@@ -1,0 +1,1 @@
+using HandAndLife as service from '../../srv/renova-hl-service';

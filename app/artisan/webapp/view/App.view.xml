@@ -1,0 +1,8 @@
+<mvc:View
+	xmlns:mvc="sap.ui.core.mvc"
+	controllerName="renova.hl.ui.artisan.controller.App"
+	displayBlock="true"
+	xmlns="sap.m">
+
+	<App id="app" autoFocus="false"/>
+</mvc:View>

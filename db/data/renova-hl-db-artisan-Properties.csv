@@ -1,0 +1,9 @@
+propertyID;property;category_categoryID;commonProperty;isSize;isBodySize;isColor;isWeight;mandatory
+1;Material;0;true;false;false;false;false;true
+2;Package Size;0;true;true;false;false;false;true
+3;Color;0;true;false;false;true;false;false
+4;Ağırlık;0;true;false;false;false;true;false
+5;Reçine;1;false;false;false;false;false;false
+6;Demir Türü;2;false;false;false;false;false;false
+7;Karat;3;false;false;false;false;false;false
+8;Beden;6;false;false;true;false;false;false

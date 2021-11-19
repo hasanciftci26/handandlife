@@ -1,0 +1,108 @@
+<mvc:View controllerName="renova.hl.ui.artisan.controller.Products"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+    xmlns:core="sap.ui.core"
+    xmlns:semantic="sap.m.semantic">
+    <App id="ProductsApp">
+        <pages>
+            <Page id="Products" showHeader="false">
+                <content>
+                    <VBox>
+                        <tnt:ToolHeader design="Transparent" class="testClass">
+                            <Image src="img/Renova.png" height="2rem" width="4.5rem" press="onNavToHomePage"/>
+                            <Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+                                <layoutData>
+                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                </layoutData>
+                            </Button>
+                            <Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+                                <layoutData>
+                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                </layoutData>
+                            </Button>
+                            <Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+                                <layoutData>
+                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                </layoutData>
+                            </Button>
+                            <ToolbarSpacer/>
+                            <Button icon="sap-icon://search" type="Transparent">
+                                <layoutData>
+                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                </layoutData>
+                            </Button>
+                            <Button icon="sap-icon://comment" type="Transparent">
+                                <layoutData>
+                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                </layoutData>
+                            </Button>
+                            <MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+                                <layoutData>
+                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
+                                </layoutData>
+                                <Menu>
+                                    <MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+                                    <MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+                                    <MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+                                    <MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+                                </Menu>
+                            </MenuButton>
+                        </tnt:ToolHeader>
+                        <SplitApp
+                            id="ProductsSplitApp"
+                            initialDetail="ProductDetails"
+                            initialMaster="AllProducts">
+                            <detailPages>
+                                <Page
+                                    id="ProductDetails"
+                                    backgroundDesign= "Solid">
+                                </Page>
+                            </detailPages>
+                            <masterPages>
+                                <semantic:MasterPage
+                                    id="AllProducts"
+                                    title="{i18n>AllProducts}"
+                                    backgroundDesign= "List"
+                                    floatingFooter="true">
+                                    <semantic:subHeader>
+                                        <Bar id="headerBar">
+                                            <contentMiddle>
+                                                <SearchField id="sfSearchProduct" width="100%"
+                                                    search="onSearchProduct"></SearchField>
+                                            </contentMiddle>
+                                        </Bar>
+                                    </semantic:subHeader>
+                                    <List id="lstArtisanProducts" items="{ArtisanProducts>/}">
+                                        <items>
+                                            <ObjectListItem type="Active" press="onSelectProduct" 
+                                            title="{ArtisanProducts>productName}"
+                                            number="{
+                                                parts:[{path:'ArtisanProducts>price'},{path:'ArtisanProducts>currency_currencyCode'}],
+                                                type: 'sap.ui.model.type.Currency',
+                                                formatOptions: {showMeasure: false}
+                                            }"
+                                            numberUnit="{ArtisanProducts>currency_currencyCode}">
+                                                <firstStatus>
+                                                    <ObjectStatus text="{ArtisanProducts>status}"
+                                                     state="{= ${ArtisanProducts>statusID} === 'AVLB' ? 'Success' : 'Error' }"/>
+                                                </firstStatus>
+                                                <attributes>
+                                                    <ObjectAttribute text="{ArtisanProducts>productID}" visible="false"/>
+                                                    <ObjectAttribute text="{ArtisanProducts>category}"/>
+                                                </attributes>
+                                            </ObjectListItem>
+                                        </items>
+                                    </List>
+                                    <semantic:customFooterContent>
+                                        <Button icon="sap-icon://add" type="Accept" text="{i18n>AddNewProduct}" press="onAddNewProduct"/>
+				                    </semantic:customFooterContent>
+                                </semantic:MasterPage>
+                            </masterPages>
+                        </SplitApp>
+                    </VBox>
+                </content>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

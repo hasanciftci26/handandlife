@@ -1,0 +1,73 @@
+<mvc:View controllerName="renova.hl.ui.artisan.controller.Login"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:tnt="sap.tnt"
+    xmlns:l="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <App id="LoginApp">
+        <pages>
+            <Page id="Login" showHeader="false">
+                <content>
+                    <tnt:ToolHeader design="Transparent" class="testClass">
+                        <Image src="img/Renova.png" height="2rem" width="4.5rem" press="onNavToHomePage"/>
+                        <Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+                            <layoutData>
+                                <OverflowToolbarLayoutData priority="NeverOverflow" />
+                            </layoutData>
+                        </Button>
+                        <ToolbarSpacer/>
+                        <MenuButton icon="sap-icon://customer" type="Transparent" text="{i18n>Signup}">
+                            <layoutData>
+                                <OverflowToolbarLayoutData priority="NeverOverflow" />
+                            </layoutData>
+                            <Menu>
+                                <MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp" />
+                            </Menu>
+                        </MenuButton>
+                    </tnt:ToolHeader>
+                    <FlexBox height="80%"
+                        alignItems="Center"
+                        justifyContent="Center">
+                        <items>
+                            <f:SimpleForm id="SimpleFormChange354"
+                                editable="true"
+                                layout="ResponsiveGridLayout"
+                                labelSpanXL="3"
+                                labelSpanL="3"
+                                labelSpanM="3"
+                                labelSpanS="12"
+                                adjustLabelSpan="false"
+                                emptySpanXL="4"
+                                emptySpanL="4"
+                                emptySpanM="4"
+                                emptySpanS="0"
+                                columnsXL="1"
+                                columnsL="1"
+                                columnsM="1"
+                                singleContainerFullSize="false" >
+                                <f:content>
+                                    <Label/>
+                                    <Image src="img/Renova.png" class="ImageMargin"/>
+                                    <Label text="{i18n>Email}" class="sapUiSmallMarginTop" />
+                                    <Input id="inpLoginEmail" maxLength="160" width="25rem" type="Email" change="onChangeLoginEmail"/>
+                                    <Label text="{i18n>Password}"/>
+                                    <Input id="inpLoginPassword" width="25rem" type="Password" maxLength="60"
+                                    valueHelpIconSrc="{= ${ShowPassword>/Display} === true ? 'sap-icon://hide' : 'sap-icon://show' }"
+                                    showValueHelp="true" valueHelpRequest="onDisplayHidePassword"/>
+                                    <Label/>
+                                    <Button type="Accept" press="onLogin" text="{i18n>Login}" width="25rem"/>
+                                    <Label/>
+                                    <HBox>
+                                        <Text text="{i18n>NoAccount}"/>
+                                        <Link text="{i18n>RegisterNow}" class="sapUiTinyMarginBegin" press="onSignUp"/>
+                                    </HBox>
+                                </f:content>
+                            </f:SimpleForm>
+                        </items>
+                    </FlexBox>
+                </content>
+            </Page>
+        </pages>
+    </App>
+</mvc:View>

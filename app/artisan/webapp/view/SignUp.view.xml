@@ -1,0 +1,232 @@
+<mvc:View controllerName="renova.hl.ui.artisan.controller.SignUp"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.uxap"
+    xmlns:m="sap.m"
+    xmlns:tnt="sap.tnt"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+    xmlns:upload="sap.m.upload">
+    <tnt:ToolHeader design="Transparent">
+        <m:Image src="img/Renova.png" height="2rem" width="4.5rem" press="onNavToHomePage" />
+        <m:Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+        </m:Button>
+        <m:Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+        </m:Button>
+        <m:Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+        </m:Button>
+        <m:Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+        </m:Button>
+        <m:ToolbarSpacer/>
+        <m:Button icon="sap-icon://search" type="Transparent">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+        </m:Button>
+        <m:Button icon="sap-icon://comment" type="Transparent">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+        </m:Button>
+        <m:MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
+            </m:layoutData>
+            <m:Menu>
+                <m:MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+                <m:MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+                <m:MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+            </m:Menu>
+        </m:MenuButton>
+    </tnt:ToolHeader>
+    <ObjectPageLayout id="ArtisanRegisterPageLayout" upperCaseAnchorBar="false" showFooter="true" height="92%">
+        <sections>
+            <ObjectPageSection titleUppercase="false" id="opsPersonalSection" title="{i18n>Personal}">
+                <subSections>
+                    <ObjectPageSubSection id="opssPersonalSubSection">
+                        <blocks>
+                            <f:SimpleForm id="sfPersonalForm" editable="true" title="{i18n>PersonalInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                <f:content>
+                                    <m:Label text="{i18n>Name}" />
+                                    <m:Input id="inpArtisanName" value="{ArtisanRegistration>/Name}" maxLength="40" liveChange="onGeneralChange"/>
+                                    <m:Label text="{i18n>LastName}" />
+                                    <m:Input value="{ArtisanRegistration>/LastName}" maxLength="40" liveChange="onGeneralChange"/>
+                                    <m:Label text="{i18n>BirthDate}" />
+                                    <m:DatePicker value="{ArtisanRegistration>/BirthDate}" displayFormat="dd/MM/yyyy" change="onGeneralChange"/>
+                                    <m:Label text="{i18n>BirthCountry}" />
+                                    <m:ComboBox items="{BirthCountries>/}" selectionChange="onChangeBirthCountry" id="cbBirthCountries">
+                                        <m:items>
+                                            <core:Item xmlns:core="sap.ui.core" key="{BirthCountries>countryCode}" text="{BirthCountries>country}"/>
+                                        </m:items>
+                                    </m:ComboBox>
+                                    <m:Label text="{i18n>BirthCity}" />
+                                    <m:ComboBox items="{BirthCities>/}" selectionChange="onGeneralChange" id="cbBirthCities">
+                                        <m:items>
+                                            <core:Item xmlns:core="sap.ui.core" key="{BirthCities>cityCode}" text="{BirthCities>city}"/>
+                                        </m:items>
+                                    </m:ComboBox>
+                                    <m:Label text="{i18n>Gender}" />
+                                    <m:ComboBox id="cbArtisanGender" selectionChange="onGeneralChange">
+                                        <m:items>
+                                            <core:Item xmlns:core="sap.ui.core" key="M" text="{i18n>Male}"/>
+                                            <core:Item xmlns:core="sap.ui.core" key="F" text="{i18n>Female}"/>
+                                            <core:Item xmlns:core="sap.ui.core" key="N" text="{i18n>NoGender}"/>
+                                        </m:items>
+                                    </m:ComboBox>
+                                    <m:Label text="{i18n>Introduction}"/>
+                                    <m:TextArea value="{ArtisanRegistration>/Introduction}" rows="5" maxLength="1000" showExceededText="true" liveChange="onGeneralChange" placeholder="{i18n>IntroductionPlaceholder}"/>
+                                </f:content>
+                            </f:SimpleForm>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <ObjectPageSection titleUppercase="false" id="opsContactSection" title="{i18n>Contact}" importance="Medium" showTitle="false">
+                <subSections>
+                    <ObjectPageSubSection id="opsContactSubSection">
+                        <blocks>
+                            <f:SimpleForm id="sfContactForm" editable="true" title="{i18n>ContactInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                <f:content>
+                                    <m:Label text="{i18n>ResidenceCountry}" />
+                                    <m:ComboBox items="{ResidenceCountries>/}" selectionChange="onChangeResidenceCountry" id="cbResidenceCountries">
+                                        <m:items>
+                                            <core:Item xmlns:core="sap.ui.core" key="{ResidenceCountries>countryCode}" text="{ResidenceCountries>country}"/>
+                                        </m:items>
+                                    </m:ComboBox>
+                                    <m:Label text="{i18n>ResidenceCity}" />
+                                    <m:ComboBox items="{ResidenceCities>/}" selectionChange="onGeneralChange" id="cbResidenceCities">
+                                        <m:items>
+                                            <core:Item xmlns:core="sap.ui.core" key="{ResidenceCities>cityCode}" text="{ResidenceCities>city}"/>
+                                        </m:items>
+                                    </m:ComboBox>
+                                    <m:Label text="{i18n>Gsm}" />
+                                    <m:MaskInput placeholderSymbol="_" id="maskInpGsm" change="onGeneralChange" value="{ArtisanRegistration>/Gsm}">
+                                        <m:rules>
+                                            <m:MaskInputRule maskFormatSymbol="C" regex="[0-9]"/>
+                                        </m:rules>
+                                    </m:MaskInput>
+                                    <m:Label text="{i18n>Email}" />
+                                    <m:Input value="{ArtisanRegistration>/Email}" maxLength="160" id="inpArtisanEmail" type="Email" change="onChangeArtisanEmail"/>
+                                    <m:Label text="{i18n>Address}"/>
+                                    <m:TextArea value="{ArtisanRegistration>/Address}" rows="5" maxLength="1000" showExceededText="true" liveChange="onGeneralChange"/>
+                                </f:content>
+                            </f:SimpleForm>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <ObjectPageSection titleUppercase="false" id="opsProfessionSection" title="{i18n>Profession}" importance="Medium" showTitle="false">
+                <subSections>
+                    <ObjectPageSubSection id="opsProfessionSubSection">
+                        <blocks>
+                            <m:VBox>
+                                <f:SimpleForm id="sfProfessionForm" editable="true" title="{i18n>ProfessionInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                    <f:content>
+                                        <m:Label text="{i18n>Profession}" />
+                                        <m:ComboBox items="{Professions>/}" id="cbArtisanProfessions">
+                                            <m:items>
+                                                <core:Item xmlns:core="sap.ui.core" key="{Professions>professionID}" text="{Professions>profession}"/>
+                                            </m:items>
+                                        </m:ComboBox>
+                                        <m:Label text="{i18n>Experience}" />
+                                        <m:MaskInput mask="CC" placeholderSymbol=" " id="maskInpExperience" value="{ArtisanRegistration>/Experience}">
+                                            <m:rules>
+                                                <m:MaskInputRule maskFormatSymbol="C" regex="[0-9]"/>
+                                            </m:rules>
+                                        </m:MaskInput>
+                                        <m:Label text="{i18n>Details}"/>
+                                        <m:TextArea value="{ArtisanRegistration>/ProfessionDescription}" rows="3" maxLength="500" showExceededText="true"/>
+                                        <m:Label text="" />
+                                        <m:Button text="{i18n>Add}" press="onAddProfession" type="Accept"/>
+                                    </f:content>
+                                </f:SimpleForm>
+                                <m:VBox alignItems="Center">
+                                    <m:Table items="{ArtisanProfessions>/}" width="60rem" class="TableMargin" mode="Delete" delete="onDeleteProfession">
+                                        <m:columns>
+                                            <m:Column width="20%">
+                                                <m:Label design="Bold" text="{i18n>Profession}"/>
+                                            </m:Column>
+                                            <m:Column width="20%">
+                                                <m:Label design="Bold" text="{i18n>Experience}"/>
+                                            </m:Column>
+                                            <m:Column width="60%">
+                                                <m:Label design="Bold" text="{i18n>Details}"/>
+                                            </m:Column>
+                                        </m:columns>
+                                        <m:items>
+                                            <m:ColumnListItem>
+                                                <m:Text text="{ArtisanProfessions>Profession}"/>
+                                                <m:Text text="{ArtisanProfessions>Experience}"/>
+                                                <m:Text text="{ArtisanProfessions>Details}" wrapping="true" class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+                                            </m:ColumnListItem>
+                                        </m:items>
+                                    </m:Table>
+                                </m:VBox>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+
+            <ObjectPageSection titleUppercase="false" id="opsAttachmentsSection" title="{i18n>Attachments}" importance="Medium">
+                <subSections>
+                    <ObjectPageSubSection id="opsAttachmentsSubSection">
+                        <blocks>
+                            <m:VBox>
+                                <m:Label text="{i18n>AttachmentInform}" design="Bold" class="LabelColor"/>
+                                <upload:UploadSet id="usArtisanAttachments" 
+                                instantUpload="false" 
+                                uploadEnabled="true"
+                                uploadCompleted="onFileUploadCompleted" items="{
+								path: '/ArtisanResumes',
+								parameters: {
+									$orderby: 'createdAt desc'
+								},
+								templateShareable: false}">
+                                    <upload:toolbar>
+                                    </upload:toolbar>
+                                    <upload:items>
+                                        <upload:UploadSetItem fileName="{fileName}" mediaType="{mediaType}" 
+                                        url="{url}"
+                                        enabledEdit="false"
+                                        visibleEdit="false" openPressed="onFileOpenPressed" 
+                                        thumbnailUrl="{
+                                            path: 'mediaType',
+                                            formatter: '.formatter.formatThumbnailUrl'
+                                        }">
+                                            <upload:attributes>
+                                                <m:ObjectAttribute title="Uploaded By" text="{createdBy}" />
+                                                <m:ObjectAttribute title="Uploaded on" text="{createdAt}" />
+                                            </upload:attributes>
+                                        </upload:UploadSetItem>
+                                    </upload:items>
+                                </upload:UploadSet>
+                            </m:VBox>
+                        </blocks>
+                    </ObjectPageSubSection>
+                </subSections>
+            </ObjectPageSection>
+        </sections>
+        <footer>
+            <m:OverflowToolbar>
+                <m:ToolbarSpacer />
+                <m:Button width="15rem" text="{i18n>Complete}" press="onRegistrationComplete" type="Accept" icon="sap-icon://complete"/>
+                <!-- <m:ToolbarSpacer /> -->
+            </m:OverflowToolbar>
+        </footer>
+    </ObjectPageLayout>
+</mvc:View>
