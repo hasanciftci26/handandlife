@@ -85,6 +85,7 @@ sap.ui.define([
             }
             return bVisible;
         },
+        //Body sizeları al
         getBodySizes: function () {
             var aBodySizes = [{
                 key: "XS",
