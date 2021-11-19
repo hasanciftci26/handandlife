@@ -13,6 +13,7 @@ sap.ui.define([
         getResourceBundle: function () {
             return this.getOwnerComponent().getModel("i18n").getResourceBundle();
         },
+        //Zorunlu alanları kontrol et
         checkMandatoryFields(FormId, vThis) {
             var vEmptyFields = false;
             var aFormContent = vThis.getView().byId(FormId).getContent();
