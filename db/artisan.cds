@@ -75,7 +75,7 @@ entity ArtisanProducts {
     key productID   : UUID;
         category    : Association to Categories;
         email       : Association to Artisans;
-        stock       : Decimal(13, 3);
+        stock       : String(25);
         unit        : Association to main.Units;
         price       : Decimal(10, 2);
         currency    : Association to main.Currencies;
@@ -84,11 +84,14 @@ entity ArtisanProducts {
                           on properties.productID = $self;
         details     : String;
         status      : Association to main.Statuses;
+        createdAt   : Timestamp @cds.on.insert : $now;
 };
 
 entity ProductProperties {
-    key productID  : Association to ArtisanProducts;
-    key propertyID : Association to Properties;
+    key productID     : Association to ArtisanProducts;
+    key propertyID    : Association to Properties;
+        propertyValue : String(100);
+        unit          : Association to main.Units;
 };
 
 entity Properties {

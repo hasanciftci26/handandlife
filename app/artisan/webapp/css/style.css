@@ -18,3 +18,8 @@
 .ImageMargin{
     margin-left: 5rem;
 }
+
+.CarouselMargin{
+    margin-left: 190px !important;
+    margin-top: 30px !important;
+}

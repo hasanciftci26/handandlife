@@ -1,7 +1,8 @@
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
-], function (Controller, JSONModel) {
+    "sap/ui/util/Storage"
+], function (Controller, JSONModel,Storage) {
     "use strict";
     return Controller.extend("renova.hl.ui.artisan.controller.BaseController", {
         /* =========================================================== */
@@ -139,6 +140,29 @@ sap.ui.define([
                         oEvent.getSource().setValueState();
                     }
                     break;
+            }
+        },
+        sessionControl: function (oThis) {
+            var oStorage = new Storage(Storage.Type.local, "userLogin");
+            var vLogin = false;
+
+            if (oStorage.get("isLogin") !== null) {
+                vLogin = oStorage.get("isLogin").active
+                // @ts-ignore
+                sap.ui.getCore().email = oStorage.get("isLogin").email;
+            }
+            // @ts-ignore
+            sap.ui.getCore().isLogin = vLogin;
+
+            if (oThis.getView().getModel("UserCredential") === undefined) {
+                oThis.getView().setModel(new JSONModel({
+                    // @ts-ignore
+                    isLogin: sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true
+                }), "UserCredential");
+            } else {
+                oThis.getView().getModel("UserCredential").setProperty("/isLogin",
+                    // @ts-ignore
+                    sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true);
             }
         }
     });

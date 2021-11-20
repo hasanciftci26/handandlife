@@ -54,10 +54,45 @@
                             initialDetail="ProductDetails"
                             initialMaster="AllProducts">
                             <detailPages>
-                                <Page
+                                <semantic:DetailPage
                                     id="ProductDetails"
-                                    backgroundDesign= "Solid">
-                                </Page>
+                                    backgroundDesign= "Solid"
+                                    title="{i18n>ProductDetails}"
+                                    floatingFooter="true">
+                                    	<ObjectHeader
+                                        responsive="true"
+                                        title="{Product>/productName}"
+                                            number="{
+                                                parts:[{path:'Product>/price'},{path:'Product>/currency_currencyCode'}],
+                                                type: 'sap.ui.model.type.Currency',
+                                                formatOptions: {showMeasure: false}
+                                            }"
+                                        numberUnit="{Product>/currency_currencyCode}"
+                                        class="sapUiResponsivePadding--header" >
+                                        <statuses>
+                                            <ObjectStatus
+                                                text="{Product>/status}"
+                                                state="{= ${Product>/statusID} === 'AVLB' ? 'Success' : 'Error'}" />
+                                        </statuses>
+                                        <ObjectAttribute text="{i18n>ProductID}: {Product>/productID}" />
+                                        <ObjectAttribute text="{i18n>Category}: {Product>/category}" />
+                                    </ObjectHeader>
+                                    <Carousel pages="{path:'/ProductAttachments',
+                                    filters:[{
+                                        path:'email_email',
+                                        operator:'EQ',
+                                        value1:'aaaaa'
+                                    }]}" id="crProductPictures" loop="true" height="500px" width="70%" class="CarouselMargin">
+                                        <pages>
+                                            <Image src="{mediaContent}"/>
+                                        </pages>
+                                    </Carousel>
+                                    <semantic:customFooterContent>
+                                        <Button icon="sap-icon://activate" type="Ghost" text="{i18n>ActivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
+                                        <Button icon="sap-icon://pending" type="Ghost" text="{i18n>DeactivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
+                                        <Button icon="sap-icon://delete" type="Reject" text="{i18n>DeleteProduct}"/>
+				                    </semantic:customFooterContent>
+                                </semantic:DetailPage>
                             </detailPages>
                             <masterPages>
                                 <semantic:MasterPage

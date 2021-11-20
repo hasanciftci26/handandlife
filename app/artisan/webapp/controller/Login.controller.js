@@ -15,23 +15,13 @@ sap.ui.define([
         return BaseController.extend("renova.hl.ui.artisan.controller.Login", {
             onInit: function () {
                 this.getRouter().getRoute("Login").attachPatternMatched(this._onObjectMatched, this);
-                var oMyStorage = new Storage(Storage.Type.session, "my_prefix");
             },
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
             },
             _onObjectMatched: function () {
                 var that = this;
-                var oStorage = new Storage(Storage.Type.session, "userLogin");
-                var vLogin = false;
-
-                if (oStorage.get("isLogin") !== null) {
-                    vLogin = oStorage.get("isLogin").active
-                    // @ts-ignore
-                    sap.ui.getCore().email = oStorage.get("isLogin").email;
-                }
-                // @ts-ignore
-                sap.ui.getCore().isLogin = vLogin;
+                this.sessionControl(this);
 
                 this.getView().byId("inpLoginEmail").setValue();
                 this.getView().byId("inpLoginPassword").setValue();
@@ -93,7 +83,7 @@ sap.ui.define([
                     // @ts-ignore
                     sap.ui.getCore().email = vMail;
 
-                    var oStorage = new Storage(Storage.Type.session, "userLogin");
+                    var oStorage = new Storage(Storage.Type.local, "userLogin");
                     oStorage.put("isLogin", {
                         active: true,
                         email: vMail

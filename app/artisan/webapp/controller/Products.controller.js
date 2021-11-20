@@ -22,27 +22,7 @@ sap.ui.define([
             },
             _onObjectMatched: function () {
                 var that = this;
-                var oStorage = new Storage(Storage.Type.session, "userLogin");
-                var vLogin = false;
-
-                if (oStorage.get("isLogin") !== null) {
-                    vLogin = oStorage.get("isLogin").active
-                    // @ts-ignore
-                    sap.ui.getCore().email = oStorage.get("isLogin").email;
-                }
-                // @ts-ignore
-                sap.ui.getCore().isLogin = vLogin;
-
-                if (this.getView().getModel("UserCredential") === undefined) {
-                    this.getView().setModel(new JSONModel({
-                        // @ts-ignore
-                        isLogin: sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true
-                    }), "UserCredential");
-                } else {
-                    this.getView().getModel("UserCredential").setProperty("/isLogin",
-                        // @ts-ignore
-                        sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true);
-                }
+                this.sessionControl(this);
                 // @ts-ignore
                 if (sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false) {
                     MessageBox.information(
@@ -74,6 +54,9 @@ sap.ui.define([
 
                 oBindProduct.requestObject().then((oData) => {
                     that.getView().setModel(new JSONModel(oData.value), "ArtisanProducts");
+                    if (oData.value.length !== 0) {
+                        that.getProductDetails(oData.value[0].productID);
+                    }
                     that.getView().byId("AllProducts").setTitle(this.getResourceBundle().getText("AllProducts", [oData.value.length]));
                 });
             },
@@ -82,7 +65,7 @@ sap.ui.define([
             },
             onLogout: function () {
                 var that = this;
-                var oStorage = new Storage(Storage.Type.session, "userLogin");
+                var oStorage = new Storage(Storage.Type.local, "userLogin");
 
                 MessageBox.information(
                     this.getResourceBundle().getText("Loggingout"), {
@@ -106,6 +89,37 @@ sap.ui.define([
             },
             onSelectProduct: function (oEvent) {
                 var vProductId = oEvent.getSource().getAttributes()[0].getText();
+                this.getProductDetails(vProductId);
+            },
+            getProductDetails: function (vProductId) {
+                var sProduct = this.getView().getModel("ArtisanProducts").getData().find((item) => {
+                    return item.productID === vProductId;
+                });
+                this.getView().setModel(new JSONModel(sProduct), "Product");
+                this.getProductPictures(sProduct);
+            },
+            getProductPictures: function (sProduct) {
+                var that = this;
+                var aFilter = [];
+                aFilter.push(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
+                this.getView().byId("crProductPictures").getBinding("pages").filter(aFilter);
+                // var oImage = new sap.m.Image({ src: "{mediaContent}" });
+                // this.getView().byId("crProductPictures").bindAggregation("pages", {
+                //     path: "/ProductAttachments",
+                //     template: oImage,
+                //     filters: aFilter
+                // });
+                // this.getView().byId("fbCarousel").setJustifyContent("Center");
+                // this.getView().byId("crProductPictures").getBinding("pages").filter(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
+                // var oDataModel = this.getView().getModel();
+                // var oBindPictures = oDataModel.bindContext("/ProductAttachments", undefined, {
+                //     $filter: "productID_productID eq " + sProduct.productID,
+                //     $$groupId: "directRequest"
+                // });
+
+                // oBindPictures.requestObject().then((oData) => {
+                //     that.getView().setModel(new JSONModel(oData.value), "ProductPictures");
+                // });
             },
             onSearchProduct: function (oEvent) {
                 var sQuery = oEvent.getParameter("query");

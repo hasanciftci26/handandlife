@@ -13,7 +13,12 @@ module.exports = (srv) => {
     srv.before('CREATE', 'ArtisanResumes', (req) => {
         console.log(JSON.stringify(req.data))
         req.data.url = `/hand-and-life/ArtisanResumes(${req.data.fileID})/mediaContent`
-    })
+    });
+
+    srv.before('CREATE', 'ProductAttachments', (req) => {
+        console.log(JSON.stringify(req.data))
+        req.data.url = `/hand-and-life/ProductAttachments(productID_productID=${req.data.productID_productID},fileID=${req.data.fileID})/mediaContent`
+    });
 
     // srv.on("READ", "ArtisanInformations", async (req, next) => {
     //     let result = await srv.run(SELECT.from(Professions).where({ professionID: 1 }));

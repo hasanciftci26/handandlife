@@ -32,29 +32,11 @@ sap.ui.define([
             },
             //Sayfaya her yönlenişte ülke ve uzmanlık bilgisini al
             _onObjectMatched: async function () {
-                var oStorage = new Storage(Storage.Type.session, "userLogin");
-                var vLogin = false;
-
-                if (oStorage.get("isLogin") !== null) {
-                    vLogin = oStorage.get("isLogin").active
-                    sap.ui.getCore().email = oStorage.get("isLogin").email;
-                }
-                // @ts-ignore
-                sap.ui.getCore().isLogin = vLogin;
-
-                if (this.getView().getModel("UserCredential") === undefined) {
-                    this.getView().setModel(new JSONModel({
-                        // @ts-ignore
-                        isLogin: sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true
-                    }), "UserCredential");
-                } else {
-                    this.getView().getModel("UserCredential").setProperty("/isLogin",
-                        // @ts-ignore
-                        sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true);
-                }
+                this.sessionControl(this);
 
                 await this.getCountries();
                 await this.getProfessions();
+                
                 this.getView().setModel(new JSONModel({}), "ArtisanRegistration");
                 this.getView().setModel(new JSONModel([]), "ArtisanProfessions");
                 this.getView().setModel(new JSONModel([]), "BirthCities");
@@ -421,7 +403,7 @@ sap.ui.define([
             },
             onLogout: function () {
                 var that = this;
-                var oStorage = new Storage(Storage.Type.session, "userLogin");
+                var oStorage = new Storage(Storage.Type.local, "userLogin");
 
                 MessageBox.information(
                     this.getResourceBundle().getText("Loggingout"), {

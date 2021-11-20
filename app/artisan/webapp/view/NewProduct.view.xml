@@ -128,14 +128,14 @@
                                         <m:items>
                                             <m:ColumnListItem>
                                                 <m:Text text="{Properties>propertyID}" visible="false"/>
-                                                <m:Text text="{Properties>property}" class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+                                                <m:Label text="{Properties>property}" class="sapUiSmallMarginTop sapUiSmallMarginBottom" required="{Properties>mandatory}"/>
                                                 <m:HBox>
-                                                    <m:Input visible="{Properties>CommonInputVisible}" width="160%"/>
-                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" />
+                                                    <m:Input visible="{Properties>CommonInputVisible}" width="160%" value="{Properties>CommonProperty}" liveChange="onChangeState"/>
+                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Height}" liveChange="onChangeState"/>
                                                     <m:Text text="X" visible="{= ${Properties>isSize} === true ? true:false}" class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
-                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" />
+                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Width}" liveChange="onChangeState"/>
                                                     <m:Text text="X" visible="{= ${Properties>isSize} === true ? true:false}" class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
-                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" />
+                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Depth}" liveChange="onChangeState"/>
                                                     <m:Select items="{path:'BodySizes>/', templateShareable:true}" visible="{= ${Properties>isBodySize} === true ? true:false}" selectedKey="XS">
                                                         <m:items>
                                                             <core:Item xmlns:core="sap.ui.core" key="{BodySizes>key}" text="{BodySizes>text}"/>
@@ -188,34 +188,20 @@
                     <ObjectPageSubSection id="opsPicturesSubSection">
                         <blocks>
                             <m:VBox>
-                                <m:Label text="{i18n>AttachmentInform}" design="Bold" class="LabelColor"/>
+                                <m:Label text="{i18n>ProductAttachmentInform}" design="Bold" class="LabelColor"/>
                                 <upload:UploadSet id="usProductAttachments" 
                                 instantUpload="false" 
                                 uploadEnabled="true"
-                                uploadCompleted="onFileUploadCompleted" items="{
-								path: 'ProductAttachments>/',
-								parameters: {
-									$orderby: 'createdAt desc'
-								},
-								templateShareable: false}">
-                                    <upload:toolbar>
+                                uploadCompleted="onFileUploadCompleted"
+                                mediaTypes="image/jpeg,image/png">
+                                    <!-- <upload:toolbar>
                                     </upload:toolbar>
                                     <upload:items>
-                                        <upload:UploadSetItem fileName="{ProductAttachments>fileName}" 
-                                        mediaType="{ProductAttachments>mediaType}" 
-                                        url="{ProductAttachments>url}"
+                                        <upload:UploadSetItem 
                                         enabledEdit="false"
-                                        visibleEdit="false" openPressed="onFileOpenPressed" 
-                                        thumbnailUrl="{
-                                            path: 'ProductAttachments>mediaType',
-                                            formatter: '.formatter.formatThumbnailUrl'
-                                        }">
-                                            <upload:attributes>
-                                                <m:ObjectAttribute title="Uploaded By" text="{ProductAttachments>createdBy}" />
-                                                <m:ObjectAttribute title="Uploaded on" text="{ProductAttachments>createdAt}" />
-                                            </upload:attributes>
+                                        visibleEdit="false">
                                         </upload:UploadSetItem>
-                                    </upload:items>
+                                    </upload:items> -->
                                 </upload:UploadSet>
                             </m:VBox>
                         </blocks>
