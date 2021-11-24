@@ -1,3 +1,4 @@
+
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "sap/ui/core/mvc/Controller",
@@ -151,6 +152,53 @@ sap.ui.define([
                         that.getArtisanProducts();
                     });
                 });
+            },
+
+            onActivateProduct: function () {
+                var that = this;
+
+                //boş bir model oluşturuyoruz
+                var oDataModel = this.getView().getModel();
+
+                //Ürün sayfasındaki model boş mu kontrolü yapıyoruz
+                if (this.getView().getModel("Product").getData() === undefined) {
+                    return;
+                }
+
+                //Modelde üzerinde bulunduğumuz ürün bilgilerini bi arraye atadık
+                var sProduct = this.getView().getModel("Product").getData();
+
+                //ArtisanProduct dbsine seçili ürünün idsi direct olarak bind ediliyor
+                var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                    $filter: "productID eq " + sProduct.productID,
+                    $$groupId: "directRequest"
+                });
+
+                //bind edilen id objecti ile status özelliğine avlb set ediyoruz
+                //update işlemi için submitbatch ve toplu işlem olarak batchrequest yapılıyor
+                oBindProduct.requestContexts().then((aContext) => {
+                    aContext[0].setProperty("status_statusID", "AVLB");
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        that.getArtisanProducts();
+                    });
+                });
+            },
+
+            onDeleteProduct: function (oEvent) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var sSelected = this.getView().getModel("Product").getData();
+                var oSelected = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                    $filter: "productID eq " + sSelected.productID,
+                    $$groupId: "directRequest"
+                });
+
+                oSelected.requestContexts().then((aContext) => {
+                    aContext[0].delete("directRequest").then(function () {
+                        that.getArtisanProducts();
+                    });
+                });
             }
+
         });
     });

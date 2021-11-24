@@ -1,6 +1,8 @@
 <mvc:View controllerName="renova.hl.ui.artisan.controller.Products"
     xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
     xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:f="sap.ui.layout.form"
     xmlns:tnt="sap.tnt"
     xmlns:core="sap.ui.core"
     xmlns:semantic="sap.m.semantic">
@@ -86,11 +88,11 @@
                                         <pages>
                                             <Image src="{mediaContent}"/>
                                         </pages>
-                                    </Carousel>
+                                    </Carousel>                             
                                     <semantic:customFooterContent>
                                         <Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
                                         <Button icon="sap-icon://pending" type="Ghost" press="onDeactivateProduct" text="{i18n>DeactivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
-                                        <Button icon="sap-icon://delete" type="Reject" text="{i18n>DeleteProduct}"/>
+                                        <Button icon="sap-icon://delete" type="Reject" press="onDeleteProduct" text="{i18n>DeleteProduct}"/>
 				                    </semantic:customFooterContent>
                                 </semantic:DetailPage>
                             </detailPages>

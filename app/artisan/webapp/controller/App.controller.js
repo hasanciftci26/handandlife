@@ -1,3 +1,4 @@
+
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "sap/ui/core/mvc/Controller"

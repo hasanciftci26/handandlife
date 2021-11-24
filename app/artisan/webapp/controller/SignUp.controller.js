@@ -1,4 +1,4 @@
-// @ts-nocheck
+
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "renova/hl/ui/artisan/model/formatter",
