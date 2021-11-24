@@ -131,6 +131,26 @@ sap.ui.define([
             },
             onAddNewProduct: function () {
                 this.getRouter().navTo("NewProduct");
+            },
+            onDeactivateProduct: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                if (this.getView().getModel("Product") === undefined) {
+                    return;
+                }
+                var sProduct = this.getView().getModel("Product").getData();
+
+                var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                    $filter: "productID eq " + sProduct.productID,
+                    $$groupId: "directRequest"
+                });
+
+                oBindProduct.requestContexts().then((aContext) => {
+                    aContext[0].setProperty("status_statusID", "DCTV");
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        that.getArtisanProducts();
+                    }); 
+                });
             }
         });
     });

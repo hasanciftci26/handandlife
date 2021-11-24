@@ -88,8 +88,8 @@
                                         </pages>
                                     </Carousel>
                                     <semantic:customFooterContent>
-                                        <Button icon="sap-icon://activate" type="Ghost" text="{i18n>ActivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
-                                        <Button icon="sap-icon://pending" type="Ghost" text="{i18n>DeactivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
+                                        <Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
+                                        <Button icon="sap-icon://pending" type="Ghost"  press="onDeactivateProduct" text="{i18n>DeactivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
                                         <Button icon="sap-icon://delete" type="Reject" text="{i18n>DeleteProduct}"/>
 				                    </semantic:customFooterContent>
                                 </semantic:DetailPage>
