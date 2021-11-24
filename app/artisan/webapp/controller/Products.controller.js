@@ -156,26 +156,19 @@ sap.ui.define([
 
             onActivateProduct: function () {
                 var that = this;
-
-                //boş bir model oluşturuyoruz
                 var oDataModel = this.getView().getModel();
 
-                //Ürün sayfasındaki model boş mu kontrolü yapıyoruz
                 if (this.getView().getModel("Product").getData() === undefined) {
                     return;
                 }
 
-                //Modelde üzerinde bulunduğumuz ürün bilgilerini bi arraye atadık
                 var sProduct = this.getView().getModel("Product").getData();
 
-                //ArtisanProduct dbsine seçili ürünün idsi direct olarak bind ediliyor
                 var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
                     $filter: "productID eq " + sProduct.productID,
                     $$groupId: "directRequest"
                 });
 
-                //bind edilen id objecti ile status özelliğine avlb set ediyoruz
-                //update işlemi için submitbatch ve toplu işlem olarak batchrequest yapılıyor
                 oBindProduct.requestContexts().then((aContext) => {
                     aContext[0].setProperty("status_statusID", "AVLB");
                     oDataModel.submitBatch("batchRequest").then(() => {
