@@ -1,4 +1,3 @@
-
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "sap/ui/core/mvc/Controller",
@@ -104,23 +103,6 @@ sap.ui.define([
                 var aFilter = [];
                 aFilter.push(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
                 this.getView().byId("crProductPictures").getBinding("pages").filter(aFilter);
-                // var oImage = new sap.m.Image({ src: "{mediaContent}" });
-                // this.getView().byId("crProductPictures").bindAggregation("pages", {
-                //     path: "/ProductAttachments",
-                //     template: oImage,
-                //     filters: aFilter
-                // });
-                // this.getView().byId("fbCarousel").setJustifyContent("Center");
-                // this.getView().byId("crProductPictures").getBinding("pages").filter(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
-                // var oDataModel = this.getView().getModel();
-                // var oBindPictures = oDataModel.bindContext("/ProductAttachments", undefined, {
-                //     $filter: "productID_productID eq " + sProduct.productID,
-                //     $$groupId: "directRequest"
-                // });
-
-                // oBindPictures.requestObject().then((oData) => {
-                //     that.getView().setModel(new JSONModel(oData.value), "ProductPictures");
-                // });
             },
             onSearchProduct: function (oEvent) {
                 var sQuery = oEvent.getParameter("query");
@@ -180,7 +162,8 @@ sap.ui.define([
             onDeleteProduct: function (oEvent) {
                 var that = this;
                 var oDataModel = this.getView().getModel();
-                var sSelected = this.getView().getModel("Product").getData();
+                var oProductModel = this.getView().getModel("Product");
+                var sSelected = oProductModel.getData();
                 var oSelected = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
                     $filter: "productID eq " + sSelected.productID,
                     $$groupId: "directRequest"
@@ -188,10 +171,12 @@ sap.ui.define([
 
                 oSelected.requestContexts().then((aContext) => {
                     aContext[0].delete("directRequest").then(function () {
+                        that.getView().byId("crProductPictures").getBinding("pages").filter(new Filter("email_email", FilterOperator.EQ, "aaaaa"));
+                        oProductModel.setData({});
+                        oProductModel.refresh();
                         that.getArtisanProducts();
                     });
                 });
             }
-
         });
     });

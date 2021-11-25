@@ -1,4 +1,3 @@
-
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "renova/hl/ui/artisan/model/formatter",
@@ -27,20 +26,20 @@ sap.ui.define([
                 this.setComboboxReadonly("cbCategories", this);
                 this.setComboboxReadonly("cbUnits", this);
                 this.setComboboxReadonly("cbCurrencies", this);
-                // this.setComboboxReadonly("cbBodySizes", this);
             },
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
             },
             _onObjectMatched: async function () {
-                this.getView().setModel(new JSONModel({}),"NewProduct");
+                var that = this;
+                this.sessionControl(this);
+
+                this.getView().setModel(new JSONModel({}), "NewProduct");
                 this.getView().setModel(new JSONModel([]), "Properties");
                 this.getView().byId("cbCategories").setSelectedKey();
                 this.getView().byId("cbUnits").setSelectedKey();
                 this.getView().byId("cbCurrencies").setSelectedKey();
 
-                var that = this;
-                this.sessionControl(this);
                 this.getView().byId("usProductAttachments").removeAllItems();
                 // @ts-ignore
                 if (sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false) {

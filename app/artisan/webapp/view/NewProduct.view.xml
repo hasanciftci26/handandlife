@@ -190,18 +190,10 @@
                             <m:VBox>
                                 <m:Label text="{i18n>ProductAttachmentInform}" design="Bold" class="LabelColor"/>
                                 <upload:UploadSet id="usProductAttachments" 
-                                instantUpload="false" 
-                                uploadEnabled="true"
-                                uploadCompleted="onFileUploadCompleted"
-                                mediaTypes="image/jpeg,image/png">
-                                    <!-- <upload:toolbar>
-                                    </upload:toolbar>
-                                    <upload:items>
-                                        <upload:UploadSetItem 
-                                        enabledEdit="false"
-                                        visibleEdit="false">
-                                        </upload:UploadSetItem>
-                                    </upload:items> -->
+                                    instantUpload="false" 
+                                    uploadEnabled="true"
+                                    uploadCompleted="onFileUploadCompleted"
+                                    mediaTypes="image/jpeg,image/png">
                                 </upload:UploadSet>
                             </m:VBox>
                         </blocks>
