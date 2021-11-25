@@ -57,8 +57,8 @@
                 <subSections>
                     <ObjectPageSubSection id="opssProductInfoSubSection">
                         <blocks>
-                            <f:SimpleForm id="sfProductInfoForm" editable="true" title="{i18n>ProductInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
-                                <f:content>
+                           <f:SimpleForm id="sfProductInfoForm" editable="true" title="{i18n>ProductInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                 <f:content>
                                     <m:Label text="{i18n>ProductName}" />
                                     <m:Input id="inpProductName" value="{NewProduct>/ProductName}" maxLength="40" liveChange="onGeneralChange"/>
                                     <m:Label text="{i18n>Category}" />
@@ -190,18 +190,10 @@
                             <m:VBox>
                                 <m:Label text="{i18n>ProductAttachmentInform}" design="Bold" class="LabelColor"/>
                                 <upload:UploadSet id="usProductAttachments" 
-                                instantUpload="false" 
-                                uploadEnabled="true"
-                                uploadCompleted="onFileUploadCompleted"
-                                mediaTypes="image/jpeg,image/png">
-                                    <!-- <upload:toolbar>
-                                    </upload:toolbar>
-                                    <upload:items>
-                                        <upload:UploadSetItem 
-                                        enabledEdit="false"
-                                        visibleEdit="false">
-                                        </upload:UploadSetItem>
-                                    </upload:items> -->
+                                    instantUpload="false" 
+                                    uploadEnabled="true"
+                                    uploadCompleted="onFileUploadCompleted"
+                                    mediaTypes="image/jpeg,image/png">
                                 </upload:UploadSet>
                             </m:VBox>
                         </blocks>

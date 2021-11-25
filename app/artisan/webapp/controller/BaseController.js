@@ -9,6 +9,7 @@ sap.ui.define([
         /* Hazırda olan fonksiyonlar                                   */
         /* =========================================================== */
         getRouter: function () {
+            // @ts-ignore
             return sap.ui.core.UIComponent.getRouterFor(this);
         },
         getResourceBundle: function () {

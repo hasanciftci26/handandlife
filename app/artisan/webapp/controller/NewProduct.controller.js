@@ -1,4 +1,3 @@
-// @ts-nocheck
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "renova/hl/ui/artisan/model/formatter",
@@ -22,12 +21,11 @@ sap.ui.define([
             formatter: formatter,
             onInit: function () {
                 this.getView().setModel(new JSONModel({}), "NewProduct");
-                this.getRouter().getRoute("NewProduct").attachPatternMatched(this._onObjectMatched, this);
 
+                this.getRouter().getRoute("NewProduct").attachPatternMatched(this._onObjectMatched, this);
                 this.setComboboxReadonly("cbCategories", this);
                 this.setComboboxReadonly("cbUnits", this);
                 this.setComboboxReadonly("cbCurrencies", this);
-                // this.setComboboxReadonly("cbBodySizes", this);
             },
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
@@ -35,6 +33,13 @@ sap.ui.define([
             _onObjectMatched: async function () {
                 var that = this;
                 this.sessionControl(this);
+
+                this.getView().setModel(new JSONModel({}), "NewProduct");
+                this.getView().setModel(new JSONModel([]), "Properties");
+                this.getView().byId("cbCategories").setSelectedKey();
+                this.getView().byId("cbUnits").setSelectedKey();
+                this.getView().byId("cbCurrencies").setSelectedKey();
+
                 this.getView().byId("usProductAttachments").removeAllItems();
                 // @ts-ignore
                 if (sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false) {
@@ -54,6 +59,7 @@ sap.ui.define([
                 if (!sap.ui.getCore().isLogin) {
                     return;
                 }
+
                 await this.getCategories();
                 await this.getUnits();
                 await this.getColors();
@@ -424,5 +430,6 @@ sap.ui.define([
                 oUploadSet.setHttpRequestMethod("PUT");
                 oUploadSet.uploadItem(oItem);
             },
+
         });
     });

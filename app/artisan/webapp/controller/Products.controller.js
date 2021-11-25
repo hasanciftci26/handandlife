@@ -103,23 +103,6 @@ sap.ui.define([
                 var aFilter = [];
                 aFilter.push(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
                 this.getView().byId("crProductPictures").getBinding("pages").filter(aFilter);
-                // var oImage = new sap.m.Image({ src: "{mediaContent}" });
-                // this.getView().byId("crProductPictures").bindAggregation("pages", {
-                //     path: "/ProductAttachments",
-                //     template: oImage,
-                //     filters: aFilter
-                // });
-                // this.getView().byId("fbCarousel").setJustifyContent("Center");
-                // this.getView().byId("crProductPictures").getBinding("pages").filter(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
-                // var oDataModel = this.getView().getModel();
-                // var oBindPictures = oDataModel.bindContext("/ProductAttachments", undefined, {
-                //     $filter: "productID_productID eq " + sProduct.productID,
-                //     $$groupId: "directRequest"
-                // });
-
-                // oBindPictures.requestObject().then((oData) => {
-                //     that.getView().setModel(new JSONModel(oData.value), "ProductPictures");
-                // });
             },
             onSearchProduct: function (oEvent) {
                 var sQuery = oEvent.getParameter("query");
@@ -149,7 +132,50 @@ sap.ui.define([
                     aContext[0].setProperty("status_statusID", "DCTV");
                     oDataModel.submitBatch("batchRequest").then(() => {
                         that.getArtisanProducts();
-                    }); 
+                    });
+                });
+            },
+
+            onActivateProduct: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+
+                if (this.getView().getModel("Product").getData() === undefined) {
+                    return;
+                }
+
+                var sProduct = this.getView().getModel("Product").getData();
+
+                var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                    $filter: "productID eq " + sProduct.productID,
+                    $$groupId: "directRequest"
+                });
+
+                oBindProduct.requestContexts().then((aContext) => {
+                    aContext[0].setProperty("status_statusID", "AVLB");
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        that.getArtisanProducts();
+                    });
+                });
+            },
+
+            onDeleteProduct: function (oEvent) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oProductModel = this.getView().getModel("Product");
+                var sSelected = oProductModel.getData();
+                var oSelected = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                    $filter: "productID eq " + sSelected.productID,
+                    $$groupId: "directRequest"
+                });
+
+                oSelected.requestContexts().then((aContext) => {
+                    aContext[0].delete("directRequest").then(function () {
+                        that.getView().byId("crProductPictures").getBinding("pages").filter(new Filter("email_email", FilterOperator.EQ, "aaaaa"));
+                        oProductModel.setData({});
+                        oProductModel.refresh();
+                        that.getArtisanProducts();
+                    });
                 });
             }
         });
