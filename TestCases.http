@@ -30,3 +30,55 @@ GET http://localhost:4004/hand-and-life/ArtisanProfessions
 ###
 
 GET http://localhost:4004/hand-and-life/ArtisanInformations
+
+###
+
+POST http://localhost:4004/hand-and-life/Categories
+Content-Type: application/json
+
+{
+    "categoryID":"ABDC",
+    "category":"Test"
+}
+###
+
+POST http://localhost:4004/hand-and-life-integration/createOrder
+Content-Type: application/json
+
+{
+"order":{
+        "totalPrice":150,
+        "currency":"TRY",
+        "country":"TR",
+        "cityCode":"34",
+        "address":"Addresss",
+        "gsm":"+905555555555",
+        "firstName":"Customer Name",
+        "lastName":"Customer Surname",
+        "items": [{
+            "itemNo"           : 1,
+            "productType"      : "A",
+            "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
+            "offerExpireEnd"   : "2020-12-01T00:00:00.000Z",
+            "artisanCount"     : 5,
+            "propertyID"       : 1,
+            "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
+            "price"            : 10,
+            "currency"         : "EUR",
+            "quantity"         : "15",
+            "unit"             : "ST"
+        },{
+            "itemNo"           : 2,
+            "productType"      : "A",
+            "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
+            "offerExpireEnd"   : "2020-12-01T00:00:00.000Z",
+            "artisanCount"     : 5,
+            "propertyID"       : 1,
+            "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
+            "price"            : 10,
+            "currency"         : "EUR",
+            "quantity"         : "15",
+            "unit"             : "ST"
+        }]
+    }
+}

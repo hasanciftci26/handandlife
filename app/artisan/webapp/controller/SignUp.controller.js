@@ -1,3 +1,4 @@
+// @ts-nocheck
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "renova/hl/ui/artisan/model/formatter",
@@ -35,7 +36,7 @@ sap.ui.define([
 
                 await this.getCountries();
                 await this.getProfessions();
-                
+
                 this.getView().setModel(new JSONModel({}), "ArtisanRegistration");
                 this.getView().setModel(new JSONModel([]), "ArtisanProfessions");
                 this.getView().setModel(new JSONModel([]), "BirthCities");
@@ -47,6 +48,7 @@ sap.ui.define([
                 this.getView().byId("cbArtisanGender").setSelectedKey();
                 this.getView().byId("maskInpGsm").setValue();
                 this.getView().byId("maskInpGsm").setMask("C");
+                this.getView().byId("usArtisanAttachments").removeAllIncompleteItems();
             },
             //Databaseden ülkeleri al
             getCountries: function () {
@@ -317,6 +319,7 @@ sap.ui.define([
             },
             createWorkflowInstance: function () {
                 MessageBox.information(this.getResourceBundle().getText("RegistrationCompleted"));
+                this.getRouter().navTo("HomePage");
             },
             //Genel boş alan kontrolüne göre state'i boş yap
             onGeneralChange: function (oEvent) {
@@ -334,46 +337,16 @@ sap.ui.define([
             onFileUploadCompleted: function (oEvent) {
                 var oUploadSet = this.getView().byId("usArtisanAttachments");
                 oUploadSet.removeAllIncompleteItems();
-                oUploadSet.getBinding("items").refresh();
-            },
-
-            onFileOpenPressed: function (oEvent) {
-                oEvent.preventDefault();
-                var oItem = oEvent.getSource();
-                this._fileName = oItem.getFileName();
-                this.downloadFile(oItem).then((blob) => {
-                    var url = window.URL.createObjectURL(blob);
-                    var link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', this._fileName);
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }).catch((err) => {
-                    console.log(err);
-                });
-            },
-            downloadFile: function (oItem) {
-                var oRequestSettings = {
-                    url: oItem.getUrl(),
-                    method: "GET",
-                    xhrFields: {
-                        responseType: "blob"
-                    }
-                }
-
-                return new Promise((resolve, reject) => {
-                    $.ajax(oRequestSettings).done((result, textStatus, request) => {
-                        resolve(result);
-                    }).fail((err) => {
-                        reject(err);
-                    });
-                });
+                oUploadSet.removeItem(oEvent.getParameters().item);
             },
             createFileEntity: function (oItem) {
+                var oArtisanRegistration = this.getView().getModel("ArtisanRegistration");
+                var sArtisanRegistration = oArtisanRegistration.getData();
+
                 var sPayloadData = {
                     mediaType: oItem.getMediaType(),
-                    fileName: oItem.getFileName()
+                    fileName: oItem.getFileName(),
+                    email_email: sArtisanRegistration.Email
                 };
 
                 var oRequestSettings = {

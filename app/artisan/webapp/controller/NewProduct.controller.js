@@ -1,3 +1,4 @@
+// @ts-nocheck
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "renova/hl/ui/artisan/model/formatter",
@@ -273,6 +274,7 @@ sap.ui.define([
 
                 oBindProduct.create({
                     category_categoryID: this.getView().byId("cbCategories").getSelectedKey(),
+                    // @ts-ignore
                     email_email: sap.ui.getCore().email,
                     stock: sProduct.Stock,
                     unit_unitID: this.getView().byId("cbUnits").getSelectedKey(),

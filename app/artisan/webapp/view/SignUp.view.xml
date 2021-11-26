@@ -189,31 +189,9 @@
                             <m:VBox>
                                 <m:Label text="{i18n>AttachmentInform}" design="Bold" class="LabelColor"/>
                                 <upload:UploadSet id="usArtisanAttachments" 
-                                instantUpload="false" 
-                                uploadEnabled="true"
-                                uploadCompleted="onFileUploadCompleted" items="{
-								path: '/ArtisanResumes',
-								parameters: {
-									$orderby: 'createdAt desc'
-								},
-								templateShareable: false}">
-                                    <upload:toolbar>
-                                    </upload:toolbar>
-                                    <upload:items>
-                                        <upload:UploadSetItem fileName="{fileName}" mediaType="{mediaType}" 
-                                        url="{url}"
-                                        enabledEdit="false"
-                                        visibleEdit="false" openPressed="onFileOpenPressed" 
-                                        thumbnailUrl="{
-                                            path: 'mediaType',
-                                            formatter: '.formatter.formatThumbnailUrl'
-                                        }">
-                                            <upload:attributes>
-                                                <m:ObjectAttribute title="Uploaded By" text="{createdBy}" />
-                                                <m:ObjectAttribute title="Uploaded on" text="{createdAt}" />
-                                            </upload:attributes>
-                                        </upload:UploadSetItem>
-                                    </upload:items>
+                                    instantUpload="false" 
+                                    uploadEnabled="true"
+                                    uploadCompleted="onFileUploadCompleted">
                                 </upload:UploadSet>
                             </m:VBox>
                         </blocks>
