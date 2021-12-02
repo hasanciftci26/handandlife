@@ -47,19 +47,21 @@ Content-Type: application/json
 
 {
 "order":{
+        "customerID":"mail@customer.com",
         "totalPrice":150,
         "currency":"TRY",
         "country":"TR",
         "cityCode":"34",
-        "address":"Addresss",
+        "address":"Customer Addresss",
         "gsm":"+905555555555",
         "firstName":"Customer Name",
         "lastName":"Customer Surname",
         "items": [{
             "itemNo"           : 1,
-            "productType"      : "A",
+            "productType"      : "E",
+            "category"         :"4",
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
-            "offerExpireEnd"   : "2020-12-01T00:00:00.000Z",
+            "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
             "propertyID"       : 1,
             "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
@@ -69,12 +71,26 @@ Content-Type: application/json
             "unit"             : "ST"
         },{
             "itemNo"           : 2,
-            "productType"      : "A",
+            "productType"      : "N",
+            "category"         :"1",
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
-            "offerExpireEnd"   : "2020-12-01T00:00:00.000Z",
+            "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
+            "artisanCount"     : null,
+            "propertyID"       : 1,
+            "productID"        : null,
+            "price"            : 10,
+            "currency"         : "EUR",
+            "quantity"         : "15",
+            "unit"             : "ST"
+        },{
+            "itemNo"           : 3,
+            "productType"      : "N",
+            "category"         :"2",
+            "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
+            "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
             "propertyID"       : 1,
-            "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
+            "productID"        : null,
             "price"            : 10,
             "currency"         : "EUR",
             "quantity"         : "15",
@@ -82,3 +98,50 @@ Content-Type: application/json
         }]
     }
 }
+###
+POST http://localhost:4004/hand-and-life-integration/saveProductProperties
+Content-Type: application/json
+
+{
+    "productProperties":{
+        "productID":"4f028efa-4170-4afc-abc7-27f292b5625f",
+        "properties":[{
+            "propertyID":1,
+            "propertyValue":"55",
+            "unit":"KG"
+            
+        },{
+            "propertyID":2,
+            "propertyValue":"Blue",
+            "unit":""
+            
+        },{
+            "propertyID":3,
+            "propertyValue":"3x3x3",
+            "unit":"CM"
+        }]
+    }
+}
+###
+POST http://localhost:4004/hand-and-life/OrderItems
+Content-Type: application/json
+
+{
+    "itemNo": 4,
+    "orderID_orderID": "100000000",
+    "productType_productTypeID": "A",
+    "offerExpireBegin": "2020-12-01T00:00:00.000Z",
+    "offerExpireEnd": "2020-12-05T00:00:00.000Z",
+    "artisanCount": 5,
+    "productID_productID": "4f028efa-4170-4afc-abc7-27f292b5625f",
+    "price": 154,
+    "currency_currencyCode": "TRY",
+    "quantity": 15,
+    "unit_unitID": "ST",
+    "status_statusID": "CRTD",
+    "cargoBranch": "test",
+    "cargoNumber": "test2"
+}
+
+###
+GET http://localhost:4004/hand-and-life/OrderItems

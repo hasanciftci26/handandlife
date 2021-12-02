@@ -4,7 +4,7 @@ using {renova.hl.db.main as main} from '../db/main'; //Main (Common) Models
 //OData Service
 service HandAndLife @(impl : './renova-hl-service') {
     @readonly
-    entity ArtisanInformations as
+    entity ArtisanInformations  as
         select from artisan.Artisans {
             *,
             residenceCountry.country           as residenceCountry,
@@ -17,32 +17,35 @@ service HandAndLife @(impl : './renova-hl-service') {
         };
 
     // @assert.integrity : false
-    entity Artisans            as projection on artisan.Artisans {
+    entity Artisans             as projection on artisan.Artisans {
         * , products : redirected to ArtisanProducts
     };
 
     // @assert.integrity : false
-    entity ArtisanProducts     as projection on artisan.ArtisanProducts {
+    entity ArtisanProducts      as projection on artisan.ArtisanProducts {
         * , email : redirected to Artisans, properties : redirected to ProductProperties
     };
 
     // @assert.integrity : false
-    entity ArtisanResumes      as projection on artisan.ArtisanResumes {
+    entity ArtisanResumes       as projection on artisan.ArtisanResumes {
         * , email : redirected to Artisans
     };
 
     // @assert.integrity : false
-    entity ProductAttachments  as projection on artisan.ProductAttachments {
+    entity ProductAttachments   as projection on artisan.ProductAttachments {
         * , productID : redirected to ArtisanProducts, email : redirected to Artisans
     };
 
     @assert.integrity : false
-    entity ProductProperties   as projection on artisan.ProductProperties {
+    entity ProductProperties    as projection on artisan.ProductProperties {
         * , productID : redirected to ArtisanProducts
     };
 
+    @assert.integrity : false
+    entity ProfessionCategories as projection on artisan.ProfessionCategories;
+
     // @assert.integrity : false
-    entity ArtisanCredentials  as
+    entity ArtisanCredentials   as
         select from artisan.ArtisanCredentials as c
         inner join artisan.Artisans as a
             on a.email = c.email
@@ -55,77 +58,77 @@ service HandAndLife @(impl : './renova-hl-service') {
 
     // @readonly
     // @assert.integrity : false
-    entity Categories          as projection on artisan.Categories;
+    entity Categories           as projection on artisan.Categories;
 
     //Sonradan kalkabilir.
     @readonly
     // @assert.integrity : false
-    entity ArtisanProductsView as projection on artisan.ArtisanProducts {
+    entity ArtisanProductsView  as projection on artisan.ArtisanProducts {
         * , email : redirected to Artisans, properties : redirected to ProductProperties, category.category as category, status.status as status, status.statusID
     };
 
     @readonly
     // @assert.integrity : false
-    entity Properties          as projection on artisan.Properties;
+    entity Properties           as projection on artisan.Properties;
 
     @readonly
     // @assert.integrity : false
-    entity Professions         as projection on artisan.Professions;
+    entity Professions          as projection on artisan.Professions;
 
     // @assert.integrity : false
-    entity ArtisanSystems      as projection on artisan.ArtisanSystems {
+    entity ArtisanSystems       as projection on artisan.ArtisanSystems {
         * , email : redirected to Artisans
     };
 
     @readonly
     // @assert.integrity : false
-    entity IntegratedSystems   as projection on artisan.IntegratedSystems;
+    entity IntegratedSystems    as projection on artisan.IntegratedSystems;
 
     // @assert.integrity : false
-    entity ArtisanProfessions  as projection on artisan.ArtisanProfessions {
+    entity ArtisanProfessions   as projection on artisan.ArtisanProfessions {
         * , email : redirected to Artisans
     };
 
-    // @assert.integrity : false
-    entity Orders              as projection on artisan.Orders;
+    @assert.integrity : false
+    entity Orders               as projection on artisan.Orders;
 
     @readonly
     // @assert.integrity : false
-    entity ProductTypes        as projection on artisan.ProductTypes;
+    // entity ProductTypes        as projection on artisan.ProductTypes;
 
     // @assert.integrity : false
-    entity ArtisanOffers       as projection on artisan.ArtisanOffers {
+    entity ArtisanOffers        as projection on artisan.ArtisanOffers {
         * , email : redirected to Artisans
     };
 
-    // @assert.integrity : false
-    entity OrderItems          as projection on artisan.OrderItems {
+    @assert.integrity : false
+    entity OrderItems           as projection on artisan.OrderItems {
         * , productID : redirected to ArtisanProducts
     };
 
     // @assert.integrity : false
     @readonly
-    entity Countries           as projection on main.Countries;
+    entity Countries            as projection on main.Countries;
 
     // @assert.integrity : false
     @readonly
-    entity Cities              as projection on main.Cities;
+    entity Cities               as projection on main.Cities;
 
     // @assert.integrity : false
     @readonly
-    entity Statuses            as projection on main.Statuses;
+    entity Statuses             as projection on main.Statuses;
 
     // @assert.integrity : false
     @readonly
-    entity Currencies          as projection on main.Currencies;
+    entity Currencies           as projection on main.Currencies;
 
     // @assert.integrity : false
     @readonly
-    entity Colors              as projection on main.Colors;
+    entity Colors               as projection on main.Colors;
 
     // @assert.integrity : false
     @readonly
-    entity Units               as projection on main.Units;
+    entity Units                as projection on main.Units;
 };
 
 service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
@@ -151,6 +154,7 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
     };
 
     type Orders {
+        customerID           : artisan.Orders:customerID;
         totalPrice           : Decimal(10, 2);
         currency             : main.Currencies:currencyCode;
         country              : main.Countries:countryCode;
@@ -161,7 +165,8 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         lastName             : artisan.Artisans:lastName;
         items                : many {
             itemNo           : Integer;
-            productType      : artisan.ProductTypes:productTypeID;
+            productType      : artisan.OrderItems:productType;
+            category         : artisan.Categories:categoryID;
             offerExpireBegin : DateTime;
             offerExpireEnd   : DateTime;
             artisanCount     : Integer;
@@ -175,10 +180,27 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
     };
 
     type OrderResponse {
-        orderID   : String(10);
-        isSuccess : Boolean
+        orderID       : String(10);
+        isSuccess     : Boolean;
+        nonExistItems : many {
+            productID : artisan.ArtisanProducts:productID;
+        };
+    };
+
+    type ProductPropertiesInput {
+        productID         : artisan.ArtisanProducts:productID;
+        properties        : many {
+            propertyID    : Integer;
+            propertyValue : artisan.ProductProperties:propertyValue;
+            unit          : main.Units:unitID;
+        };
+    };
+
+    type PropertyResponse {
+        isSuccess : Boolean;
     };
 
     function getProducts() returns array of Products;
     action createOrder(order : Orders) returns OrderResponse;
+    action saveProductProperties(productProperties : ProductPropertiesInput) returns PropertyResponse;
 };
