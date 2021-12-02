@@ -111,12 +111,18 @@ entity Categories {
         category   : String(100);
 };
 
+entity ProfessionCategories {
+    key categoryID   : Association to Categories;
+    key professionID : Association to Professions;
+};
+
 entity ProductAttachments : managed, Attachment {
     key productID : Association to ArtisanProducts;
 };
 
 entity Orders : managed {
-    key orderID    : String(10);
+    key orderID    : String(9);
+        customerID : String(160);
         totalPrice : Decimal(10, 2);
         currency   : Association to main.Currencies;
         country    : Association to main.Countries;
@@ -135,41 +141,40 @@ entity Orders : managed {
 entity OrderItems {
     key itemNo           : Integer;
     key orderID          : Association to Orders;
-        productType      : Association to ProductTypes;
-        offerExpireBegin : DateTime @cds.valid.from;
-        offerExpireEnd   : DateTime @cds.valid.to;
+        productType      : String(1)@assert.range enum {
+            E;
+            N
+        };
+        category         : Association to Categories;
+        offerExpireBegin : DateTime;
+        offerExpireEnd   : DateTime;
         artisanCount     : Integer default 15;
-        propertyID       : Properties:propertyID;
-        properties       : Association to many Properties
-                               on properties.propertyID = propertyID;
+        properties       : Association to many ProductProperties
+                               on properties.productID = productID;
         attachments      : Association to many ProductAttachments
                                on attachments.productID = productID;
         productID        : Association to ArtisanProducts;
         price            : Decimal(10, 2);
         currency         : Association to main.Currencies;
-        quantity         : Decimal(13, 3);
+        quantity         : ArtisanProducts:stock;
         unit             : Association to main.Units;
         status           : Association to main.Statuses;
         cargoNumber      : String(20);
         cargoBranch      : String(10);
 };
 
-entity ProductTypes {
-    key productTypeID : String(1);
-        productType   : String(100);
-};
-
 entity ArtisanOffers {
-    key orderID  : Orders:orderID;
-    key itemNo   : OrderItems:itemNo;
-    key offerID  : String(10);
-        email    : Association to Artisans;
-        price    : Decimal(10, 2);
-        currency : Association to main.Currencies;
-        workDays : Integer;
-        details  : String(1000);
-        status   : Association to main.Statuses;
+    key orderID          : Orders:orderID;
+    key itemNo           : OrderItems:itemNo;
+    key offerID          : UUID;
+        email            : Association to Artisans;
+        price            : Decimal(10, 2);
+        currency         : Association to main.Currencies;
+        workDays         : Integer;
+        details          : String(1000);
+        status           : Association to main.Statuses;
+        offerExpireBegin : DateTime @cds.valid.from;
+        offerExpireEnd   : DateTime @cds.valid.to;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-
