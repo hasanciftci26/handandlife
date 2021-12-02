@@ -5,12 +5,13 @@ sap.ui.define([
     "sap/m/MessageBox",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
-    "sap/ui/util/Storage"
+    "sap/ui/util/Storage",
+    "sap/m/MessageToast"
 ],
 	/**
 	 * @param {typeof sap.ui.core.mvc.Controller} Controller
 	 */
-    function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage) {
+    function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage, MessageToast) {
         "use strict";
 
         return BaseController.extend("renova.hl.ui.artisan.controller.Products", {
@@ -41,6 +42,10 @@ sap.ui.define([
                 if (sap.ui.getCore().isLogin) {
                     this.getArtisanProducts();
                 }
+
+                this.getCategories();
+                this.getUnits();
+                this.getCurrencies();
             },
             getArtisanProducts: function () {
                 var that = this;
@@ -58,8 +63,54 @@ sap.ui.define([
                         that.getProductDetails(oData.value[0].productID);
                     }
                     that.getView().byId("AllProducts").setTitle(this.getResourceBundle().getText("AllProducts", [oData.value.length]));
+
+                    that._setScreenSimpleForm(that);
                 });
             },
+
+            _setScreenSimpleForm: function (thoose) {
+                var vCount = thoose.getView().byId("lstArtisanProducts").getItems().length;
+                if (vCount === 0) {
+                    thoose.getView().byId("sfProductInfoForm").setVisible(false);
+                } else {
+                    thoose.getView().byId("sfProductInfoForm").setVisible(true);
+                }
+            },
+
+            getCategories: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oBindCategories = oDataModel.bindContext("/Categories", undefined, {
+                    $$groupId: "directRequest"
+                });
+
+                oBindCategories.requestObject().then((oData) => {
+                    that.getView().setModel(new JSONModel(oData.value), "Categories");
+                });
+            },
+            getUnits: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oBindUnits = oDataModel.bindContext("/Units", undefined, {
+                    $$groupId: "directRequest"
+                });
+
+                oBindUnits.requestObject().then((oData) => {
+                    that.getView().setModel(new JSONModel(oData.value), "Units");
+                });
+            },
+            getCurrencies: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oBindCurrencies = oDataModel.bindContext("/Currencies", undefined, {
+                    $$groupId: "directRequest"
+                });
+
+                oBindCurrencies.requestObject().then((oData) => {
+                    that.getView().setModel(new JSONModel(oData.value), "Currencies");
+                });
+            },
+
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
             },
@@ -177,6 +228,58 @@ sap.ui.define([
                         that.getArtisanProducts();
                     });
                 });
+
+                // that._setScreenSimpleForm(that);
+            },
+
+            onUpdateProduct: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+
+                var vProductInfoControl = this.checkMandatoryFields("sfProductInfoForm", this);
+                if (vProductInfoControl) {
+                    MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                    return;
+                }
+
+                var sProduct = this.getView().getModel("Product").getData();
+
+                var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                    $filter: "productID eq " + sProduct.productID,
+                    $$groupId: "directRequest"
+                });
+
+                // oModel.setProperty(bindingPath + "/Status", sStatus);
+                oBindProduct.requestContexts().then((aContext) => {
+                    aContext[0].setProperty(
+                        "stock", sProduct.stock
+                        //"/sProduct", sProduct
+                        // "price", sProduct.price,
+                        // "currency_currencyCode", sProduct.currency_currencyCode,
+                        // "unit_unitID", sProduct.unit_unitID,
+                        // "details", sProduct.details,                       
+                    );
+                    aContext[0].setProperty(
+                        "category", sProduct.category
+                    );
+                    aContext[0].setProperty(
+                        "price", sProduct.price,
+                    );
+                    aContext[0].setProperty(
+                        "currency_currencyCode", sProduct.currency_currencyCode,
+                    );
+                    aContext[0].setProperty(
+                        "unit_unitID", sProduct.unit_unitID,
+                    );
+                    aContext[0].setProperty(
+                        "details", sProduct.details,
+                    );//tek seferde update işlemine bakmayı unutma
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        that.getArtisanProducts();
+                       // MessageToast.show(this.getResourceBundle().getText("UpdateSuccessful"));
+                    });
+                });
+
             }
         });
     });
