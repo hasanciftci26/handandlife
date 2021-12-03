@@ -63,7 +63,6 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "propertyID"       : 1,
             "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
             "price"            : 10,
             "currency"         : "EUR",
@@ -75,8 +74,7 @@ Content-Type: application/json
             "category"         :"1",
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
-            "artisanCount"     : null,
-            "propertyID"       : 1,
+            "artisanCount"     : 2,
             "productID"        : null,
             "price"            : 10,
             "currency"         : "EUR",
@@ -89,7 +87,6 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "propertyID"       : 1,
             "productID"        : null,
             "price"            : 10,
             "currency"         : "EUR",
@@ -144,4 +141,4 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:4004/hand-and-life/OrderItems
+GET http://localhost:4004/hand-and-life-integration/getSingleProduct(productID=0d6c71df-8b30-493d-97f0-105230fd228f)

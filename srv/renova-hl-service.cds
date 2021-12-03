@@ -96,7 +96,7 @@ service HandAndLife @(impl : './renova-hl-service') {
     // @assert.integrity : false
     // entity ProductTypes        as projection on artisan.ProductTypes;
 
-    // @assert.integrity : false
+    @assert.integrity : false
     entity ArtisanOffers        as projection on artisan.ArtisanOffers {
         * , email : redirected to Artisans
     };
@@ -153,7 +153,7 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         details                   : String;
     };
 
-    type Orders {
+    aspect Orders {
         customerID           : artisan.Orders:customerID;
         totalPrice           : Decimal(10, 2);
         currency             : main.Currencies:currencyCode;
@@ -170,13 +170,18 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
             offerExpireBegin : DateTime;
             offerExpireEnd   : DateTime;
             artisanCount     : Integer;
-            propertyID       : artisan.Properties:propertyID;
             productID        : artisan.ArtisanProducts:productID;
             price            : Decimal(10, 2);
             currency         : main.Currencies:currencyCode;
             quantity         : String(25);
             unit             : main.Units:unitID;
         };
+    };
+
+    type AllOrders : Orders {};
+
+    type CustomerOrders : Orders {
+        orderID : String(9);
     };
 
     type OrderResponse {
@@ -200,7 +205,31 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         isSuccess : Boolean;
     };
 
+    type Categories {
+        categoryID : String(4);
+        category   : String(100);
+    };
+
+    type Properties {
+        propertyID          : Integer;
+        property            : String(100);
+        category_categoryID : artisan.Categories:categoryID;
+        commonProperty      : Boolean;
+        isSize              : Boolean;
+        isBodySize          : Boolean;
+        isColor             : Boolean;
+        isWeight            : Boolean;
+        mandatory           : Boolean;
+    };
+
     function getProducts() returns array of Products;
-    action createOrder(order : Orders) returns OrderResponse;
+    function getSingleProduct(productID : UUID) returns Products;
+    function getCategoricalProducts(categoryID : String(4)) returns array of Products;
+    function getCategories() returns array of Categories;
+    function getCustomerOrders(customerID : artisan.Orders:customerID) returns array of CustomerOrders;
+    function getSingleOrder(orderID : artisan.Orders:orderID) returns CustomerOrders;
+    function getProperties() returns array of Properties;
+    function getCategoricalProperties(categoryID : artisan.Categories:categoryID) returns array of Properties;
+    action createOrder(order : AllOrders) returns OrderResponse;
     action saveProductProperties(productProperties : ProductPropertiesInput) returns PropertyResponse;
 };
