@@ -165,6 +165,11 @@ sap.ui.define([
                     // @ts-ignore
                     sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true);
             }
-        }
+        },
+
+        // _setEditable: function (thoose, id) {
+        //     thoose.getView().byId("id").setEditable(true);
+        //     return;
+        // }
     });
 });

@@ -92,13 +92,13 @@
                               <f:SimpleForm id="sfProductInfoForm" editable="true" title="{i18n>ProductInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
                                  <f:content>
                                     <Label text="{i18n>Category}"/>                               
-                                    <Input value="{path:'Product>/category'}" maxLength="40" enabled="false">
+                                    <Input value="{path:'Product>/category'}" maxLength="40" editable="false">
                                         <layoutData>
-                                            <l:GridData span="XL5 L2 M2 S4" />
+                                            <l:GridData span="XL3 L4 M5 S6"/>
                                         </layoutData>
-                                    </Input>
+                                    </Input>                    
                                     <Label text="{i18n>Stock}" />
-                                    <Input id="inpStock" value="{path:'Product>/stock'}" maxLength="40" liveChange="onGeneralChange" enabled="false">
+                                    <Input id="inpStock" value="{path:'Product>/stock'}" maxLength="40" liveChange="onGeneralChange" editable="false">
                                         <layoutData>
                                             <l:GridData span="XL1 L2 M2 S4" />
                                         </layoutData>
@@ -106,7 +106,8 @@
                                     <Select items="{path:'Units>/', 
                                     templateShareable:true}"
                                     selectedKey="{Product>/unit_unitID}"
-                                    enabled="false">
+                                    editable="false"
+                                    id="idUnit">
                                     <items>
                                     <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
                                     </items>
@@ -115,25 +116,51 @@
                                     <Label text="{i18n>Price}" />
                                     <Input id="inpPrice" 
                                     value="{path:'Product>/price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}" 
-                                    maxLength="40" liveChange="onGeneralChange" enabled="false">
+                                    maxLength="40" liveChange="onGeneralChange" editable="false">
                                     <layoutData>
                                             <l:GridData span="XL1 L2 M2 S4" />
                                         </layoutData>
                                     </Input>
                                     <Select items="{path:'Currencies>/', 
                                     templateShareable:true}"
-                                    selectedKey="{Product>/currency_currencyCode}" enabled="false">
+                                    selectedKey="{Product>/currency_currencyCode}" editable="false" id="idPrice">
                                     <items>
                                     <core:Item xmlns:core="sap.ui.core" key="{Currencies>currencyCode}" text="{Currencies>currency}"/>
                                     </items>
                                     </Select>
+                                    <Button icon="sap-icon://edit" type="Ghost" press="onUpdPrice" width="1rem"/>
                                     <Label text="{i18n>Details}" />
+                                    <HBox>
                                     <TextArea value="{Product>/details}" rows="10" maxLength="5000" showExceededText="true" liveChange="onGeneralChange" 
-                                    placeholder="{i18n>ProductDetails}" enabled="false"/>    
+                                    placeholder="{i18n>ProductDetails}" editable="false" width="27.5rem" class="sapUiSmallMarginEnd" id="idDetails"/> 
+                                    <Button icon="sap-icon://edit" type="Ghost" press="onUpdDetails" width="1rem"/>
+                                    </HBox>
                                   </f:content>
-                               </f:SimpleForm>                     
+                               </f:SimpleForm>  
+
+                                <VBox>
+                                <f:SimpleForm id="sfPropertiesForm2" editable="true" title="{i18n>Properties}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                    <f:content></f:content>
+                                </f:SimpleForm>
+                                <Label text="{i18n>PropertyInform}" design="Bold" class="LabelColor sapUiSmallMarginTop"/>
+                                <VBox alignItems="Center">
+                                    <Table id="tblProperties2" items="{ProductProperties/'}" width="60rem" class="TableMargin" mode="MultiSelect">
+                                        <columns>
+                                         <Column >
+                                                <Label design="Bold" text="{i18n>Property}"/>
+                                            </Column>
+                                        </columns>
+                                        <items>
+                                            <ColumnListItem>
+                                                <Input value="{ProductProperties>/propertyID_propertyID}"/>
+                                            </ColumnListItem>
+                                        </items>
+                                    </Table>
+                                </VBox>
+                            </VBox>
+
                                     <semantic:customFooterContent>     
-                                        <!--  <Button icon="sap-icon://complete" type="Ghost" press="onUpdateProduct" text="{i18n>UpdateProduct}"/>  -->                               
+                                        <Button icon="sap-icon://complete" type="Ghost" press="onUpdateProduct" text="{i18n>UpdateProduct}"/>                            
                                         <Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
                                         <Button icon="sap-icon://pending" type="Ghost" press="onDeactivateProduct" text="{i18n>DeactivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
                                         <Button icon="sap-icon://delete" type="Reject" press="onDeleteProduct" text="{i18n>DeleteProduct}"/>
