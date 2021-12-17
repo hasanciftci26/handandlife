@@ -165,8 +165,9 @@ entity OrderItems {
 
 entity ArtisanOffers {
     key orderID          : Orders:orderID;
-    key itemNo           : OrderItems:itemNo;
     key offerID          : UUID;
+        productID        : ArtisanProducts:productID;
+        itemNo           : OrderItems:itemNo;
         email            : Association to Artisans;
         price            : Decimal(10, 2);
         currency         : Association to main.Currencies;

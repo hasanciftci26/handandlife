@@ -6,7 +6,7 @@ service HandAndLife @(impl : './renova-hl-service') {
     @readonly
     entity ArtisanInformations  as
         select from artisan.Artisans {
-            *,
+            * ,
             residenceCountry.country           as residenceCountry,
             birthCountry.country               as birthCountry,
             residenceCityAssoc.city            as residenceCity,
@@ -92,7 +92,7 @@ service HandAndLife @(impl : './renova-hl-service') {
     @assert.integrity : false
     entity Orders               as projection on artisan.Orders;
 
-    @readonly
+    // @readonly
     // @assert.integrity : false
     // entity ProductTypes        as projection on artisan.ProductTypes;
 
@@ -222,6 +222,37 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         mandatory           : Boolean;
     };
 
+    type Units {
+        unitID   : String(5);
+        unit     : String(100);
+        isSize   : Boolean;
+        isWeight : Boolean;
+    };
+
+    type OrderOffers {
+        orderID   : artisan.Orders:orderID;
+        itemNo    : artisan.OrderItems:itemNo;
+        offerID   : UUID;
+        productID : artisan.ArtisanProducts:productID;
+        email     : artisan.Artisans:email;
+        price     : Decimal(10, 2);
+        currency  : main.Currencies:currencyCode;
+        workDays  : Integer;
+        details   : String(1000);
+        status    : main.Statuses:statusID;
+    };
+
+    type OfferResponse {
+        orderID   : artisan.Orders:orderID;
+        offerID   : artisan.ArtisanOffers:offerID;
+        isSuccess : Boolean;
+    };
+
+    type OfferExpireResponse {
+        orderID   : artisan.Orders:orderID;
+        isSuccess : Boolean;
+    };
+
     function getProducts() returns array of Products;
     function getSingleProduct(productID : UUID) returns Products;
     function getCategoricalProducts(categoryID : String(4)) returns array of Products;
@@ -230,6 +261,10 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
     function getSingleOrder(orderID : artisan.Orders:orderID) returns CustomerOrders;
     function getProperties() returns array of Properties;
     function getCategoricalProperties(categoryID : artisan.Categories:categoryID) returns array of Properties;
+    function getUnits() returns array of Units;
+    function getOrderOffers(orderID : artisan.Orders:orderID) returns array of OrderOffers;
     action createOrder(order : AllOrders) returns OrderResponse;
     action saveProductProperties(productProperties : ProductPropertiesInput) returns PropertyResponse;
+    action setOfferAccepted(orderID : artisan.Orders:orderID, offerID : artisan.ArtisanOffers:offerID) returns OfferResponse;
+    action updateOfferExpireDate(orderID : artisan.Orders:orderID, productID : UUID, offerExpireBegin : DateTime, offerExpireEnd : DateTime) returns OfferExpireResponse;
 };

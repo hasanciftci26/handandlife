@@ -306,6 +306,12 @@ module.exports = async (srv) => {
         return aCategories;
     });
 
+    //Unit'leri döner
+    srv.on("getUnits", async (req) => {
+        let aUnits = await SELECT.from(Units);
+        return aUnits;
+    });
+
     //Property'lerin tamamını veya category'ye özel döner
     srv.on(["getProperties", "getCategoricalProperties"], async (req) => {
         let aProperties = [];
@@ -313,9 +319,86 @@ module.exports = async (srv) => {
             aProperties = await SELECT.from(Properties);
         } else {
             let aCategories = [0, req.data.categoryID];
-            aProperties = await SELECT.from(Properties).where({ category_categoryID: { in: aCategories } });            
+            aProperties = await SELECT.from(Properties).where({ category_categoryID: { in: aCategories } });
         }
         return aProperties;
+    });
+
+    //Ordera gelen offerları döner
+    srv.on("getOrderOffers", async (req) => {
+        let vOrderId = req.data.orderID;
+        let aOffers = await SELECT.from(ArtisanOffers).where({ status_statusID: "OFRD" });
+        let aItemNo = [];
+        let aReturnOffers = [];
+
+        aOffers.forEach((item) => {
+            aReturnOffers.push({
+                orderID: vOrderId,
+                itemNo: item.itemNo,
+                offerID: item.offerID,
+                productID: item.productID,
+                email: item.email_email,
+                price: item.price,
+                currency: item.currency_currencyCode,
+                workDays: item.workDays,
+                details: item.details,
+                status: item.status_statusID
+            });
+        });
+        return aReturnOffers;
+    });
+
+    srv.on("setOfferAccepted", async (req) => {
+        let vOrderId = req.data.orderID,
+            vOfferId = req.data.offerID,
+            sReturn = {},
+            sStatus = {
+                status_statusID: "ACTD"
+            };
+
+        let sOffer = {
+            orderID: vOrderId,
+            offerID: vOfferId
+        };
+
+        let vResponse = await UPDATE(ArtisanOffers, sOffer).with(sStatus);
+
+        if (vResponse == 1) {
+            sReturn = {
+                orderID: vOrderId,
+                offerID: vOfferId,
+                isSuccess: true
+            };
+        } else {
+            sReturn = {
+                orderID: vOrderId,
+                offerID: vOfferId,
+                isSuccess: false
+            };
+        }
+        return sReturn;
+    });
+
+    srv.on("updateOfferExpireDate", async (req) => {
+        let sOfferExpire = {
+            offerExpireBegin: req.data.offerExpireBegin,
+            offerExpireEnd: req.data.offerExpireEnd
+        },
+            sResponse = {};
+
+        let vResponse = await UPDATE(ArtisanOffers).with(sOfferExpire).where({ orderID: req.data.orderID }).and({ productID: req.data.productID });
+        if (vResponse > 0) {
+            sResponse = {
+                orderID: req.data.orderID,
+                isSuccess: true
+            };
+        } else {
+            sResponse = {
+                orderID: req.data.orderID,
+                isSuccess: false
+            };
+        }
+        return sResponse;
     });
 }
 
@@ -368,6 +451,7 @@ async function determineBestArtisans(aProducts, ProfessionCategories, ArtisanPro
                 aArtisanOffer.push({
                     orderID: vOrderId,
                     itemNo: products.itemNo,
+                    productID: products.productID_productID,
                     offerID: uuidv4(),
                     email_email: artisan,
                     status_statusID: "WAIT",
