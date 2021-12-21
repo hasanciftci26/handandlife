@@ -4,4 +4,6 @@ REJC;Rejected
 WAIT;Waiting
 AVLB;Available
 DCTV;Deactive
-CRTD:Created
+CRTD;Created
+OFRD;Offer Given
+ACTD;Accepted

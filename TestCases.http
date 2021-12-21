@@ -63,7 +63,6 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "propertyID"       : 1,
             "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
             "price"            : 10,
             "currency"         : "EUR",
@@ -75,8 +74,7 @@ Content-Type: application/json
             "category"         :"1",
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
-            "artisanCount"     : null,
-            "propertyID"       : 1,
+            "artisanCount"     : 2,
             "productID"        : null,
             "price"            : 10,
             "currency"         : "EUR",
@@ -89,7 +87,6 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "propertyID"       : 1,
             "productID"        : null,
             "price"            : 10,
             "currency"         : "EUR",
@@ -144,4 +141,36 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:4004/hand-and-life/OrderItems
+GET http://localhost:4004/hand-and-life-integration/getSingleProduct(productID=0d6c71df-8b30-493d-97f0-105230fd228f)
+
+###
+PATCH http://localhost:4004/hand-and-life/ArtisanOffers(orderID='100000000',offerID=0968ef68-d3e4-45f3-9b01-3d8db9e94283)
+Content-Type: application/json
+
+{
+    "price":555,
+    "currency_currencyCode":"TRY",
+    "workDays":5,
+    "details":"Details of offer",
+    "status_statusID":"OFRD"
+}
+
+###
+POST http://localhost:4004/hand-and-life-integration/setOfferAccepted
+Content-Type: application/json
+
+{
+    "orderID":"100000000",
+    "offerID":"0968ef68-d3e4-45f3-9b01-3d8db9e94283"
+}
+
+###
+POST http://localhost:4004/hand-and-life-integration/updateOfferExpireDate
+Content-Type: application/json
+
+{
+    "orderID":"100000000",
+    "productID":"5fb02719-7749-41bd-b888-dfcf7a3593d5",
+    "offerExpireBegin": "2020-12-01T00:00:00.000Z",
+    "offerExpireEnd": "2025-12-05T00:00:00.000Z"
+}
