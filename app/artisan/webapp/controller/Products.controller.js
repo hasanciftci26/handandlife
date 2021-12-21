@@ -13,6 +13,7 @@ sap.ui.define([
 	 */
     function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage, MessageToast) {
         "use strict";
+        var gProduct;
 
         return BaseController.extend("renova.hl.ui.artisan.controller.Products", {
             onInit: function () {
@@ -46,6 +47,7 @@ sap.ui.define([
                 this.getCategories();
                 this.getUnits();
                 this.getCurrencies();
+                
             },
             getArtisanProducts: function () {
                 var that = this;
@@ -110,6 +112,20 @@ sap.ui.define([
                     that.getView().setModel(new JSONModel(oData.value), "Currencies");
                 });
             },
+            getProperties: function (vProductId) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oBindProperties = oDataModel.bindContext("/ProductProperties", undefined, {
+                    $filter: "productID_productID eq " + vProductId,
+                    $$groupId: "directRequest"
+                });
+
+                oBindProperties.requestObject().then((oData) => {
+                    that.getView().setModel(new JSONModel(oData.value), "Prop");                  
+                });    
+                var oProperty =this.getView().getModel("Prop"); 
+                
+            },
 
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
@@ -148,6 +164,15 @@ sap.ui.define([
                 });
                 this.getView().setModel(new JSONModel(sProduct), "Product");
                 this.getProductPictures(sProduct);
+
+                this.getProperties(vProductId);
+
+                gProduct = sProduct;
+                this.getView().byId("inpStock").setEditable(false);
+                this.getView().byId("idUnit").setEditable(false);
+                this.getView().byId("inpPrice").setEditable(false);
+                this.getView().byId("idPrice").setEditable(false);
+                this.getView().byId("idDetails").setEditable(false);
             },
             getProductPictures: function (sProduct) {
                 var that = this;
@@ -232,9 +257,28 @@ sap.ui.define([
                 // that._setScreenSimpleForm(that);
             },
 
+            onUpdStock: function () {
+                this.getView().byId("inpStock").setEditable(true);
+                this.getView().byId("idUnit").setEditable(true);
+            },
+            onUpdPrice: function () {
+                this.getView().byId("inpPrice").setEditable(true);
+                this.getView().byId("idPrice").setEditable(true);
+            },
+            onUpdDetails: function () {
+                this.getView().byId("idDetails").setEditable(true);
+            },
             onUpdateProduct: function () {
+
                 var that = this;
-                var oDataModel = this.getView().getModel();
+                var oDataModel = that.getView().getModel();
+                var sProduct = that.getView().getModel("Product").getData();
+
+                this.getView().byId("inpStock").setEditable(false);
+                this.getView().byId("idUnit").setEditable(false);
+                this.getView().byId("inpPrice").setEditable(false);
+                this.getView().byId("idPrice").setEditable(false);
+                this.getView().byId("idDetails").setEditable(false);
 
                 var vProductInfoControl = this.checkMandatoryFields("sfProductInfoForm", this);
                 if (vProductInfoControl) {
@@ -242,25 +286,14 @@ sap.ui.define([
                     return;
                 }
 
-                var sProduct = this.getView().getModel("Product").getData();
-
                 var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
                     $filter: "productID eq " + sProduct.productID,
                     $$groupId: "directRequest"
                 });
 
-                // oModel.setProperty(bindingPath + "/Status", sStatus);
                 oBindProduct.requestContexts().then((aContext) => {
                     aContext[0].setProperty(
                         "stock", sProduct.stock
-                        //"/sProduct", sProduct
-                        // "price", sProduct.price,
-                        // "currency_currencyCode", sProduct.currency_currencyCode,
-                        // "unit_unitID", sProduct.unit_unitID,
-                        // "details", sProduct.details,                       
-                    );
-                    aContext[0].setProperty(
-                        "category", sProduct.category
                     );
                     aContext[0].setProperty(
                         "price", sProduct.price,
@@ -273,13 +306,14 @@ sap.ui.define([
                     );
                     aContext[0].setProperty(
                         "details", sProduct.details,
-                    );//tek seferde update işlemine bakmayı unutma
+                    );
                     oDataModel.submitBatch("batchRequest").then(() => {
                         that.getArtisanProducts();
-                       // MessageToast.show(this.getResourceBundle().getText("UpdateSuccessful"));
+                        // MessageToast.show(this.getResourceBundle().getText("UpdateSuccessful"));
                     });
+
                 });
 
-            }
+            },
         });
     });

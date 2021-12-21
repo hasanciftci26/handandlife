@@ -1,3 +1,5 @@
-productID;email_email;price;currency_currencyCode;productName;category_categoryID;status_statusID;unit_unitID
-4f028efa-4170-4afc-abc7-27f292b5625f;hasan.ciftci@renovaconsulting.com.tr;160;TRY;Product;1;DCTV;ST
-0c6c71df-8b30-493d-97f0-105230fd228f;hasan.ciftci@renovaconsulting.com.tr;160;TRY;Product;1;AVLB;KG
+productID;email_email;price;currency_currencyCode;productName;category_categoryID;status_statusID;unit_unitID;stock;details
+4f028efa-4170-4afc-abc7-27f292b5625f;hasan.ciftci@renovaconsulting.com.tr;160;TRY;Product;1;DCTV;ST;100;detay
+0c6c71df-8b30-493d-97f0-105230fd228f;hasan.ciftci@renovaconsulting.com.tr;160;TRY;Product;1;AVLB;KG;234;detay
+4f028efa-4170-4afc-abc7-27f292b5625k;a;160;TRY;Product1;1;DCTV;ST;987;detay
+0c6c71df-8b30-493d-97f0-105230fd228h;a;160;TRY;Product2;2;AVLB;KG;67;detay
