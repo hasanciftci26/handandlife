@@ -144,7 +144,7 @@
                                 </f:SimpleForm>
                                 <Label text="{i18n>PropertyInform}" design="Bold" class="LabelColor sapUiSmallMarginTop"/>
                                 <VBox alignItems="Center">
-                                    <Table id="tblProperties2" items="{ProductProperties/'}" width="60rem" class="TableMargin" mode="MultiSelect">
+                                    <Table id="tblProperties2" items="{/Prop}" width="60rem" class="TableMargin" mode="MultiSelect">
                                         <columns>
                                          <Column >
                                                 <Label design="Bold" text="{i18n>Property}"/>
@@ -152,7 +152,7 @@
                                         </columns>
                                         <items>
                                             <ColumnListItem>
-                                                <Input value="{ProductProperties>/propertyID_propertyID}"/>
+                                                <Input value="{Prop>/propertyID_propertyID}"/>
                                             </ColumnListItem>
                                         </items>
                                     </Table>

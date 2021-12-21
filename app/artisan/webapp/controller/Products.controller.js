@@ -112,20 +112,18 @@ sap.ui.define([
                     that.getView().setModel(new JSONModel(oData.value), "Currencies");
                 });
             },
-            getProperties: function () {
+            getProperties: function (vProductId) {
                 var that = this;
                 var oDataModel = this.getView().getModel();
-                var sProduct = this.getView().getModel("Product").getData();
                 var oBindProperties = oDataModel.bindContext("/ProductProperties", undefined, {
-                    $filter: "productID eq " + sProduct.productID,
+                    $filter: "productID_productID eq " + vProductId,
                     $$groupId: "directRequest"
                 });
 
                 oBindProperties.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "ProductProperties");
-                });
-
-                var sProduct1 = that.getView().getModel("ProductProperties").getData();
+                    that.getView().setModel(new JSONModel(oData.value), "Prop");                  
+                });    
+                var oProperty =this.getView().getModel("Prop"); 
                 
             },
 
@@ -167,7 +165,7 @@ sap.ui.define([
                 this.getView().setModel(new JSONModel(sProduct), "Product");
                 this.getProductPictures(sProduct);
 
-                this.getProperties();
+                this.getProperties(vProductId);
 
                 gProduct = sProduct;
                 this.getView().byId("inpStock").setEditable(false);
