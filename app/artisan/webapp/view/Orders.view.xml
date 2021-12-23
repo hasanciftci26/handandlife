@@ -10,7 +10,7 @@
             <Page id="Orders" showHeader="false">
                 <content>
                     <tnt:ToolHeader design="Transparent" class="testClass">
-                        <Image src="img/Renova.png" height="2rem" width="4.5rem" press="onNavToHomePage"/>
+                        <Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
                         <Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
                             <layoutData>
                                 <OverflowToolbarLayoutData priority="NeverOverflow" />

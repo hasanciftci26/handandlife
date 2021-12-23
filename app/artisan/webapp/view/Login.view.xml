@@ -10,7 +10,7 @@
             <Page id="Login" showHeader="false">
                 <content>
                     <tnt:ToolHeader design="Transparent" class="testClass">
-                        <Image src="img/Renova.png" height="2rem" width="4.5rem" press="onNavToHomePage"/>
+                        <Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
                         <Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
                             <layoutData>
                                 <OverflowToolbarLayoutData priority="NeverOverflow" />
@@ -48,7 +48,7 @@
                                 singleContainerFullSize="false" >
                                 <f:content>
                                     <Label/>
-                                    <Image src="img/Renova.png" class="ImageMargin"/>
+                                    <Image src="img/LogoNoBackground.png" class="ImageMargin"/>
                                     <Label text="{i18n>Email}" class="sapUiSmallMarginTop" />
                                     <Input id="inpLoginEmail" maxLength="160" width="25rem" type="Email" change="onChangeLoginEmail"/>
                                     <Label text="{i18n>Password}"/>

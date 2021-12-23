@@ -7,7 +7,7 @@
             <Page id="HomePage" showHeader="false">
                 <content>
                     <tnt:ToolHeader design="Transparent" class="testClass">
-                        <Image src="img/Renova.png" height="2rem" width="4.5rem"/>
+                        <Image src="img/HandAndLife Logo.jpg"/>
                         <Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" 
                         class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}"
                         press="onNavToProducts">
