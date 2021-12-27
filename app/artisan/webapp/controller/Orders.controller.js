@@ -40,6 +40,39 @@ sap.ui.define([
                 }
                 this.getOrders();
             },
+            getURLPicture: function (prdid) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var oBindUnits = oDataModel.bindContext("/ProductAttachments", undefined, {
+                    $filter: "productID_productID eq " + prdid,
+                    $$groupId: "directRequest"
+                });
+                return new Promise((resolve) => {
+                    oBindUnits.requestObject().then((oData) => {
+                        resolve(oData.value[0].url);
+                    });
+                });
+            },
+            getImages: function (iurl) {
+                var settings = {
+                    url: iurl,
+                    method: "GET",
+                    xhrFields: {
+                        responseType: "blob"
+                    }
+                }
+
+                return new Promise((resolve, reject) => {
+                    $.ajax(settings)
+                        .done((result, textStatus, request) => {
+                            resolve(result);
+                        })
+                        .fail((err) => {
+                            reject(err);
+                        })
+                });
+            },
             getUnits: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
@@ -112,6 +145,7 @@ sap.ui.define([
                 });
             },
             setOrders: async function (aOrderItems, aProducts) {
+                var that = this;
                 var aUnits = await this.getUnits();
                 var aNewOrders = aOrderItems.filter((item) => { return item.status_statusID === "CRTD"; });
                 var aPreparedOrders = aOrderItems.filter((item) => { return item.status_statusID === "PRPR"; });
@@ -122,6 +156,14 @@ sap.ui.define([
                 aPreparedOrders = this.combineProductOrderItems(aPreparedOrders, aProducts, aUnits);
                 aCargoOrders = this.combineProductOrderItems(aCargoOrders, aProducts, aUnits);
                 aCompletedOrders = this.combineProductOrderItems(aCompletedOrders, aProducts, aUnits);
+                var aURL = await this.getURLPicture(aNewOrders[0].productID_productID);
+                this.getImages(aURL).then((resolve) => {
+                    var vUrl = window.URL.createObjectURL(resolve);
+                    var sUrl = {
+                        ImageURL: vUrl
+                    };
+                    that.getView().setModel(new JSONModel(sUrl), "ImageModel");
+                });
 
                 this.getView().byId("itfNewOrders").setCount(aNewOrders.length);
                 this.getView().byId("itfPreparedOrders").setCount(aPreparedOrders.length);

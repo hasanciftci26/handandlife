@@ -60,6 +60,7 @@
                                 design="Horizontal"
                                 text="{i18n>NewOrders}"
                                 key="NewOrders" >
+                                <Image src="{ImageModel>/ImageURL}"/>
                                 <f:GridList items="{NewOrders>/}" headerText="{i18n>NewOrders}">
                                     <f:customLayout>
                                         <grid:GridBoxLayout boxWidth="25rem"/>
