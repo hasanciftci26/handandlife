@@ -18,7 +18,14 @@ Content-Type: application/json
 {
 "productName":"Test Pr"
 }
+###
 
+PATCH http://localhost:4004/hand-and-life/OrderItems(itemNo=1,orderID_orderID='100000001')
+Content-Type: application/json
+
+{
+"status_statusID":"CMPL"
+}
 ###
 
 GET http://localhost:4004/hand-and-life/Artisans
@@ -63,8 +70,8 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "productID"        : "368710c9-1d50-4b96-b91d-cfbe63100c94",
-            "price"            : 10,
+            "productID"        : "c9b8ae2f-304f-437f-8220-61bf20e48971",
+            "price"            : 11893.53,
             "currency"         : "EUR",
             "quantity"         : "15",
             "unit"             : "ST"
@@ -76,7 +83,7 @@ Content-Type: application/json
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 2,
             "productID"        : null,
-            "price"            : 10,
+            "price"            : 10.00,
             "currency"         : "EUR",
             "quantity"         : "15",
             "unit"             : "ST"

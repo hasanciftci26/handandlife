@@ -3,12 +3,15 @@ sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
     "sap/m/MessageBox",
-    "sap/ui/util/Storage"
+    "sap/m/MessageToast",
+    "sap/ui/util/Storage",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator"
 ],
 	/**
 	 * @param {typeof sap.ui.core.mvc.Controller} Controller
 	 */
-    function (BaseController, Controller, JSONModel, MessageBox, Storage) {
+    function (BaseController, Controller, JSONModel, MessageBox, MessageToast, Storage, Filter, FilterOperator) {
         "use strict";
 
         return BaseController.extend("renova.hl.ui.artisan.controller.Orders", {
@@ -18,7 +21,7 @@ sap.ui.define([
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
             },
-            _onObjectMatched: function () {
+            _onObjectMatched: async function () {
                 var that = this;
                 this.sessionControl(this);
                 // @ts-ignore
@@ -35,9 +38,159 @@ sap.ui.define([
                     }
                     );
                 }
+                this.getOrders();
+            },
+            getURLPicture: function (prdid) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var oBindUnits = oDataModel.bindContext("/ProductAttachments", undefined, {
+                    $filter: "productID_productID eq " + prdid,
+                    $$groupId: "directRequest"
+                });
+                return new Promise((resolve) => {
+                    oBindUnits.requestObject().then((oData) => {
+                        resolve(oData.value[0].url);
+                    });
+                });
+            },
+            getImages: function (iurl) {
+                var settings = {
+                    url: iurl,
+                    method: "GET",
+                    xhrFields: {
+                        responseType: "blob"
+                    }
+                }
+
+                return new Promise((resolve, reject) => {
+                    $.ajax(settings)
+                        .done((result, textStatus, request) => {
+                            resolve(result);
+                        })
+                        .fail((err) => {
+                            reject(err);
+                        })
+                });
+            },
+            getUnits: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var oBindUnits = oDataModel.bindContext("/Units", undefined, {
+                    $$groupId: "directRequest"
+                });
+                return new Promise((resolve) => {
+                    oBindUnits.requestObject().then((oData) => {
+                        resolve(oData.value);
+                    });
+                });
+            },
+            getOrders: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var aProductId = [];
+
+                var oBindProduct = oDataModel.bindContext("/ArtisanProducts", undefined,
+                    {
+                        // @ts-ignore
+                        $filter: "email_email eq '" + sap.ui.getCore().email + "'",
+                        $$groupId: "directRequest"
+                    });
+
+                oBindProduct.requestObject().then((oData) => {
+                    oData.value.forEach((item) => {
+                        aProductId.push(item.productID);
+                    });
+                    that.getAllOrders(aProductId, oData.value);
+                });
+            },
+            getAllOrders: function (aProductId, aProducts) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var aFilter = [];
+                var aOrderItems = [];
+                var aPictures = [];
+
+                aProductId.forEach((element) => {
+                    aFilter.push(new Filter("productID_productID", FilterOperator.EQ, element));
+                });
+                var oBindOrderItems = oDataModel.bindList("/OrderItems", undefined, undefined, undefined,
+                    {
+                        // @ts-ignore
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                // var oBindProductPictures = oDataModel.bindList("/ProductAttachments", undefined, undefined, undefined,
+                //     {
+                //         // @ts-ignore
+                //         $$groupId: "directRequest"
+                //     }).filter(aFilter);
+
+                oBindOrderItems.requestContexts().then((oContext) => {
+                    oContext.forEach((element) => {
+                        var sObject = element.getObject();
+                        sObject.price = Number(sObject.price);
+                        aOrderItems.push(sObject);
+                    });
+                    // oBindProductPictures.requestContexts().then((oPictures) => {
+                    //     oPictures.forEach((element) => {
+                    //         aPictures.push(element.getObject());
+                    //     });
+
+                    // });
+                    that.setOrders(aOrderItems, aProducts);
+                });
+            },
+            setOrders: async function (aOrderItems, aProducts) {
+                var that = this;
+                var aUnits = await this.getUnits();
+                var aNewOrders = aOrderItems.filter((item) => { return item.status_statusID === "CRTD"; });
+                var aPreparedOrders = aOrderItems.filter((item) => { return item.status_statusID === "PRPR"; });
+                var aCargoOrders = aOrderItems.filter((item) => { return item.status_statusID === "CRGO"; });
+                var aCompletedOrders = aOrderItems.filter((item) => { return item.status_statusID === "CMPL"; });
+
+                aNewOrders = this.combineProductOrderItems(aNewOrders, aProducts, aUnits);
+                aPreparedOrders = this.combineProductOrderItems(aPreparedOrders, aProducts, aUnits);
+                aCargoOrders = this.combineProductOrderItems(aCargoOrders, aProducts, aUnits);
+                aCompletedOrders = this.combineProductOrderItems(aCompletedOrders, aProducts, aUnits);
+                var aURL = await this.getURLPicture(aNewOrders[0].productID_productID);
+                this.getImages(aURL).then((resolve) => {
+                    var vUrl = window.URL.createObjectURL(resolve);
+                    var sUrl = {
+                        ImageURL: vUrl
+                    };
+                    that.getView().setModel(new JSONModel(sUrl), "ImageModel");
+                });
+
+                this.getView().byId("itfNewOrders").setCount(aNewOrders.length);
+                this.getView().byId("itfPreparedOrders").setCount(aPreparedOrders.length);
+                this.getView().byId("itfCargoOrders").setCount(aCargoOrders.length);
+                this.getView().byId("itfCompletedOrders").setCount(aCompletedOrders.length);
+                this.getView().setModel(new JSONModel(aNewOrders), "NewOrders");
+                this.getView().setModel(new JSONModel(aPreparedOrders), "PreparedOrders");
+                this.getView().setModel(new JSONModel(aCargoOrders), "CargoOrders");
+                this.getView().setModel(new JSONModel(aCompletedOrders), "CompletedOrders");
             },
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
+            },
+            combineProductOrderItems: function (aOrderItems, aProducts, aUnits) {
+                aOrderItems.forEach((element) => {
+                    var sProduct = aProducts.find((item) => { return item.productID === element.productID_productID; });
+                    var sUnit = aUnits.find((item) => { return item.unitID === element.unit_unitID; });
+
+                    if (sProduct !== undefined) {
+                        element.productCurrency = sProduct.currency_currencyCode;
+                        element.productPrice = sProduct.price;
+                        element.productName = sProduct.productName;
+                        element.orderUnit = sUnit.unit;
+                    }
+                });
+                aOrderItems.sort((a, b) => { return a.orderID_orderID - b.orderID_orderID; });
+                return aOrderItems;
             },
             onLogout: function () {
                 var that = this;
@@ -62,6 +215,105 @@ sap.ui.define([
             //Anasayfaya dön
             onNavToHomePage: function () {
                 this.getRouter().navTo("HomePage");
+            },
+            onPrepareOrder: function (oEvent) {
+                var that = this;
+                var sOrder = oEvent.getSource().getBindingContext("NewOrders").getProperty();
+                var aMessage = [sOrder.orderID_orderID, sOrder.productName];
+
+                MessageBox.confirm(this.getResourceBundle().getText("ConfirmPreparation", aMessage), {
+                    title: this.getResourceBundle().getText("PleaseConfirm"),
+                    actions: [sap.m.MessageBox.Action.OK,
+                    sap.m.MessageBox.Action.CANCEL],
+                    emphasizedAction: sap.m.MessageBox.Action.OK,
+                    initialFocus: null,
+                    onClose: function (oAction) {
+                        that.setOrderPrepared(sOrder);
+                    }
+                });
+            },
+            setOrderPrepared: function (sOrder) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var aFilter = [];
+
+                aFilter.push(new Filter("orderID_orderID", FilterOperator.EQ, sOrder.orderID_orderID));
+                aFilter.push(new Filter("itemNo", FilterOperator.EQ, sOrder.itemNo));
+
+                var oBindOrderItems = oDataModel.bindList("/OrderItems", undefined, undefined, undefined,
+                    {
+                        // @ts-ignore
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                oBindOrderItems.requestContexts().then((oContext) => {
+                    oContext[0].setProperty("status_statusID", "PRPR");
+                    sap.ui.core.BusyIndicator.show();
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        sap.ui.core.BusyIndicator.hide();
+                        that._onObjectMatched();
+                    });
+                })
+            },
+            onShipmentPress: function (oEvent) {
+                var sOrder = oEvent.getSource().getBindingContext("PreparedOrders").getProperty();
+                this.sOrder = sOrder;
+                var sOrderInformations = {
+                    OrderNo: this.getResourceBundle().getText("OrderNo") + ": " + sOrder.orderID_orderID,
+                    ProductName: this.getResourceBundle().getText("ProductName") + ": " + sOrder.productName,
+                    ProductID: this.getResourceBundle().getText("ProductID") + ": " + sOrder.productID_productID,
+                };
+                this.getView().setModel(new JSONModel(sOrderInformations), "OrderInformation");
+                this.getView().setModel(new JSONModel({}), "CargoInformation");
+                this.getShipmentDialog().open();
+            },
+            getShipmentDialog: function () {
+                if (!this.oShipmentDialog) {
+                    this.oShipmentDialog = sap.ui.xmlfragment("renova.hl.ui.artisan.fragments.Shipment", this);
+                    this.getView().addDependent(this.oShipmentDialog);
+                    jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oShipmentDialog);
+                }
+                return this.oShipmentDialog;
+            },
+            onCompleteShipment: function (oEvent) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                oDataModel.setSizeLimit(25000);
+                var aFilter = [];
+
+                var sCargoInfo = this.getView().getModel("CargoInformation").getData();
+                var sOrder = this.sOrder;
+
+                if (sCargoInfo.ShipmentNo === undefined || sCargoInfo.CargoBranch === undefined ||
+                    sCargoInfo.ShipmentNo === "" || sCargoInfo.CargoBranch === "") {
+                    MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                    return;
+                }
+
+                aFilter.push(new Filter("orderID_orderID", FilterOperator.EQ, sOrder.orderID_orderID));
+                aFilter.push(new Filter("itemNo", FilterOperator.EQ, sOrder.itemNo));
+
+                var oBindOrderItems = oDataModel.bindList("/OrderItems", undefined, undefined, undefined,
+                    {
+                        // @ts-ignore
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                oBindOrderItems.requestContexts().then((oContext) => {
+                    oContext[0].setProperty("status_statusID", "CRGO");
+                    oContext[0].setProperty("cargoNumber", sCargoInfo.ShipmentNo);
+                    oContext[0].setProperty("cargoBranch", sCargoInfo.CargoBranch);
+                    sap.ui.core.BusyIndicator.show();
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        sap.ui.core.BusyIndicator.hide();
+                        that.getShipmentDialog().close();
+                        that._onObjectMatched();
+                    });
+                })
+            },
+            onCancelShipment: function () {
+                this.getShipmentDialog().close();
             }
         });
     });

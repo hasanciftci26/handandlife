@@ -1,7 +1,7 @@
 /* Enter your custom styles here */
 
 .sapTntToolHeader.sapMTB {
-    background-color: #900C3F !important;
+    background-color: #2b4045 !important;
     box-shadow: inset 0 -0.0625rem 0 0 #354a5f;
     height: 4rem !important;
 }
@@ -16,7 +16,7 @@
 }
 
 .ImageMargin{
-    margin-left: 5rem;
+    margin-left: 2.7rem;
 }
 
 .CarouselMargin{
