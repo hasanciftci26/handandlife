@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+const { v4: uuidv4 } = require('uuid');
+
 module.exports = (srv) => {
     // const { Professions } = srv.entities;
 
@@ -23,4 +26,7 @@ module.exports = (srv) => {
                 req.reject(401, "Unauthorized");
             }
         });
+    srv.on("GenerateUuid", (req) => {
+        return uuidv4();
+    });
 };

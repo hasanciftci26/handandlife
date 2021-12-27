@@ -41,6 +41,8 @@ service HandAndLife @(impl : './renova-hl-service') {
         * , productID : redirected to ArtisanProducts
     };
 
+    entity ForgottenPasswords   as projection on artisan.ForgottenPasswords;
+
     @assert.integrity : false
     entity ProfessionCategories as projection on artisan.ProfessionCategories;
 
@@ -59,6 +61,8 @@ service HandAndLife @(impl : './renova-hl-service') {
     // @readonly
     // @assert.integrity : false
     entity Categories           as projection on artisan.Categories;
+
+    entity ArtisanCredentialsView as projection on artisan.ArtisanCredentials;
 
     //Sonradan kalkabilir.
     @readonly
@@ -129,6 +133,8 @@ service HandAndLife @(impl : './renova-hl-service') {
     // @assert.integrity : false
     @readonly
     entity Units                as projection on main.Units;
+
+    function GenerateUuid() returns UUID;
 };
 
 service HandAndLifeIntegration @(impl : './renova-hl-int-service') {

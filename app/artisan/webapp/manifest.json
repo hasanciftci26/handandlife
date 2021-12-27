@@ -146,6 +146,13 @@
                     "target": [
                         "NewProduct"
                     ]
+                },
+                {
+                    "name": "ResetPassword",
+                    "pattern": "ResetPassword/{uuid}",
+                    "target": [
+                        "ResetPassword"
+                    ]
                 }
             ],
             "targets": {
@@ -190,6 +197,13 @@
                     "clearControlAggregation": false,
                     "viewId": "NewProduct",
                     "viewName": "NewProduct"
+                },
+                "ResetPassword": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "ResetPassword",
+                    "viewName": "ResetPassword"
                 }
             }
         }
