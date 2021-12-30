@@ -13,7 +13,7 @@
                     <VBox>
                         <tnt:ToolHeader design="Transparent" class="testClass">
                             <Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
-                            <Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+                            <Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
                                 <layoutData>
                                     <OverflowToolbarLayoutData priority="NeverOverflow" />
                                 </layoutData>
@@ -137,7 +137,6 @@
                                     </HBox>
                                   </f:content>
                                </f:SimpleForm>  
-
                                 <VBox>
                                 <f:SimpleForm id="sfPropertiesForm2" editable="true" title="{i18n>Properties}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
                                     <f:content></f:content>

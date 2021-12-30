@@ -23,3 +23,7 @@
     margin-left: 190px !important;
     margin-top: 30px !important;
 }
+.responsiveImage {
+    max-width: 20rem;
+    max-height: 15rem;
+  }

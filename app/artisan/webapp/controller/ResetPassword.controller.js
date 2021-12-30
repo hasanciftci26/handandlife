@@ -55,7 +55,7 @@ sap.ui.define([
 
                 var oBindForgottenPassword = oDataModel.bindContext("/ForgottenPasswords", undefined,
                     {
-                        $filter: "passwordKey eq " + vUuid,
+                        $filter: "passwordKey eq '" + vUuid + "'",
                         $$groupId: "directRequest"
                     });
                 oBindForgottenPassword.requestObject().then((oData) => {

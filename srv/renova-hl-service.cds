@@ -133,8 +133,6 @@ service HandAndLife @(impl : './renova-hl-service') {
     // @assert.integrity : false
     @readonly
     entity Units                as projection on main.Units;
-
-    function GenerateUuid() returns UUID;
 };
 
 service HandAndLifeIntegration @(impl : './renova-hl-int-service') {

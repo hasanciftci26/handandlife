@@ -4,14 +4,15 @@
     xmlns:tnt="sap.tnt"
     xmlns:grid="sap.ui.layout.cssgrid"
 	xmlns:f="sap.f"
-    xmlns:core="sap.ui.core">
+    xmlns:core="sap.ui.core"
+    xmlns:l="sap.ui.layout">
     <App id="OrdersApp">
         <pages>
             <Page id="Orders" showHeader="false">
                 <content>
                     <tnt:ToolHeader design="Transparent" class="testClass">
                         <Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
-                        <Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+                        <Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
                             <layoutData>
                                 <OverflowToolbarLayoutData priority="NeverOverflow" />
                             </layoutData>
@@ -60,10 +61,9 @@
                                 design="Horizontal"
                                 text="{i18n>NewOrders}"
                                 key="NewOrders" >
-                                <Image src="{ImageModel>/ImageURL}"/>
                                 <f:GridList items="{NewOrders>/}" headerText="{i18n>NewOrders}">
                                     <f:customLayout>
-                                        <grid:GridBoxLayout boxWidth="25rem"/>
+                                        <grid:GridBoxLayout boxWidth="30rem"/>
                                     </f:customLayout>
                                     <f:GridListItem>
                                         <VBox height="100%" justifyContent="SpaceBetween">
@@ -71,33 +71,29 @@
                                                 <FlexItemData growFactor="1" shrinkFactor="0" /><!-- Don't shrink below minimum size. Fill space if available. -->
                                             </layoutData>
                                             <VBox class="sapUiSmallMargin">
-                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                    <core:Icon
-                                                    src="sap-icon://cart-full"
-                                                    size="2.625rem"
-                                                    color="Default"
-                                                    class="sapUiTinyMarginBottom" />
-                                                    <ObjectNumber
-                                                    class="sapUiSmallMarginBottom"
-                                                    number="{
-                                                            parts:[{path:'NewOrders>price'},{path:'NewOrders>currency_currencyCode'}],
-                                                            type: 'sap.ui.model.type.Currency',
-                                                            formatOptions: {showMeasure: false}
-                                                        }"
-                                                    unit="{NewOrders>currency_currencyCode}"
-                                                    state="Success" />
-                                                </HBox>
+                                                <FlexBox height="16rem" alignItems="Center" justifyContent="Center">
+                                                    <Image src="{NewOrders>pictureURL}" class="responsiveImage"/>
+                                                </FlexBox>
                                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <Title text="{NewOrders>productName}" wrapping="true" />
                                                     <tnt:InfoLabel text="{i18n>OrderNo}: {NewOrders>orderID_orderID}" colorScheme="5" />
                                                 </HBox>
                                                 <Label text="{i18n>ProductID}: {NewOrders>productID_productID}" wrapping="true" class="sapUiTinyMarginBottom sapUiTinyMarginTop" />
                                                 <Text text="{i18n>OrderQuantity}: {NewOrders>quantity} {NewOrders>orderUnit}" wrapping="true" />
+                                                <ObjectNumber
+                                                class="sapUiSmallMarginTop"
+                                                number="{
+                                                        parts:[{path:'NewOrders>price'},{path:'NewOrders>currency_currencyCode'}],
+                                                        type: 'sap.ui.model.type.Currency',
+                                                        formatOptions: {showMeasure: false}
+                                                    }"
+                                                unit="{NewOrders>currency_currencyCode}"
+                                                state="Success" /> 
                                             </VBox>
                                             <OverflowToolbar design="Solid">
                                                 <ToolbarSpacer />
                                                 <Button text="{i18n>PrepareOrder}" icon="sap-icon://eam-work-order" type="Accept" press="onPrepareOrder"/>
-                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" />
+                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" press="onNewOrderDetails"/>
                                             </OverflowToolbar>
                                         </VBox>
                                     </f:GridListItem>
@@ -113,7 +109,7 @@
                                 key="PreparingOrders">
                                 <f:GridList items="{PreparedOrders>/}" headerText="{i18n>PreparingOrders}">
                                     <f:customLayout>
-                                        <grid:GridBoxLayout boxWidth="25rem"/>
+                                        <grid:GridBoxLayout boxWidth="30rem"/>
                                     </f:customLayout>
                                     <f:GridListItem>
                                         <VBox height="100%" justifyContent="SpaceBetween">
@@ -121,14 +117,17 @@
                                                 <FlexItemData growFactor="1" shrinkFactor="0" /><!-- Don't shrink below minimum size. Fill space if available. -->
                                             </layoutData>
                                             <VBox class="sapUiSmallMargin">
+                                                <FlexBox height="16rem" alignItems="Center" justifyContent="Center">
+                                                    <Image src="{PreparedOrders>pictureURL}" class="responsiveImage"/>
+                                                </FlexBox>
                                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                    <core:Icon
-                                                    src="sap-icon://date-time"
-                                                    size="2.625rem"
-                                                    color="Default"
-                                                    class="sapUiTinyMarginBottom" />
-                                                    <ObjectNumber
-                                                    class="sapUiSmallMarginBottom"
+                                                    <Title text="{PreparedOrders>productName}" wrapping="true" />
+                                                    <tnt:InfoLabel text="{i18n>OrderNo}: {PreparedOrders>orderID_orderID}" colorScheme="5" />
+                                                </HBox>
+                                                <Label text="{i18n>ProductID}: {PreparedOrders>productID_productID}" wrapping="true" class="sapUiTinyMarginBottom sapUiTinyMarginTop" />
+                                                <Text text="{i18n>OrderQuantity}: {PreparedOrders>quantity} {PreparedOrders>orderUnit}" wrapping="true" />
+                                                <ObjectNumber
+                                                    class="sapUiSmallMarginTop"
                                                     number="{
                                                             parts:[{path:'PreparedOrders>price'},{path:'PreparedOrders>currency_currencyCode'}],
                                                             type: 'sap.ui.model.type.Currency',
@@ -136,18 +135,11 @@
                                                         }"
                                                     unit="{PreparedOrders>currency_currencyCode}"
                                                     state="Success" />
-                                                </HBox>
-                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                    <Title text="{PreparedOrders>productName}" wrapping="true" />
-                                                    <tnt:InfoLabel text="{i18n>OrderNo}: {PreparedOrders>orderID_orderID}" colorScheme="5" />
-                                                </HBox>
-                                                <Label text="{i18n>ProductID}: {PreparedOrders>productID_productID}" wrapping="true" class="sapUiTinyMarginBottom sapUiTinyMarginTop" />
-                                                <Text text="{i18n>OrderQuantity}: {PreparedOrders>quantity} {PreparedOrders>orderUnit}" wrapping="true" />
                                             </VBox>
                                             <OverflowToolbar design="Solid">
                                                 <ToolbarSpacer />
                                                 <Button text="{i18n>Shipment}" icon="sap-icon://shipping-status" type="Accept" press="onShipmentPress"/>
-                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" />
+                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" press="onPreparedOrderDetails"/>
                                             </OverflowToolbar>
                                         </VBox>
                                     </f:GridListItem>
@@ -163,7 +155,7 @@
                                 key="ShippedOrders" >
                                 <f:GridList items="{CargoOrders>/}" headerText="{i18n>Shipped}">
                                     <f:customLayout>
-                                        <grid:GridBoxLayout boxWidth="25rem"/>
+                                        <grid:GridBoxLayout boxWidth="30rem"/>
                                     </f:customLayout>
                                     <f:GridListItem>
                                         <VBox height="100%" justifyContent="SpaceBetween">
@@ -171,22 +163,9 @@
                                                 <FlexItemData growFactor="1" shrinkFactor="0" /><!-- Don't shrink below minimum size. Fill space if available. -->
                                             </layoutData>
                                             <VBox class="sapUiSmallMargin">
-                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                    <core:Icon
-                                                    src="sap-icon://shipping-status"
-                                                    size="2.625rem"
-                                                    color="Default"
-                                                    class="sapUiTinyMarginBottom" />
-                                                    <ObjectNumber
-                                                    class="sapUiSmallMarginBottom"
-                                                    number="{
-                                                            parts:[{path:'CargoOrders>price'},{path:'CargoOrders>currency_currencyCode'}],
-                                                            type: 'sap.ui.model.type.Currency',
-                                                            formatOptions: {showMeasure: false}
-                                                        }"
-                                                    unit="{CargoOrders>currency_currencyCode}"
-                                                    state="Success" />
-                                                </HBox>
+                                                <FlexBox height="16rem" alignItems="Center" justifyContent="Center">
+                                                    <Image src="{CargoOrders>pictureURL}" class="responsiveImage"/>
+                                                </FlexBox>    
                                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <Title text="{CargoOrders>productName}" wrapping="true" />
                                                     <tnt:InfoLabel text="{i18n>OrderNo}: {CargoOrders>orderID_orderID}" colorScheme="5" />
@@ -195,10 +174,19 @@
                                                 <Text text="{i18n>OrderQuantity}: {CargoOrders>quantity} {CargoOrders>orderUnit}" wrapping="true" />
                                                 <Text text="{i18n>ShipmentNo}: {CargoOrders>cargoNumber}" wrapping="true" />
                                                 <Text text="{i18n>CargoBranch}: {CargoOrders>cargoBranch}" wrapping="true" />
+                                                <ObjectNumber
+                                                    class="sapUiSmallMarginTop"
+                                                    number="{
+                                                            parts:[{path:'CargoOrders>price'},{path:'CargoOrders>currency_currencyCode'}],
+                                                            type: 'sap.ui.model.type.Currency',
+                                                            formatOptions: {showMeasure: false}
+                                                        }"
+                                                    unit="{CargoOrders>currency_currencyCode}"
+                                                    state="Success" />
                                             </VBox>
                                             <OverflowToolbar design="Solid">
                                                 <ToolbarSpacer />
-                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" />
+                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" press="onCargoOrderDetails"/>
                                             </OverflowToolbar>
                                         </VBox>
                                     </f:GridListItem>
@@ -214,7 +202,7 @@
                                 key="CompletedOrders">
                                 <f:GridList items="{CompletedOrders>/}" headerText="{i18n>CompletedOrders}">
                                     <f:customLayout>
-                                        <grid:GridBoxLayout boxWidth="25rem"/>
+                                        <grid:GridBoxLayout boxWidth="30rem"/>
                                     </f:customLayout>
                                     <f:GridListItem>
                                         <VBox height="100%" justifyContent="SpaceBetween">
@@ -222,22 +210,9 @@
                                                 <FlexItemData growFactor="1" shrinkFactor="0" /><!-- Don't shrink below minimum size. Fill space if available. -->
                                             </layoutData>
                                             <VBox class="sapUiSmallMargin">
-                                                <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
-                                                    <core:Icon
-                                                    src="sap-icon://shipping-status"
-                                                    size="2.625rem"
-                                                    color="Default"
-                                                    class="sapUiTinyMarginBottom" />
-                                                    <ObjectNumber
-                                                    class="sapUiSmallMarginBottom"
-                                                    number="{
-                                                            parts:[{path:'CompletedOrders>price'},{path:'CompletedOrders>currency_currencyCode'}],
-                                                            type: 'sap.ui.model.type.Currency',
-                                                            formatOptions: {showMeasure: false}
-                                                        }"
-                                                    unit="{CompletedOrders>currency_currencyCode}"
-                                                    state="Success" />
-                                                </HBox>
+                                                <FlexBox height="16rem" alignItems="Center" justifyContent="Center">
+                                                    <Image src="{CompletedOrders>pictureURL}" class="responsiveImage"/>
+                                                </FlexBox>       
                                                 <HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
                                                     <Title text="{CompletedOrders>productName}" wrapping="true" />
                                                     <tnt:InfoLabel text="{i18n>OrderNo}: {CompletedOrders>orderID_orderID}" colorScheme="5" />
@@ -246,10 +221,19 @@
                                                 <Text text="{i18n>OrderQuantity}: {CompletedOrders>quantity} {CompletedOrders>orderUnit}" wrapping="true" />
                                                 <Text text="{i18n>ShipmentNo}: {CompletedOrders>cargoNumber}" wrapping="true" />
                                                 <Text text="{i18n>CargoBranch}: {CompletedOrders>cargoBranch}" wrapping="true" />
+                                                <ObjectNumber
+                                                    class="sapUiSmallMarginTop"
+                                                    number="{
+                                                            parts:[{path:'CompletedOrders>price'},{path:'CompletedOrders>currency_currencyCode'}],
+                                                            type: 'sap.ui.model.type.Currency',
+                                                            formatOptions: {showMeasure: false}
+                                                        }"
+                                                    unit="{CompletedOrders>currency_currencyCode}"
+                                                    state="Success" />
                                             </VBox>
                                             <OverflowToolbar design="Solid">
                                                 <ToolbarSpacer />
-                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" />
+                                                <Button text="{i18n>OrderDetails}" icon="sap-icon://message-information" type="Transparent" press="onCompletedOrderDetails"/>
                                             </OverflowToolbar>
                                         </VBox>
                                     </f:GridListItem>

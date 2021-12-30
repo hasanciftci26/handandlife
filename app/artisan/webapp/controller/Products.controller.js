@@ -22,6 +22,9 @@ sap.ui.define([
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
             },
+            onNavToOrders: function () {
+                this.getRouter().navTo("Orders");
+            },
             _onObjectMatched: function () {
                 var that = this;
                 this.sessionControl(this);

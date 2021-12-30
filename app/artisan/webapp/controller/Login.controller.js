@@ -151,8 +151,7 @@ sap.ui.define([
             },
             updateForgottenPassword: async function (email) {
                 var oDataModel = this.getView().getModel();
-                var vUuid = await this.generateUuid();
-                var vResetURL = window.location.href.split("#")[0] + "#/ResetPassword/" + vUuid;
+                var vResetURL = window.location.href.split("#")[0] + "#/ResetPassword/";
 
                 var aFilter = [];
                 aFilter.push(new Filter("email", FilterOperator.EQ, email));
@@ -164,7 +163,6 @@ sap.ui.define([
                 oBindForgottenPassword.attachPatchCompleted(this.onForgotPasswordCompleted, this);
 
                 oBindForgottenPassword.requestContexts().then((aContext) => {
-                    aContext[0].setProperty("passwordKey", vUuid);
                     aContext[0].setProperty("resetUrl", vResetURL);
                     oDataModel.submitBatch("batchRequest");                    
                 });
@@ -172,8 +170,7 @@ sap.ui.define([
             // @ts-ignore
             createForgottenPassword: async function (email) {
                 var oDataModel = this.getView().getModel();
-                var vUuid = await this.generateUuid();
-                var vResetURL = window.location.href.split("#")[0] + "#/ResetPassword/" + vUuid;
+                var vResetURL = window.location.href.split("#")[0] + "#/ResetPassword/";
 
                 var oBindForgottenPassword = oDataModel.bindList("/ForgottenPasswords", undefined, undefined, undefined, {
                     $$groupId: "batchRequest"
@@ -183,7 +180,6 @@ sap.ui.define([
 
                 oBindForgottenPassword.create({
                     email: email,
-                    passwordKey: vUuid,
                     resetUrl: vResetURL
                 });
 
@@ -192,20 +188,6 @@ sap.ui.define([
             onForgotPasswordCompleted: function () {
                 MessageBox.information(this.getResourceBundle().getText("ReceiveEmailForgotPassword"));
                 this.getForgottenPasswordDialog().close();
-            },
-            generateUuid: function () {
-                var that = this;
-                // @ts-ignore
-                return new Promise((resolve) => {
-                    var oDataModel = this.getView().getModel();
-
-                    var oBindGenerateUuid = oDataModel.bindContext("/GenerateUuid(...)");
-
-                    oBindGenerateUuid.execute().then(() => {
-                        var vUuid = oBindGenerateUuid.getBoundContext().getObject().value;
-                        resolve(vUuid);
-                    });
-                });
             }
         });
     });

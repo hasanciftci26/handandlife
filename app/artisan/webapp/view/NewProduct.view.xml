@@ -9,12 +9,12 @@
     xmlns:upload="sap.m.upload">
     <tnt:ToolHeader design="Transparent">
         <m:Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage" />
-        <m:Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+        <m:Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
             <m:layoutData>
                 <m:OverflowToolbarLayoutData priority="NeverOverflow" />
             </m:layoutData>
         </m:Button>
-        <m:Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+        <m:Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
             <m:layoutData>
                 <m:OverflowToolbarLayoutData priority="NeverOverflow" />
             </m:layoutData>

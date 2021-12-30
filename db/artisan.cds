@@ -180,8 +180,8 @@ entity ArtisanOffers {
 
 entity ForgottenPasswords {
     key email       : Artisans:email;
-        passwordKey : UUID;
-        resetUrl    : String(150);
+        passwordKey : String(100);
+        resetUrl    : String(250);
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-const { v4: uuidv4 } = require('uuid');
+const oCrypto = require("crypto");
 
 module.exports = (srv) => {
     // const { Professions } = srv.entities;
@@ -26,7 +26,9 @@ module.exports = (srv) => {
                 req.reject(401, "Unauthorized");
             }
         });
-    srv.on("GenerateUuid", (req) => {
-        return uuidv4();
+    srv.before(["CREATE","UPDATE"], "ForgottenPasswords", (req) => {
+        let vRandomBytes = oCrypto.randomBytes(30).toString("hex");
+        req.data.passwordKey = vRandomBytes;
+        req.data.resetUrl = req.data.resetUrl + vRandomBytes;
     });
 };
