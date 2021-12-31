@@ -30,7 +30,7 @@ sap.ui.define([
             },
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
-            },            
+            },
             onNavToProducts: function () {
                 this.getRouter().navTo("Products");
             },

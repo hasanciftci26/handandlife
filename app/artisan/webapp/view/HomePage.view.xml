@@ -1,74 +1,74 @@
-<mvc:View controllerName="renova.hl.ui.artisan.controller.HomePage"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m"
-    xmlns:tnt="sap.tnt">
-    <App id="HomePageApp">
-        <pages>
-            <Page id="HomePage" showHeader="false">
-                <content>
-                    <tnt:ToolHeader design="Transparent" class="testClass">
-                        <Image src="img/HandAndLife Logo.jpg"/>
-                        <Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" 
-                        class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}"
-                        press="onNavToProducts">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                        </Button>
-                        <Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" 
-                        visible="{= ${UserCredential>/isLogin} === true ? true : false}"
-                        press="onNavToOrders">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                        </Button>
-                        <Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                        </Button>
-                        <Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                        </Button>
-                        <ToolbarSpacer/>
-                        <Button icon="sap-icon://search" type="Transparent">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                        </Button>
-                        <Button icon="sap-icon://comment" type="Transparent">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                        </Button>
-                        <MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
-                            <layoutData>
-                                <OverflowToolbarLayoutData priority="NeverOverflow" />
-                            </layoutData>
-                            <Menu>
-                                <MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-                                <MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-                                <MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
-                                <MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
-                            </Menu>
-                        </MenuButton>
-                    </tnt:ToolHeader>
-                    <Table items="{/Artisans}">
-                        <columns>
-                            <Column>
-                                <Text text="Deneme"/>
-                            </Column>
-                        </columns>
-                        <items>
-                            <ColumnListItem>
-                                <Text text="{firstName}"/>
-                            </ColumnListItem>
-                        </items>
-                    </Table>
-                </content>
-            </Page>
-        </pages>
-    </App>
+<mvc:View controllerName="renova.hl.ui.artisan.controller.HomePage" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
+	xmlns:tnt="sap.tnt">
+	<App id="HomePageApp">
+		<pages>
+			<Page id="HomePage" showHeader="false">
+				<content>
+					<tnt:ToolHeader design="Transparent" class="testClass">
+						<Image src="img/HandAndLife Logo.jpg"/>
+						<Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<ToolbarSpacer/>
+						<Button icon="sap-icon://search" type="Transparent">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://comment" type="Transparent">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+							<Menu>
+								<MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+									visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+								<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+							</Menu>
+						</MenuButton>
+					</tnt:ToolHeader>
+					<Table items="{/Artisans}">
+						<columns>
+							<Column>
+								<Text text="Deneme"/>
+							</Column>
+						</columns>
+						<items>
+							<ColumnListItem>
+								<Text text="{firstName}"/>
+							</ColumnListItem>
+						</items>
+					</Table>
+				</content>
+			</Page>
+		</pages>
+	</App>
 </mvc:View>

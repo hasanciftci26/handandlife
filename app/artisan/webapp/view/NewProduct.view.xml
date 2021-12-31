@@ -1,212 +1,195 @@
-<mvc:View controllerName="renova.hl.ui.artisan.controller.NewProduct"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.uxap"
-    xmlns:m="sap.m"
-    xmlns:tnt="sap.tnt"
-    xmlns:l="sap.ui.layout"
-    xmlns:f="sap.ui.layout.form"
-    xmlns:core="sap.ui.core"
-    xmlns:upload="sap.m.upload">
-    <tnt:ToolHeader design="Transparent">
-        <m:Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage" />
-        <m:Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-        </m:Button>
-        <m:Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-        </m:Button>
-        <m:Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-        </m:Button>
-        <m:Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-        </m:Button>
-        <m:ToolbarSpacer/>
-        <m:Button icon="sap-icon://search" type="Transparent">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-        </m:Button>
-        <m:Button icon="sap-icon://comment" type="Transparent">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-        </m:Button>
-        <m:MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
-            <m:layoutData>
-                <m:OverflowToolbarLayoutData priority="NeverOverflow" />
-            </m:layoutData>
-            <m:Menu>
-                <m:MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-                <m:MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
-                <m:MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
-            </m:Menu>
-        </m:MenuButton>
-    </tnt:ToolHeader>
-    <ObjectPageLayout id="NewProductPageLayout" upperCaseAnchorBar="false" showFooter="true" height="92%">
-        <sections>
-            <ObjectPageSection titleUppercase="false" id="opsProductInfoSection" title="{i18n>ProductInfo}">
-                <subSections>
-                    <ObjectPageSubSection id="opssProductInfoSubSection">
-                        <blocks>
-                           <f:SimpleForm id="sfProductInfoForm" editable="true" title="{i18n>ProductInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
-                                 <f:content>
-                                    <m:Label text="{i18n>ProductName}" />
-                                    <m:Input id="inpProductName" value="{NewProduct>/ProductName}" maxLength="40" liveChange="onGeneralChange"/>
-                                    <m:Label text="{i18n>Category}" />
-                                    <m:ComboBox items="{Categories>/}" id="cbCategories" selectionChange="onCategoryChanged">
-                                        <m:items>
-                                            <core:Item xmlns:core="sap.ui.core" key="{Categories>categoryID}" text="{Categories>category}"/>
-                                        </m:items>
-                                    </m:ComboBox>
-                                    <m:Label text="{i18n>Stock}" />
-                                    <m:Input id="inpStock" value="{NewProduct>/Stock}" maxLength="40" liveChange="onGeneralChange">
-                                        <m:layoutData>
-                                            <l:GridData span="XL1 L2 M2 S4" />
-                                        </m:layoutData>
-                                    </m:Input>
-                                    <m:ComboBox items="{Units>/}" selectionChange="onGeneralChange" id="cbUnits">
-                                        <m:items>
-                                            <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
-                                        </m:items>
-                                    </m:ComboBox>
-                                    <m:Label text="{i18n>Price}" />
-                                    <m:Input id="inpPrice" 
-                                    value="{path:'NewProduct>/Price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}" 
-                                    maxLength="40" liveChange="onGeneralChange">
-                                    <m:layoutData>
-                                            <l:GridData span="XL1 L2 M2 S4" />
-                                        </m:layoutData>
-                                    </m:Input>
-                                    <m:ComboBox items="{Currencies>/}" selectionChange="onGeneralChange" id="cbCurrencies">
-                                        <m:items>
-                                            <core:Item xmlns:core="sap.ui.core" key="{Currencies>currencyCode}" text="{Currencies>currency}"/>
-                                        </m:items>
-                                    </m:ComboBox>
-                                    <m:Label text="{i18n>Details}" />
-                                    <m:TextArea value="{NewProduct>/Details}" rows="10" maxLength="5000" showExceededText="true" liveChange="onGeneralChange" 
-                                    placeholder="{i18n>ProductDetails}"/>
-                                </f:content>
-                            </f:SimpleForm>
-                        </blocks>
-                    </ObjectPageSubSection>
-                </subSections>
-            </ObjectPageSection>
-
-            <ObjectPageSection titleUppercase="false" id="opsPropertiesSection" title="{i18n>Properties}" importance="Medium" showTitle="false">
-                <subSections>
-                    <ObjectPageSubSection id="opsPropertiesSubSection">
-                        <blocks>
-                            <m:VBox>
-                                <f:SimpleForm id="sfPropertiesForm" editable="true" title="{i18n>Properties}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
-                                    <f:content></f:content>
-                                </f:SimpleForm>
-                                <m:Label text="{i18n>PropertyInform}" design="Bold" class="LabelColor sapUiSmallMarginTop"/>
-                                <m:VBox alignItems="Center">
-                                    <m:Table id="tblProperties" items="{Properties>/}" width="60rem" class="TableMargin" mode="MultiSelect">
-                                        <m:columns>
-                                            <m:Column visible="false">
-                                            </m:Column>
-                                            <m:Column >
-                                                <m:Label design="Bold" text="{i18n>Property}"/>
-                                            </m:Column>
-                                            <m:Column >
-                                                <m:Label design="Bold" text="{i18n>PropertyValue}"/>
-                                            </m:Column>
-                                            <m:Column >
-                                                <m:Label design="Bold" text="{i18n>Unit}"/>
-                                            </m:Column>
-                                        </m:columns>
-                                        <m:items>
-                                            <m:ColumnListItem>
-                                                <m:Text text="{Properties>propertyID}" visible="false"/>
-                                                <m:Label text="{Properties>property}" class="sapUiSmallMarginTop sapUiSmallMarginBottom" required="{Properties>mandatory}"/>
-                                                <m:HBox>
-                                                    <m:Input visible="{Properties>CommonInputVisible}" width="160%" value="{Properties>CommonProperty}" liveChange="onChangeState"/>
-                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Height}" liveChange="onChangeState"/>
-                                                    <m:Text text="X" visible="{= ${Properties>isSize} === true ? true:false}" class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
-                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Width}" liveChange="onChangeState"/>
-                                                    <m:Text text="X" visible="{= ${Properties>isSize} === true ? true:false}" class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
-                                                    <m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Depth}" liveChange="onChangeState"/>
-                                                    <m:Select items="{path:'BodySizes>/', templateShareable:true}" visible="{= ${Properties>isBodySize} === true ? true:false}" selectedKey="XS">
-                                                        <m:items>
-                                                            <core:Item xmlns:core="sap.ui.core" key="{BodySizes>key}" text="{BodySizes>text}"/>
-                                                        </m:items>
-                                                    </m:Select>
-                                                    <m:Button icon="sap-icon://palette" press="onSelectColor" visible="{= ${Properties>isColor} === true ? true:false}" width="18.2rem"/>
-                                                </m:HBox>
-                                                <m:HBox>
-                                                    <m:Label design="Bold" text="{Color>/ColorText}" visible="{= ${Properties>isColor} === true ? true:false}"/>
-                                                    <m:Select items="{path:'Units>/', 
-                                                    filters:[{
-                                                        path: 'isWeight',
-                                                        operator:'EQ',
-                                                        value1: true
-                                                    }], 
-                                                    templateShareable:true}"
-                                                    visible="{= ${Properties>isWeight} === true ? true:false}"
-                                                    selectedKey="GR">
-                                                        <m:items>
-                                                            <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
-                                                        </m:items>
-                                                    </m:Select>
-
-                                                    <m:Select items="{path:'Units>/', 
-                                                    filters:[{
-                                                        path: 'isSize',
-                                                        operator:'EQ',
-                                                        value1: true
-                                                    }], 
-                                                    templateShareable:true}"
-                                                    visible="{= ${Properties>isSize} === true ? true:false}"
-                                                    selectedKey="CM">
-                                                        <m:items>
-                                                            <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
-                                                        </m:items>
-                                                    </m:Select>
-                                                </m:HBox>
-                                            </m:ColumnListItem>
-                                        </m:items>
-                                    </m:Table>
-                                </m:VBox>
-                            </m:VBox>
-                        </blocks>
-                    </ObjectPageSubSection>
-                </subSections>
-            </ObjectPageSection>
-
-            <ObjectPageSection titleUppercase="false" id="opsPicturesSection" title="{i18n>Pictures}" importance="Medium">
-                <subSections>
-                    <ObjectPageSubSection id="opsPicturesSubSection">
-                        <blocks>
-                            <m:VBox>
-                                <m:Label text="{i18n>ProductAttachmentInform}" design="Bold" class="LabelColor"/>
-                                <upload:UploadSet id="usProductAttachments" 
-                                    instantUpload="false" 
-                                    uploadEnabled="true"
-                                    uploadCompleted="onFileUploadCompleted"
-                                    mediaTypes="image/jpeg,image/png">
-                                </upload:UploadSet>
-                            </m:VBox>
-                        </blocks>
-                    </ObjectPageSubSection>
-                </subSections>
-            </ObjectPageSection>
-        </sections>
-        <footer>
-            <m:OverflowToolbar>
-                <m:ToolbarSpacer />
-                <m:Button width="15rem" text="{i18n>Complete}" press="onNewProductComplete" type="Accept" icon="sap-icon://complete"/>
-                <!-- <m:ToolbarSpacer /> -->
-            </m:OverflowToolbar>
-        </footer>
-    </ObjectPageLayout>
+<mvc:View controllerName="renova.hl.ui.artisan.controller.NewProduct" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.uxap"
+	xmlns:m="sap.m" xmlns:tnt="sap.tnt" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core"
+	xmlns:upload="sap.m.upload">
+	<tnt:ToolHeader design="Transparent">
+		<m:Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
+		<m:Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+			visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+		</m:Button>
+		<m:Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}"
+			visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+		</m:Button>
+		<m:Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}"
+			visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+		</m:Button>
+		<m:Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+		</m:Button>
+		<m:ToolbarSpacer/>
+		<m:Button icon="sap-icon://search" type="Transparent">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+		</m:Button>
+		<m:Button icon="sap-icon://comment" type="Transparent">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+		</m:Button>
+		<m:MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+			<m:layoutData>
+				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+			</m:layoutData>
+			<m:Menu>
+				<m:MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
+					visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+				<m:MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+					visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+				<m:MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+			</m:Menu>
+		</m:MenuButton>
+	</tnt:ToolHeader>
+	<ObjectPageLayout id="NewProductPageLayout" upperCaseAnchorBar="false" showFooter="true" height="92%">
+		<sections>
+			<ObjectPageSection titleUppercase="false" id="opsProductInfoSection" title="{i18n>ProductInfo}">
+				<subSections>
+					<ObjectPageSubSection id="opssProductInfoSubSection">
+						<blocks>
+							<f:SimpleForm id="sfProductInfoForm" editable="true" title="{i18n>ProductInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3"
+								labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1"
+								columnsL="1" columnsM="1" singleContainerFullSize="false">
+								<f:content>
+									<m:Label text="{i18n>ProductName}"/>
+									<m:Input id="inpProductName" value="{NewProduct>/ProductName}" maxLength="40" liveChange="onGeneralChange"/>
+									<m:Label text="{i18n>Category}"/>
+									<m:ComboBox items="{Categories>/}" id="cbCategories" selectionChange="onCategoryChanged">
+										<m:items>
+											<core:Item xmlns:core="sap.ui.core" key="{Categories>categoryID}" text="{Categories>category}"/>
+										</m:items>
+									</m:ComboBox>
+									<m:Label text="{i18n>Stock}"/>
+									<m:Input id="inpStock" value="{NewProduct>/Stock}" maxLength="40" liveChange="onGeneralChange">
+										<m:layoutData>
+											<l:GridData span="XL1 L2 M2 S4"/>
+										</m:layoutData>
+									</m:Input>
+									<m:ComboBox items="{Units>/}" selectionChange="onGeneralChange" id="cbUnits">
+										<m:items>
+											<core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
+										</m:items>
+									</m:ComboBox>
+									<m:Label text="{i18n>Price}"/>
+									<m:Input id="inpPrice"
+										value="{path:'NewProduct>/Price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}"
+										maxLength="40" liveChange="onGeneralChange">
+										<m:layoutData>
+											<l:GridData span="XL1 L2 M2 S4"/>
+										</m:layoutData>
+									</m:Input>
+									<m:ComboBox items="{Currencies>/}" selectionChange="onGeneralChange" id="cbCurrencies">
+										<m:items>
+											<core:Item xmlns:core="sap.ui.core" key="{Currencies>currencyCode}" text="{Currencies>currency}"/>
+										</m:items>
+									</m:ComboBox>
+									<m:Label text="{i18n>Details}"/>
+									<m:TextArea value="{NewProduct>/Details}" rows="10" maxLength="5000" showExceededText="true" liveChange="onGeneralChange"
+										placeholder="{i18n>ProductDetails}"/>
+								</f:content>
+							</f:SimpleForm>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection titleUppercase="false" id="opsPropertiesSection" title="{i18n>Properties}" importance="Medium" showTitle="false">
+				<subSections>
+					<ObjectPageSubSection id="opsPropertiesSubSection">
+						<blocks>
+							<m:VBox>
+								<f:SimpleForm id="sfPropertiesForm" editable="true" title="{i18n>Properties}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3"
+									labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1"
+									columnsL="1" columnsM="1" singleContainerFullSize="false">
+									<f:content></f:content>
+								</f:SimpleForm>
+								<m:Label text="{i18n>PropertyInform}" design="Bold" class="LabelColor sapUiSmallMarginTop"/>
+								<m:VBox alignItems="Center">
+									<m:Table id="tblProperties" items="{Properties>/}" width="60rem" class="TableMargin" mode="MultiSelect">
+										<m:columns>
+											<m:Column visible="false"></m:Column>
+											<m:Column >
+												<m:Label design="Bold" text="{i18n>Property}"/>
+											</m:Column>
+											<m:Column >
+												<m:Label design="Bold" text="{i18n>PropertyValue}"/>
+											</m:Column>
+											<m:Column >
+												<m:Label design="Bold" text="{i18n>Unit}"/>
+											</m:Column>
+										</m:columns>
+										<m:items>
+											<m:ColumnListItem>
+												<m:Text text="{Properties>propertyID}" visible="false"/>
+												<m:Label text="{Properties>property}" class="sapUiSmallMarginTop sapUiSmallMarginBottom" required="{Properties>mandatory}"/>
+												<m:HBox>
+													<m:Input visible="{Properties>CommonInputVisible}" width="160%" value="{Properties>CommonProperty}" liveChange="onChangeState"/>
+													<m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Height}" liveChange="onChangeState"/>
+													<m:Text text="X" visible="{= ${Properties>isSize} === true ? true:false}"
+														class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
+													<m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Width}" liveChange="onChangeState"/>
+													<m:Text text="X" visible="{= ${Properties>isSize} === true ? true:false}"
+														class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
+													<m:Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Depth}" liveChange="onChangeState"/>
+													<m:Select items="{path:'BodySizes>/', templateShareable:true}" visible="{= ${Properties>isBodySize} === true ? true:false}" selectedKey="XS">
+														<m:items>
+															<core:Item xmlns:core="sap.ui.core" key="{BodySizes>key}" text="{BodySizes>text}"/>
+														</m:items>
+													</m:Select>
+													<m:Button icon="sap-icon://palette" press="onSelectColor" visible="{= ${Properties>isColor} === true ? true:false}" width="18.2rem"/>
+												</m:HBox>
+												<m:HBox>
+													<m:Label design="Bold" text="{Color>/ColorText}" visible="{= ${Properties>isColor} === true ? true:false}"/>
+													<m:Select items="{path:'Units>/', filters:[{ path: 'isWeight', operator:'EQ', value1: true }], templateShareable:true}"
+														visible="{= ${Properties>isWeight} === true ? true:false}" selectedKey="GR">
+														<m:items>
+															<core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
+														</m:items>
+													</m:Select>
+													<m:Select items="{path:'Units>/', filters:[{ path: 'isSize', operator:'EQ', value1: true }], templateShareable:true}"
+														visible="{= ${Properties>isSize} === true ? true:false}" selectedKey="CM">
+														<m:items>
+															<core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
+														</m:items>
+													</m:Select>
+												</m:HBox>
+											</m:ColumnListItem>
+										</m:items>
+									</m:Table>
+								</m:VBox>
+							</m:VBox>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+			<ObjectPageSection titleUppercase="false" id="opsPicturesSection" title="{i18n>Pictures}" importance="Medium">
+				<subSections>
+					<ObjectPageSubSection id="opsPicturesSubSection">
+						<blocks>
+							<m:VBox>
+								<m:Label text="{i18n>ProductAttachmentInform}" design="Bold" class="LabelColor"/>
+								<upload:UploadSet id="usProductAttachments" instantUpload="false" uploadEnabled="true" uploadCompleted="onFileUploadCompleted"
+									mediaTypes="image/jpeg,image/png"></upload:UploadSet>
+							</m:VBox>
+						</blocks>
+					</ObjectPageSubSection>
+				</subSections>
+			</ObjectPageSection>
+		</sections>
+		<footer>
+			<m:OverflowToolbar>
+				<m:ToolbarSpacer/>
+				<m:Button width="15rem" text="{i18n>Complete}" press="onNewProductComplete" type="Accept" icon="sap-icon://complete"/>
+				<!-- <m:ToolbarSpacer /> -->
+			</m:OverflowToolbar>
+		</footer>
+	</ObjectPageLayout>
 </mvc:View>

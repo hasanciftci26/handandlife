@@ -70,7 +70,7 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "productID"        : "0c6c71df-8b30-493d-97f0-105230fd228f",
+            "productID"        : "4f028efa-4170-4afc-abc7-27f292b5625f",
             "price"            : 11893.53,
             "currency"         : "EUR",
             "quantity"         : "15",

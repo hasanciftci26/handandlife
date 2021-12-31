@@ -1,8 +1,10 @@
+// @ts-nocheck
 sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
-    "sap/ui/util/Storage"
-], function (Controller, JSONModel,Storage) {
+    "sap/ui/util/Storage",
+    "sap/m/MessageToast"
+], function (Controller, JSONModel, Storage, MessageToast) {
     "use strict";
     return Controller.extend("renova.hl.ui.artisan.controller.BaseController", {
         /* =========================================================== */
@@ -166,10 +168,56 @@ sap.ui.define([
                     sap.ui.getCore().isLogin === undefined || sap.ui.getCore().isLogin === false ? false : true);
             }
         },
+        onChangePassword: function (oThis) {
+            this.changePassThis = oThis;
+            oThis.getView().setModel(new JSONModel({
+                CurrentPassword: "",
+                NewPassword: "",
+                ReNewPassword: ""
+            }), "ChangePassword");
+            this.getForgottenPasswordDialog(oThis).open();
+        },
+        getForgottenPasswordDialog: function (oThis) {
+            if (!oThis.oChangePasswordDialog) {
+                oThis.oChangePasswordDialog = sap.ui.xmlfragment("renova.hl.ui.artisan.fragments.ChangePassword", oThis);
+                oThis.getView().addDependent(oThis.oChangePasswordDialog);
+                // @ts-ignore
+                jQuery.sap.syncStyleClass("sapUiSizeCompact", oThis.getView(), oThis.oChangePasswordDialog);
+            }
+            return oThis.oChangePasswordDialog;
+        },
+        onCancelChangePassword: function () {
+            var oThis = this.changePassThis;
+            this.getForgottenPasswordDialog(oThis).close();
+        },
+        onChangePasswordComplete: async function () {
+            var oThis = this.changePassThis;
+            var sChangePassword = oThis.getView().getModel("ChangePassword").getData();
+            if (sChangePassword.CurrentPassword === "" || sChangePassword.NewPassword === "" ||
+                sChangePassword.ReNewPassword === "") {
+                MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                return;
+            }
+            var bOldPassword = await this.checkCurrentPassword(sChangePassword.CurrentPassword);
+            if (!bOldPassword) {
+                MessageToast.show(this.getResourceBundle().getText("CurrentPasswordWrong"));
+                return;
+            }
+        },
+        checkCurrentPassword: function (vCurrentPassword) {
+            var oDataModel = this.getView().getModel();
+            var vFilter = "email eq '" + sap.ui.getCore().email + "' and password eq '" + vCurrentPassword + "'";
 
-        // _setEditable: function (thoose, id) {
-        //     thoose.getView().byId("id").setEditable(true);
-        //     return;
-        // }
+            return new Promise((resolve) => {
+                var oBindArtisanCredentials = oDataModel.bindContext("/ArtisanCredentialsView", undefined, {
+                    $filter: vFilter,
+                    $$groupId: "directRequest"
+                });
+
+                oBindArtisanCredentials.requestObject().then((oData) => {
+                    resolve(!!oData.value.length);
+                });
+            });
+        }
     });
 });

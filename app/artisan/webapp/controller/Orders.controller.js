@@ -25,6 +25,9 @@ sap.ui.define([
             onNavToProducts: function () {
                 this.getRouter().navTo("Products");
             },
+            onChangeAccountPassword: function () {
+                this.onChangePassword(this);
+            },
             // @ts-ignore
             _onObjectMatched: async function () {
                 var that = this;
@@ -467,6 +470,12 @@ sap.ui.define([
             },
             onCancelOrderDetails: function () {
                 this.getOrderDetailsDialog().close();
+            },
+            onGoToProductDetails: function () {
+                var vProductId = this.getView().getModel("OrderDetails").getData().ProductId;
+                this.getRouter().navTo("Products", {
+                    productId: vProductId
+                });
             }
         });
     });

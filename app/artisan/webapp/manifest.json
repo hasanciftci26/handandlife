@@ -128,7 +128,7 @@
                 },
                 {
                     "name": "Products",
-                    "pattern": "Products",
+                    "pattern": "Products/:productId:",
                     "target": [
                         "Products"
                     ]

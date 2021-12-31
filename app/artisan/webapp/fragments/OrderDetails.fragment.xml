@@ -1,46 +1,42 @@
 <core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<Dialog id="diaOrderDetails" title="{i18n>OrderDetails}: {OrderDetails>/OrderId}">
-        <f:SimpleForm id="sfOrderDetails" editable="true"
-			layout="ColumnLayout"
-			columnsXL="3"
-			columnsL="3"
-			columnsM="2">
+		<f:SimpleForm id="sfOrderDetails" editable="true" layout="ColumnLayout" columnsXL="3" columnsL="3" columnsM="2">
 			<f:content>
-                <core:Title text="{i18n>CustomerInformation}"/>
+				<core:Title text="{i18n>CustomerInformation}"/>
 				<Label text="{i18n>CustomerName}"/>
 				<Input value="{OrderDetails>/CustomerFirstName} {OrderDetails>/CustomerLastName}" editable="false"/>
-                <Label text="{i18n>CustomerCountry}"/>
+				<Label text="{i18n>CustomerCountry}"/>
 				<Input value="{OrderDetails>/CustomerCountry}" editable="false"/>
-                <Label text="{i18n>CustomerCity}"/>
+				<Label text="{i18n>CustomerCity}"/>
 				<Input value="{OrderDetails>/CustomerCity}" editable="false"/>
-                <Label text="{i18n>CustomerAddress}"/>
+				<Label text="{i18n>CustomerAddress}"/>
 				<TextArea value="{OrderDetails>/CustomerAddress}" editable="false" rows="3"/>
-                <core:Title text="{i18n>OrderInformation}"/>
-                <Label text="{i18n>OrderQuantity}"/>
+				<core:Title text="{i18n>OrderInformation}"/>
+				<Label text="{i18n>OrderQuantity}"/>
 				<Input value="{OrderDetails>/OrderQuantity} {OrderDetails>/OrderUnitText}" editable="false"/>
-                <Label text="{i18n>OrderPrice}"/>
-				<Input value="{path:'OrderDetails>/OrderPrice',
-                type:'sap.ui.model.type.Float', 
-                formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}} {OrderDetails>/OrderCurrency}" editable="false"/>
-                <Label text="{i18n>OrderStatus}"/>
+				<Label text="{i18n>OrderPrice}"/>
+				<Input
+					value="{path:'OrderDetails>/OrderPrice', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}} {OrderDetails>/OrderCurrency}"
+					editable="false"/>
+				<Label text="{i18n>OrderStatus}"/>
 				<Input value="{OrderDetails>/Status}" editable="false"/>
-                <Label text="{i18n>OrderDate}"/>
+				<Label text="{i18n>OrderDate}"/>
 				<Input value="{path:'OrderDetails>/CreatedAt',type:'sap.ui.model.type.Date',formatOptions:{style:'long'}}" editable="false"/>
-                <core:Title text="{i18n>ProductInformation}"/>
-                <Label text="{i18n>ProductID}"/>
+				<core:Title text="{i18n>ProductInformation}"/>
+				<Label text="{i18n>ProductID}"/>
 				<Input value="{OrderDetails>/ProductId}" editable="false"/>
-                <Label text="{i18n>ProductName}"/>
+				<Label text="{i18n>ProductName}"/>
 				<Input value="{OrderDetails>/ProductName}" editable="false"/>
-                <Label text="{i18n>ProductPrice}"/>
-				<Input value="{path:'OrderDetails>/ProductPrice',
-                type:'sap.ui.model.type.Float', 
-                formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}} {OrderDetails>/ProductCurrency}" editable="false"/>
-                <Label text="{i18n>ProductQuantity}"/>
+				<Label text="{i18n>ProductPrice}"/>
+				<Input
+					value="{path:'OrderDetails>/ProductPrice', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}} {OrderDetails>/ProductCurrency}"
+					editable="false"/>
+				<Label text="{i18n>ProductQuantity}"/>
 				<Input value="{OrderDetails>/ProductQuantity} {OrderDetails>/ProductUnitText}" editable="false"/>
-            </f:content>
+			</f:content>
 		</f:SimpleForm>
 		<beginButton>
-			<Button text="{i18n>GoToProductDetail}" press="onCompleteForgottenPassword"/>
+			<Button text="{i18n>GoToProductDetail}" press="onGoToProductDetails"/>
 		</beginButton>
 		<endButton>
 			<Button text="{i18n>Cancel}" press="onCancelOrderDetails"/>

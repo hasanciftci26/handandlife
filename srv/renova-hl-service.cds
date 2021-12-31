@@ -21,7 +21,7 @@ service HandAndLife @(impl : './renova-hl-service') {
         * , products : redirected to ArtisanProducts
     };
 
-    // @assert.integrity : false
+    @assert.integrity : false
     entity ArtisanProducts      as projection on artisan.ArtisanProducts {
         * , email : redirected to Artisans, properties : redirected to ProductProperties
     };
