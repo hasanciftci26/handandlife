@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+const oCrypto = require("crypto");
+
 module.exports = (srv) => {
     // const { Professions } = srv.entities;
 
@@ -23,4 +26,9 @@ module.exports = (srv) => {
                 req.reject(401, "Unauthorized");
             }
         });
+    srv.before(["CREATE","UPDATE"], "ForgottenPasswords", (req) => {
+        let vRandomBytes = oCrypto.randomBytes(30).toString("hex");
+        req.data.passwordKey = vRandomBytes;
+        req.data.resetUrl = req.data.resetUrl + vRandomBytes;
+    });
 };

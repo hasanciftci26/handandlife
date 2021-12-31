@@ -21,7 +21,7 @@ service HandAndLife @(impl : './renova-hl-service') {
         * , products : redirected to ArtisanProducts
     };
 
-    // @assert.integrity : false
+    @assert.integrity : false
     entity ArtisanProducts      as projection on artisan.ArtisanProducts {
         * , email : redirected to Artisans, properties : redirected to ProductProperties
     };
@@ -41,6 +41,8 @@ service HandAndLife @(impl : './renova-hl-service') {
         * , productID : redirected to ArtisanProducts
     };
 
+    entity ForgottenPasswords   as projection on artisan.ForgottenPasswords;
+
     @assert.integrity : false
     entity ProfessionCategories as projection on artisan.ProfessionCategories;
 
@@ -59,6 +61,8 @@ service HandAndLife @(impl : './renova-hl-service') {
     // @readonly
     // @assert.integrity : false
     entity Categories           as projection on artisan.Categories;
+
+    entity ArtisanCredentialsView as projection on artisan.ArtisanCredentials;
 
     //Sonradan kalkabilir.
     @readonly

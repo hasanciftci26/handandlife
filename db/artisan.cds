@@ -178,4 +178,10 @@ entity ArtisanOffers {
         offerExpireEnd   : DateTime @cds.valid.to;
 };
 
+entity ForgottenPasswords {
+    key email       : Artisans:email;
+        passwordKey : String(100);
+        resetUrl    : String(250);
+};
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

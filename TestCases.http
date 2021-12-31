@@ -20,7 +20,7 @@ Content-Type: application/json
 }
 ###
 
-PATCH http://localhost:4004/hand-and-life/OrderItems(itemNo=1,orderID_orderID='100000001')
+PATCH http://localhost:4004/hand-and-life/OrderItems(itemNo=1,orderID_orderID='100000000')
 Content-Type: application/json
 
 {
@@ -70,7 +70,7 @@ Content-Type: application/json
             "offerExpireBegin" : "2020-12-01T00:00:00.000Z",
             "offerExpireEnd"   : "9999-12-01T00:00:00.000Z",
             "artisanCount"     : 5,
-            "productID"        : "c9b8ae2f-304f-437f-8220-61bf20e48971",
+            "productID"        : "4f028efa-4170-4afc-abc7-27f292b5625f",
             "price"            : 11893.53,
             "currency"         : "EUR",
             "quantity"         : "15",

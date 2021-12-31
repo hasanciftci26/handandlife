@@ -1,3 +1,4 @@
+// @ts-nocheck
 sap.ui.define([
     "renova/hl/ui/artisan/controller/BaseController",
     "sap/ui/core/mvc/Controller",
@@ -18,11 +19,16 @@ sap.ui.define([
         return BaseController.extend("renova.hl.ui.artisan.controller.Products", {
             onInit: function () {
                 this.getRouter().getRoute("Products").attachPatternMatched(this._onObjectMatched, this);
+                this.setComboboxReadonly("cbUnits", this);
+                this.setComboboxReadonly("cbCurrencies", this);
             },
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
             },
-            _onObjectMatched: function () {
+            onNavToOrders: function () {
+                this.getRouter().navTo("Orders");
+            },
+            _onObjectMatched: function (oEvent) {
                 var that = this;
                 this.sessionControl(this);
                 // @ts-ignore
@@ -39,17 +45,20 @@ sap.ui.define([
                     }
                     );
                 }
+
                 // @ts-ignore
                 if (sap.ui.getCore().isLogin) {
-                    this.getArtisanProducts();
+                    if (oEvent.getParameter("arguments").productId === undefined) {
+                        this.getArtisanProducts();
+                    } else {
+                        this.getArtisanProducts(0, oEvent.getParameter("arguments").productId);
+                    }
                 }
-
-                this.getCategories();
+                // this.getCategories();
                 this.getUnits();
                 this.getCurrencies();
-                
             },
-            getArtisanProducts: function () {
+            getArtisanProducts: function (vIndex = 0, vProductId) {
                 var that = this;
                 var oDataModel = this.getView().getModel();
                 var oBindProduct = oDataModel.bindContext("/ArtisanProductsView", undefined,
@@ -62,21 +71,14 @@ sap.ui.define([
                 oBindProduct.requestObject().then((oData) => {
                     that.getView().setModel(new JSONModel(oData.value), "ArtisanProducts");
                     if (oData.value.length !== 0) {
-                        that.getProductDetails(oData.value[0].productID);
+                        if (vProductId !== undefined) {
+                            vIndex = oData.value.findIndex((element) => { return element.productID === vProductId });
+                        }
+                        that.getProductDetails(oData.value[vIndex].productID);
+                        that.getView().byId("lstArtisanProducts").getItems()[vIndex].focus();
                     }
                     that.getView().byId("AllProducts").setTitle(this.getResourceBundle().getText("AllProducts", [oData.value.length]));
-
-                    that._setScreenSimpleForm(that);
                 });
-            },
-
-            _setScreenSimpleForm: function (thoose) {
-                var vCount = thoose.getView().byId("lstArtisanProducts").getItems().length;
-                if (vCount === 0) {
-                    thoose.getView().byId("sfProductInfoForm").setVisible(false);
-                } else {
-                    thoose.getView().byId("sfProductInfoForm").setVisible(true);
-                }
             },
 
             getCategories: function () {
@@ -121,10 +123,10 @@ sap.ui.define([
                 });
 
                 oBindProperties.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Prop");                  
-                });    
-                var oProperty =this.getView().getModel("Prop"); 
-                
+                    that.getView().setModel(new JSONModel(oData.value), "Prop");
+                });
+                var oProperty = this.getView().getModel("Prop");
+
             },
 
             onNavToLoginPage: function () {
@@ -159,26 +161,65 @@ sap.ui.define([
                 this.getProductDetails(vProductId);
             },
             getProductDetails: function (vProductId) {
+                this.setFormEditable(["inpProductName", "inpStock", "cbUnits", "inpPrice", "cbCurrencies", "taDetails"],
+                    ["btnUpdateName", "btnUpdateDetails", "btnUpdatePrice", "btnUpdateStock"]);
+
                 var sProduct = this.getView().getModel("ArtisanProducts").getData().find((item) => {
                     return item.productID === vProductId;
                 });
                 this.getView().setModel(new JSONModel(sProduct), "Product");
-                this.getProductPictures(sProduct);
+                this.getProductPictures(vProductId);
 
                 this.getProperties(vProductId);
-
-                gProduct = sProduct;
-                this.getView().byId("inpStock").setEditable(false);
-                this.getView().byId("idUnit").setEditable(false);
-                this.getView().byId("inpPrice").setEditable(false);
-                this.getView().byId("idPrice").setEditable(false);
-                this.getView().byId("idDetails").setEditable(false);
             },
-            getProductPictures: function (sProduct) {
+            getProductPictures: function (vProductId) {
                 var that = this;
-                var aFilter = [];
-                aFilter.push(new Filter("productID_productID", FilterOperator.EQ, sProduct.productID));
-                this.getView().byId("crProductPictures").getBinding("pages").filter(aFilter);
+                var oDataModel = this.getView().getModel();
+                var aPictureURL = [];
+
+                var oBindPictures = oDataModel.bindContext("/ProductAttachments", undefined, {
+                    $filter: "productID_productID eq " + vProductId,
+                    $$groupId: "directRequest"
+                });
+
+                oBindPictures.requestObject().then(async (oData) => {
+                    var aPictures = oData.value;
+                    if (aPictures.length === 0) {
+                        that.getView().byId("crProductPictures").setVisible(false);
+                    }
+                    else {
+                        that.getView().byId("crProductPictures").setVisible(true);
+                        for (var oPicture of aPictures) {
+                            var oBlobData = await that.getPictureBlobData(oPicture.url);
+                            var vPictureURL = window.URL.createObjectURL(oBlobData);
+                            aPictureURL.push({
+                                pictureURL: vPictureURL,
+                                fileId: oPicture.fileID,
+                                productId: oPicture.productID_productID
+                            });
+                            if (aPictures.length === aPictureURL.length) {
+                                that.getView().setModel(new JSONModel(aPictureURL), "ProductPictures");
+                            }
+                        }
+                    }
+                });
+            },
+            getPictureBlobData: function (url) {
+                var settings = {
+                    url: url,
+                    method: "GET",
+                    xhrFields: {
+                        responseType: "blob"
+                    }
+                };
+
+                return new Promise((resolve, reject) => {
+                    $.ajax(settings).done((result, textStatus, request) => {
+                        resolve(result);
+                    }).fail((err) => {
+                        reject(err);
+                    });
+                });
             },
             onSearchProduct: function (oEvent) {
                 var sQuery = oEvent.getParameter("query");
@@ -194,20 +235,25 @@ sap.ui.define([
             onDeactivateProduct: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
+                var oArtisanProducts = this.getView().getModel("ArtisanProducts");
+                var aFilter = [];
+
                 if (this.getView().getModel("Product") === undefined) {
                     return;
                 }
+
                 var sProduct = this.getView().getModel("Product").getData();
+                aFilter.push(new Filter("productID", FilterOperator.EQ, sProduct.productID));
+                var vDeactivatedIndex = oArtisanProducts.getData().findIndex((item) => { return item.productID === sProduct.productID });
 
                 var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
-                    $filter: "productID eq " + sProduct.productID,
                     $$groupId: "directRequest"
-                });
+                }).filter(aFilter);
 
                 oBindProduct.requestContexts().then((aContext) => {
                     aContext[0].setProperty("status_statusID", "DCTV");
                     oDataModel.submitBatch("batchRequest").then(() => {
-                        that.getArtisanProducts();
+                        that.getArtisanProducts(vDeactivatedIndex);
                     });
                 });
             },
@@ -215,22 +261,25 @@ sap.ui.define([
             onActivateProduct: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
+                var oArtisanProducts = this.getView().getModel("ArtisanProducts");
+                var aFilter = [];
 
                 if (this.getView().getModel("Product").getData() === undefined) {
                     return;
                 }
 
                 var sProduct = this.getView().getModel("Product").getData();
+                aFilter.push(new Filter("productID", FilterOperator.EQ, sProduct.productID));
+                var vActivatedIndex = oArtisanProducts.getData().findIndex((item) => { return item.productID === sProduct.productID });
 
                 var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
-                    $filter: "productID eq " + sProduct.productID,
                     $$groupId: "directRequest"
-                });
+                }).filter(aFilter);
 
                 oBindProduct.requestContexts().then((aContext) => {
                     aContext[0].setProperty("status_statusID", "AVLB");
                     oDataModel.submitBatch("batchRequest").then(() => {
-                        that.getArtisanProducts();
+                        that.getArtisanProducts(vActivatedIndex);
                     });
                 });
             },
@@ -240,80 +289,149 @@ sap.ui.define([
                 var oDataModel = this.getView().getModel();
                 var oProductModel = this.getView().getModel("Product");
                 var sSelected = oProductModel.getData();
+                var aFilter = [];
+
+                aFilter.push(new Filter("productID", FilterOperator.EQ, sSelected.productID));
+
                 var oSelected = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
-                    $filter: "productID eq " + sSelected.productID,
                     $$groupId: "directRequest"
-                });
+                }).filter(aFilter);
 
                 oSelected.requestContexts().then((aContext) => {
                     aContext[0].delete("directRequest").then(function () {
-                        that.getView().byId("crProductPictures").getBinding("pages").filter(new Filter("email_email", FilterOperator.EQ, "aaaaa"));
                         oProductModel.setData({});
                         oProductModel.refresh();
                         that.getArtisanProducts();
                     });
                 });
+            },
+            onUpdateProductName: function (oEvent) {
+                var oButton = oEvent.getSource();
+                var aControlId = ["inpProductName"];
+                this.changeButtonType(oButton, aControlId);
+            },
+            onUpdateStock: function (oEvent) {
+                var oButton = oEvent.getSource();
+                var aControlId = ["inpStock", "cbUnits"];
+                this.changeButtonType(oButton, aControlId);
+            },
+            onUpdatePrice: function (oEvent) {
+                var oButton = oEvent.getSource();
+                var aControlId = ["inpPrice", "cbCurrencies"];
+                this.changeButtonType(oButton, aControlId);
+            },
+            onUpdateProductDetails: function (oEvent) {
+                var oButton = oEvent.getSource();
+                var aControlId = ["taDetails"];
+                this.changeButtonType(oButton, aControlId);
+            },
+            changeButtonType: function (oButton, aControlId) {
+                var that = this;
+                var vType = oButton.getType();
+                var bEditable = false;
 
-                // that._setScreenSimpleForm(that);
-            },
+                if (vType === "Default") {
+                    oButton.setType("Reject");
+                    oButton.setText(this.getResourceBundle().getText("CancelUpdate"));
+                    bEditable = true;
+                } else {
+                    oButton.setType("Default");
+                    oButton.setText(this.getResourceBundle().getText("Update"));
+                }
 
-            onUpdStock: function () {
-                this.getView().byId("inpStock").setEditable(true);
-                this.getView().byId("idUnit").setEditable(true);
+                aControlId.forEach((item) => {
+                    that.getView().byId(item).setEditable(bEditable);
+                });
             },
-            onUpdPrice: function () {
-                this.getView().byId("inpPrice").setEditable(true);
-                this.getView().byId("idPrice").setEditable(true);
-            },
-            onUpdDetails: function () {
-                this.getView().byId("idDetails").setEditable(true);
+            setFormEditable: function (aControlId, aButtons) {
+                var that = this;
+                aControlId.forEach((item) => {
+                    that.getView().byId(item).setEditable(false);
+                });
+
+                aButtons.forEach((item) => {
+                    that.getView().byId(item).setType("Default");
+                    that.getView().byId(item).setText(this.getResourceBundle().getText("Update"));
+                });
             },
             onUpdateProduct: function () {
-
                 var that = this;
-                var oDataModel = that.getView().getModel();
-                var sProduct = that.getView().getModel("Product").getData();
+                var sProduct = this.getView().getModel("Product").getData();
+                var aFilter = [];
+                var oDataModel = this.getView().getModel();
+                var bUpdateName = this.getView().byId("btnUpdateName").getType() === "Default" ? false : true;
+                var bUpdateStock = this.getView().byId("btnUpdateStock").getType() === "Default" ? false : true;
+                var bUpdatePrice = this.getView().byId("btnUpdatePrice").getType() === "Default" ? false : true;
+                var bUpdateDetails = this.getView().byId("btnUpdateDetails").getType() === "Default" ? false : true;
 
-                this.getView().byId("inpStock").setEditable(false);
-                this.getView().byId("idUnit").setEditable(false);
-                this.getView().byId("inpPrice").setEditable(false);
-                this.getView().byId("idPrice").setEditable(false);
-                this.getView().byId("idDetails").setEditable(false);
-
-                var vProductInfoControl = this.checkMandatoryFields("sfProductInfoForm", this);
-                if (vProductInfoControl) {
-                    MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                if (!bUpdateName && !bUpdateStock && !bUpdatePrice && !bUpdateDetails) {
                     return;
                 }
 
+                aFilter.push(new Filter("productID", FilterOperator.EQ, sProduct.productID));
+                this.vUpdatedProductId = sProduct.productID;
+
                 var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
-                    $filter: "productID eq " + sProduct.productID,
+                    $$groupId: "directRequest"
+                }).filter(aFilter);
+
+                oBindProduct.attachPatchCompleted(this.onUpdateCompleted, this);
+
+                oBindProduct.requestContexts().then((aContext) => {
+                    if (bUpdateName) {
+                        aContext[0].setProperty("productName", sProduct.productName);
+                    }
+                    if (bUpdateStock) {
+                        aContext[0].setProperty("stock", sProduct.stock);
+                        aContext[0].setProperty("unit_unitID", sProduct.unit_unitID);
+                    }
+                    if (bUpdatePrice) {
+                        aContext[0].setProperty("price", sProduct.price);
+                        aContext[0].setProperty("currency_currencyCode", sProduct.currency_currencyCode);
+                    }
+                    if (bUpdateDetails) {
+                        aContext[0].setProperty("details", sProduct.details);
+                    }
+                    oDataModel.submitBatch("batchRequest");
+                });
+            },
+            onUpdateCompleted: function (oEvent) {
+                this.getArtisanProducts(0, this.vUpdatedProductId);
+            },
+            onPicturePressed: function (oEvent) {
+                var that = this;
+                var sProperty = oEvent.getSource().getBindingContext("ProductPictures").getProperty();
+                var sProduct = {
+                    productId: sProperty.productId,
+                    fileId: sProperty.fileId
+                };
+
+                MessageBox.confirm(this.getResourceBundle().getText("ConfirmPictureDelete"), {
+                    title: this.getResourceBundle().getText("PleaseConfirm"),
+                    actions: [sap.m.MessageBox.Action.OK,
+                    sap.m.MessageBox.Action.CANCEL],
+                    onClose: function (oAction) {
+                        if (oAction === "OK") {
+                            that.deletePicture(sProduct);
+                        }
+                    },
+                });
+            },
+            deletePicture: function (sProduct) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var vFilter = "productID_productID eq " + sProduct.productId + " and fileID eq " + sProduct.fileId;
+
+                var oBindPictures = oDataModel.bindList("/ProductAttachments", undefined, undefined, undefined, {
+                    $filter: vFilter,
                     $$groupId: "directRequest"
                 });
 
-                oBindProduct.requestContexts().then((aContext) => {
-                    aContext[0].setProperty(
-                        "stock", sProduct.stock
-                    );
-                    aContext[0].setProperty(
-                        "price", sProduct.price,
-                    );
-                    aContext[0].setProperty(
-                        "currency_currencyCode", sProduct.currency_currencyCode,
-                    );
-                    aContext[0].setProperty(
-                        "unit_unitID", sProduct.unit_unitID,
-                    );
-                    aContext[0].setProperty(
-                        "details", sProduct.details,
-                    );
-                    oDataModel.submitBatch("batchRequest").then(() => {
-                        that.getArtisanProducts();
-                        // MessageToast.show(this.getResourceBundle().getText("UpdateSuccessful"));
+                oBindPictures.requestContexts().then((aContext)=>{
+                    aContext[0].delete("directRequest").then(()=>{
+                        that.getArtisanProducts(0,sProduct.productId)
                     });
-
                 });
-
-            },
+            }
         });
     });

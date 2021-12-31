@@ -128,7 +128,7 @@
                 },
                 {
                     "name": "Products",
-                    "pattern": "Products",
+                    "pattern": "Products/:productId:",
                     "target": [
                         "Products"
                     ]
@@ -145,6 +145,13 @@
                     "pattern": "NewProduct",
                     "target": [
                         "NewProduct"
+                    ]
+                },
+                {
+                    "name": "ResetPassword",
+                    "pattern": "ResetPassword/{uuid}",
+                    "target": [
+                        "ResetPassword"
                     ]
                 }
             ],
@@ -190,6 +197,13 @@
                     "clearControlAggregation": false,
                     "viewId": "NewProduct",
                     "viewName": "NewProduct"
+                },
+                "ResetPassword": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "ResetPassword",
+                    "viewName": "ResetPassword"
                 }
             }
         }

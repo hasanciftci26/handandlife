@@ -1,216 +1,165 @@
-<mvc:View controllerName="renova.hl.ui.artisan.controller.Products"
-    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-    xmlns="sap.m"
-    xmlns:l="sap.ui.layout"
-    xmlns:f="sap.ui.layout.form"
-    xmlns:tnt="sap.tnt"
-    xmlns:core="sap.ui.core"
-    xmlns:semantic="sap.m.semantic">
-    <App id="ProductsApp">
-        <pages>
-            <Page id="Products" showHeader="false">
-                <content>
-                    <VBox>
-                        <tnt:ToolHeader design="Transparent" class="testClass">
-                            <Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
-                            <Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
-                                <layoutData>
-                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
-                                </layoutData>
-                            </Button>
-                            <Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}" visible="{= ${UserCredential>/isLogin} === true ? true : false}">
-                                <layoutData>
-                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
-                                </layoutData>
-                            </Button>
-                            <Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
-                                <layoutData>
-                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
-                                </layoutData>
-                            </Button>
-                            <ToolbarSpacer/>
-                            <Button icon="sap-icon://search" type="Transparent">
-                                <layoutData>
-                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
-                                </layoutData>
-                            </Button>
-                            <Button icon="sap-icon://comment" type="Transparent">
-                                <layoutData>
-                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
-                                </layoutData>
-                            </Button>
-                            <MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
-                                <layoutData>
-                                    <OverflowToolbarLayoutData priority="NeverOverflow" />
-                                </layoutData>
-                                <Menu>
-                                    <MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-                                    <MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp" visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-                                    <MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
-                                    <MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
-                                </Menu>
-                            </MenuButton>
-                        </tnt:ToolHeader>
-                        <SplitApp
-                            id="ProductsSplitApp"
-                            initialDetail="ProductDetails"
-                            initialMaster="AllProducts">
-                            <detailPages>
-                                <semantic:DetailPage
-                                    id="ProductDetails"
-                                    backgroundDesign= "Solid"
-                                    title="{i18n>ProductDetails}"
-                                    floatingFooter="true">
-                                    	<ObjectHeader
-                                        responsive="true"
-                                        title="{Product>/productName}"
-                                            number="{
-                                                parts:[{path:'Product>/price'},{path:'Product>/currency_currencyCode'}],
-                                                type: 'sap.ui.model.type.Currency',
-                                                formatOptions: {showMeasure: false}
-                                            }"
-                                        numberUnit="{Product>/currency_currencyCode}"
-                                        class="sapUiResponsivePadding--header" >
-                                        <statuses>
-                                            <ObjectStatus
-                                                text="{Product>/status}"
-                                                state="{= ${Product>/statusID} === 'AVLB' ? 'Success' : 'Error'}" />
-                                        </statuses>
-                                        <ObjectAttribute text="{i18n>ProductID}: {Product>/productID}" />
-                                        <ObjectAttribute text="{i18n>Category}: {Product>/category}" />
-                                    </ObjectHeader>
-                                    <Carousel pages="{path:'/ProductAttachments',
-                                    filters:[{
-                                        path:'email_email',
-                                        operator:'EQ',
-                                        value1:'aaaaa'
-                                    }]}" id="crProductPictures" loop="true" height="500px" width="70%" class="CarouselMargin">
-                                        <pages>
-                                            <Image src="{mediaContent}"/>
-                                        </pages>
-                                    </Carousel>  
-                              <f:SimpleForm id="sfProductInfoForm" editable="true" title="{i18n>ProductInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
-                                 <f:content>
-                                    <Label text="{i18n>Category}"/>                               
-                                    <Input value="{path:'Product>/category'}" maxLength="40" editable="false">
-                                        <layoutData>
-                                            <l:GridData span="XL3 L4 M5 S6"/>
-                                        </layoutData>
-                                    </Input>                    
-                                    <Label text="{i18n>Stock}" />
-                                    <Input id="inpStock" value="{path:'Product>/stock'}" maxLength="40" liveChange="onGeneralChange" editable="false">
-                                        <layoutData>
-                                            <l:GridData span="XL1 L2 M2 S4" />
-                                        </layoutData>
-                                    </Input>
-                                    <Select items="{path:'Units>/', 
-                                    templateShareable:true}"
-                                    selectedKey="{Product>/unit_unitID}"
-                                    editable="false"
-                                    id="idUnit">
-                                    <items>
-                                    <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
-                                    </items>
-                                    </Select>
-                                    <Button icon="sap-icon://edit" type="Ghost" press="onUpdStock" width="1rem"/>
-                                    <Label text="{i18n>Price}" />
-                                    <Input id="inpPrice" 
-                                    value="{path:'Product>/price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}" 
-                                    maxLength="40" liveChange="onGeneralChange" editable="false">
-                                    <layoutData>
-                                            <l:GridData span="XL1 L2 M2 S4" />
-                                        </layoutData>
-                                    </Input>
-                                    <Select items="{path:'Currencies>/', 
-                                    templateShareable:true}"
-                                    selectedKey="{Product>/currency_currencyCode}" editable="false" id="idPrice">
-                                    <items>
-                                    <core:Item xmlns:core="sap.ui.core" key="{Currencies>currencyCode}" text="{Currencies>currency}"/>
-                                    </items>
-                                    </Select>
-                                    <Button icon="sap-icon://edit" type="Ghost" press="onUpdPrice" width="1rem"/>
-                                    <Label text="{i18n>Details}" />
-                                    <HBox>
-                                    <TextArea value="{Product>/details}" rows="10" maxLength="5000" showExceededText="true" liveChange="onGeneralChange" 
-                                    placeholder="{i18n>ProductDetails}" editable="false" width="27.5rem" class="sapUiSmallMarginEnd" id="idDetails"/> 
-                                    <Button icon="sap-icon://edit" type="Ghost" press="onUpdDetails" width="1rem"/>
-                                    </HBox>
-                                  </f:content>
-                               </f:SimpleForm>  
-
-                                <VBox>
-                                <f:SimpleForm id="sfPropertiesForm2" editable="true" title="{i18n>Properties}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
-                                    <f:content></f:content>
-                                </f:SimpleForm>
-                                <Label text="{i18n>PropertyInform}" design="Bold" class="LabelColor sapUiSmallMarginTop"/>
-                                <VBox alignItems="Center">
-                                    <Table id="tblProperties2" items="{/Prop}" width="60rem" class="TableMargin" mode="MultiSelect">
-                                        <columns>
-                                         <Column >
-                                                <Label design="Bold" text="{i18n>Property}"/>
-                                            </Column>
-                                        </columns>
-                                        <items>
-                                            <ColumnListItem>
-                                                <Input value="{Prop>/propertyID_propertyID}"/>
-                                            </ColumnListItem>
-                                        </items>
-                                    </Table>
-                                </VBox>
-                            </VBox>
-
-                                    <semantic:customFooterContent>     
-                                        <Button icon="sap-icon://complete" type="Ghost" press="onUpdateProduct" text="{i18n>UpdateProduct}"/>                            
-                                        <Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
-                                        <Button icon="sap-icon://pending" type="Ghost" press="onDeactivateProduct" text="{i18n>DeactivateProduct}" visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
-                                        <Button icon="sap-icon://delete" type="Reject" press="onDeleteProduct" text="{i18n>DeleteProduct}"/>
-				                    </semantic:customFooterContent>
-                                </semantic:DetailPage>
-                            </detailPages>
-                            <masterPages>
-                                <semantic:MasterPage
-                                    id="AllProducts"
-                                    title="{i18n>AllProducts}"
-                                    backgroundDesign= "List"
-                                    floatingFooter="true">
-                                    <semantic:subHeader>
-                                        <Bar id="headerBar">
-                                            <contentMiddle>
-                                                <SearchField id="sfSearchProduct" width="100%"
-                                                    search="onSearchProduct"></SearchField>
-                                            </contentMiddle>
-                                        </Bar>
-                                    </semantic:subHeader>
-                                    <List id="lstArtisanProducts" items="{ArtisanProducts>/}">
-                                        <items>
-                                            <ObjectListItem type="Active" press="onSelectProduct" 
-                                            title="{ArtisanProducts>productName}"
-                                            number="{
-                                                parts:[{path:'ArtisanProducts>price'},{path:'ArtisanProducts>currency_currencyCode'}],
-                                                type: 'sap.ui.model.type.Currency',
-                                                formatOptions: {showMeasure: false}
-                                            }"
-                                            numberUnit="{ArtisanProducts>currency_currencyCode}">
-                                                <firstStatus>
-                                                    <ObjectStatus text="{ArtisanProducts>status}"
-                                                     state="{= ${ArtisanProducts>statusID} === 'AVLB' ? 'Success' : 'Error' }"/>
-                                                </firstStatus>
-                                                <attributes>
-                                                    <ObjectAttribute text="{ArtisanProducts>productID}" visible="false"/>
-                                                    <ObjectAttribute text="{ArtisanProducts>category}"/>
-                                                </attributes>
-                                            </ObjectListItem>
-                                        </items>
-                                    </List>
-                                    <semantic:customFooterContent>
-                                        <Button icon="sap-icon://add" type="Accept" text="{i18n>AddNewProduct}" press="onAddNewProduct"/>
-				                    </semantic:customFooterContent>
-                                </semantic:MasterPage>
-                            </masterPages>
-                        </SplitApp>
-                    </VBox>
-                </content>
-            </Page>
-        </pages>
-    </App>
+<mvc:View controllerName="renova.hl.ui.artisan.controller.Products" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
+	xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:tnt="sap.tnt" xmlns:core="sap.ui.core" xmlns:semantic="sap.m.semantic">
+	<App id="ProductsApp">
+		<pages>
+			<Page id="Products" showHeader="false">
+				<content>
+					<VBox>
+						<tnt:ToolHeader design="Transparent" class="testClass">
+							<Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
+							<Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}"
+								visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
+								<layoutData>
+									<OverflowToolbarLayoutData priority="NeverOverflow"/>
+								</layoutData>
+							</Button>
+							<Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}"
+								visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+								<layoutData>
+									<OverflowToolbarLayoutData priority="NeverOverflow"/>
+								</layoutData>
+							</Button>
+							<Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+								<layoutData>
+									<OverflowToolbarLayoutData priority="NeverOverflow"/>
+								</layoutData>
+							</Button>
+							<ToolbarSpacer/>
+							<Button icon="sap-icon://search" type="Transparent">
+								<layoutData>
+									<OverflowToolbarLayoutData priority="NeverOverflow"/>
+								</layoutData>
+							</Button>
+							<Button icon="sap-icon://comment" type="Transparent">
+								<layoutData>
+									<OverflowToolbarLayoutData priority="NeverOverflow"/>
+								</layoutData>
+							</Button>
+							<MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+								<layoutData>
+									<OverflowToolbarLayoutData priority="NeverOverflow"/>
+								</layoutData>
+								<Menu>
+									<MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
+										visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+									<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
+										visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+									<MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+										visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+									<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+								</Menu>
+							</MenuButton>
+						</tnt:ToolHeader>
+						<SplitApp id="ProductsSplitApp" initialDetail="ProductDetails" initialMaster="AllProducts">
+							<detailPages>
+								<semantic:DetailPage id="ProductDetails" backgroundDesign="Solid" title="{i18n>ProductDetails}" floatingFooter="true">
+									<ObjectHeader responsive="true" title="{Product>/productName}"
+										number="{ parts:[{path:'Product>/price'},{path:'Product>/currency_currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false} }"
+										numberUnit="{Product>/currency_currencyCode}" class="sapUiResponsivePadding--header">
+										<statuses>
+											<ObjectStatus text="{Product>/status}" state="{= ${Product>/statusID} === 'AVLB' ? 'Success' : 'Error'}"/>
+										</statuses>
+										<ObjectAttribute text="{i18n>ProductID}: {Product>/productID}"/>
+										<ObjectAttribute text="{i18n>Category}: {Product>/category}"/>
+									</ObjectHeader>
+									<Carousel pages="{ProductPictures>/}" id="crProductPictures" loop="true" height="500px" width="70%" class="CarouselMargin">
+										<pages>
+                                            <Image src="{ProductPictures>pictureURL}" press="onPicturePressed"/>
+										</pages>
+									</Carousel>
+                                    <f:SimpleForm title="{i18n>ProductInfo}" />
+                                    <Text text="{i18n>ProductUpdateInfo}" wrapping="true" class="sapUiSmallMarginTop sapUiTinyMarginBottom sapUiSmallMarginBegin"/>
+                                    <Text text="{i18n>UpdateNote}" wrapping="true" class="sapUiSmallMarginBottom sapUiSmallMarginBegin"/>
+                                    <f:SimpleForm id="sfProduct" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                                        adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+                                        singleContainerFullSize="false" >
+                                        <f:content>                                        
+                                            <Label text="{i18n>ProductName}"/>
+                                            <Input value="{Product>/productName}" id="inpProductName" maxLength="40" liveChange="onGeneralChange" editable="false">
+                                                <layoutData>
+                                                    <l:GridData span="XL3 L4 M2 S4"/>
+                                                </layoutData>
+                                            </Input>
+                                            <Button id="btnUpdateName" text="{i18n>Update}" press="onUpdateProductName"/>
+                                            <Label text="{i18n>Stock}"/>
+                                            <Input editable="false" id="inpStock" value="{Product>/stock}" maxLength="40" liveChange="onGeneralChange">
+                                                <layoutData>
+                                                    <l:GridData span="XL1 L2 M2 S4"/>
+                                                </layoutData>
+                                            </Input>
+                                            <ComboBox editable="false" items="{Units>/}" selectionChange="onGeneralChange" id="cbUnits" selectedKey="{Product>/unit_unitID}">
+                                                <items>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
+                                                </items>
+                                            </ComboBox>
+                                            <Button id="btnUpdateStock" text="{i18n>Update}" press="onUpdateStock"/>
+                                            <Label text="{i18n>Price}"/>
+                                            <Input id="inpPrice"
+                                                value="{path:'Product>/price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}"
+                                                maxLength="40" liveChange="onGeneralChange" editable="false">
+                                                <layoutData>
+                                                    <l:GridData span="XL1 L2 M2 S4"/>
+                                                </layoutData>
+                                            </Input>
+                                            <ComboBox editable="false" items="{Currencies>/}" selectionChange="onGeneralChange" id="cbCurrencies" selectedKey="{Product>/currency_currencyCode}">
+                                                <items>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{Currencies>currencyCode}" text="{Currencies>currency}"/>
+                                                </items>
+                                            </ComboBox>
+                                            <Button id="btnUpdatePrice" text="{i18n>Update}" press="onUpdatePrice"/>
+                                            <Label text="{i18n>Details}"/>
+                                            <TextArea id="taDetails" value="{Product>/details}" rows="10" maxLength="5000" showExceededText="true" liveChange="onGeneralChange"
+                                                placeholder="{i18n>ProductDetails}" editable="false">
+                                                <layoutData>
+                                                    <l:GridData span="XL3 L4 M2 S4"/>
+                                                </layoutData>
+                                            </TextArea>
+                                            <Button id="btnUpdateDetails" text="{i18n>Update}" press="onUpdateProductDetails"/>
+                                        </f:content>
+                                    </f:SimpleForm>
+									<semantic:customFooterContent>
+										<Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}"
+											visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
+										<Button icon="sap-icon://pending" type="Ghost" press="onDeactivateProduct" text="{i18n>DeactivateProduct}"
+											visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
+                                        <Button icon="sap-icon://save" type="Accept" press="onUpdateProduct" text="{i18n>UpdateProduct}"/>
+										<Button icon="sap-icon://delete" type="Reject" press="onDeleteProduct" text="{i18n>DeleteProduct}"/>
+									</semantic:customFooterContent>
+								</semantic:DetailPage>
+							</detailPages>
+							<masterPages>
+								<semantic:MasterPage id="AllProducts" title="{i18n>AllProducts}" backgroundDesign="List" floatingFooter="true">
+									<semantic:subHeader>
+										<Bar id="headerBar">
+											<contentMiddle>
+												<SearchField id="sfSearchProduct" width="100%" search="onSearchProduct"></SearchField>
+											</contentMiddle>
+										</Bar>
+									</semantic:subHeader>
+									<List id="lstArtisanProducts" items="{ArtisanProducts>/}">
+										<items>
+											<ObjectListItem type="Active" press="onSelectProduct" title="{ArtisanProducts>productName}"
+												number="{ parts:[{path:'ArtisanProducts>price'},{path:'ArtisanProducts>currency_currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false} }"
+												numberUnit="{ArtisanProducts>currency_currencyCode}">
+												<firstStatus>
+													<ObjectStatus text="{ArtisanProducts>status}" state="{= ${ArtisanProducts>statusID} === 'AVLB' ? 'Success' : 'Error' }"/>
+												</firstStatus>
+												<attributes>
+													<ObjectAttribute text="{ArtisanProducts>productID}" visible="false"/>
+													<ObjectAttribute text="{ArtisanProducts>category}"/>
+												</attributes>
+											</ObjectListItem>
+										</items>
+									</List>
+									<semantic:customFooterContent>
+										<Button icon="sap-icon://add" type="Accept" text="{i18n>AddNewProduct}" press="onAddNewProduct"/>
+									</semantic:customFooterContent>
+								</semantic:MasterPage>
+							</masterPages>
+						</SplitApp>
+					</VBox>
+				</content>
+			</Page>
+		</pages>
+	</App>
 </mvc:View>
