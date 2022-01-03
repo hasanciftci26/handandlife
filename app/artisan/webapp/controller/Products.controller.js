@@ -54,6 +54,7 @@ sap.ui.define([
                         this.getArtisanProducts(0, oEvent.getParameter("arguments").productId);
                     }
                 }
+
                 // this.getCategories();
                 this.getUnits();
                 this.getCurrencies();
@@ -79,6 +80,8 @@ sap.ui.define([
                     }
                     that.getView().byId("AllProducts").setTitle(this.getResourceBundle().getText("AllProducts", [oData.value.length]));
                 });
+
+                this.getView().byId("sfAttach").setVisible(false);
             },
 
             getCategories: function () {
@@ -114,20 +117,20 @@ sap.ui.define([
                     that.getView().setModel(new JSONModel(oData.value), "Currencies");
                 });
             },
-            getProperties: function (vProductId) {
-                var that = this;
-                var oDataModel = this.getView().getModel();
-                var oBindProperties = oDataModel.bindContext("/ProductProperties", undefined, {
-                    $filter: "productID_productID eq " + vProductId,
-                    $$groupId: "directRequest"
-                });
+            // getProperties: function (vProductId) {
+            //     var that = this;
+            //     var oDataModel = this.getView().getModel();
+            //     var oBindProperties = oDataModel.bindContext("/ProductProperties", undefined, {
+            //         $filter: "productID_productID eq " + vProductId,
+            //         $$groupId: "directRequest"
+            //     });
 
-                oBindProperties.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Prop");
-                });
-                var oProperty = this.getView().getModel("Prop");
+            //     oBindProperties.requestObject().then((oData) => {
+            //         that.getView().setModel(new JSONModel(oData.value), "Prop");
+            //     });
+            //     var oProperty = this.getView().getModel("Prop");
 
-            },
+            // },
 
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
@@ -169,8 +172,9 @@ sap.ui.define([
                 });
                 this.getView().setModel(new JSONModel(sProduct), "Product");
                 this.getProductPictures(vProductId);
+               // this.getView().byId("sfAttach").setVisible(false);
 
-                this.getProperties(vProductId);
+               // this.getProperties(vProductId);
             },
             getProductPictures: function (vProductId) {
                 var that = this;
@@ -432,6 +436,74 @@ sap.ui.define([
                         that.getArtisanProducts(0,sProduct.productId)
                     });
                 });
-            }
+            },
+            onNewPicture: function(){
+                  //  this.getView().byId("sfAttach").setVisible(true);
+                  this.getAddPictureDialog().open();
+            },
+            getAddPictureDialog: function () {
+                if (!this.oAddPictureDialog) {
+                    this.oAddPictureDialog = sap.ui.xmlfragment("renova.hl.ui.artisan.fragments.AddPicture", this);
+                    this.getView().addDependent(this.oAddPictureDialog);
+                    jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oAddPictureDialog);
+                }
+                return this.oAddPictureDialog;
+            },
+            onCancelPicture: function () {
+                this.getAddPictureDialog().close();
+            },
+            onAddPicture: function(){
+                this.onUploadAttachments();
+                oDataModel.submitBatch("batchRequest");
+            },
+            onUploadAttachments: function () {
+                this.getView().byId("usProductAttachments").getIncompleteItems().forEach((oItem) => {
+                    this.createFileEntity(oItem).then((FileKeys) => {
+                        this.uploadFileContent(oItem, FileKeys);
+                    }).catch((err) => {
+                        console.log(err);
+                    });
+                });
+            },
+            onFileUploadCompleted: function (oEvent) {
+                var oUploadSet = this.getView().byId("usProductAttachments");
+                oUploadSet.removeAllIncompleteItems();
+                oUploadSet.removeItem(oEvent.getParameters().item);
+                if (oUploadSet.getItems().length === 0) {
+                    this.getRouter().navTo("Products");
+                }
+            },
+            createFileEntity: function (oItem) {
+                var sPayloadData = {
+                    productID_productID: this.vProductId,
+                    email_email: sap.ui.getCore().email,
+                    mediaType: oItem.getMediaType(),
+                    fileName: oItem.getFileName()
+                };
+
+                var oRequestSettings = {
+                    url: "/hand-and-life/ProductAttachments",
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    data: JSON.stringify(sPayloadData)
+                }
+
+                return new Promise((resolve, reject) => {
+                    $.ajax(oRequestSettings).done((results, textStatus, request) => {
+                        resolve({ fileID: results.fileID, productID: results.productID_productID });
+                    }).fail((error) => {
+                        reject(error);
+                    });
+                });
+            },
+            uploadFileContent: function (oItem, FileKeys) {
+                var vUrl = `/hand-and-life/ProductAttachments(productID_productID=${FileKeys.productID},fileID=${FileKeys.fileID})/mediaContent`
+                oItem.setUploadUrl(vUrl);
+                var oUploadSet = this.getView().byId("usProductAttachments");
+                oUploadSet.setHttpRequestMethod("PUT");
+                oUploadSet.uploadItem(oItem);
+            },
         });
     });
