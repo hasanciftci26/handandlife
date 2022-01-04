@@ -1,5 +1,6 @@
 <mvc:View controllerName="renova.hl.ui.artisan.controller.Products" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
-	xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:tnt="sap.tnt" xmlns:core="sap.ui.core" xmlns:semantic="sap.m.semantic">
+	xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:tnt="sap.tnt" xmlns:core="sap.ui.core" xmlns:semantic="sap.m.semantic" 
+    xmlns:upload="sap.m.upload" xmlns:uxap="sap.uxap">
 	<App id="ProductsApp">
 		<pages>
 			<Page id="Products" showHeader="false">
@@ -67,6 +68,29 @@
                                             <Image src="{ProductPictures>pictureURL}" press="onPicturePressed"/>
 										</pages>
 									</Carousel>
+                                 <FlexBox
+                                        alignItems="Center" justifyContent="Center">
+                                    <items>
+                                        <Button id="btnNewPicture" text="{i18n>NewPicture}" press="onNewPicture" width="100%"/>
+                                    </items>
+                                </FlexBox>
+                                    <!-- <f:SimpleForm id="sfAttach" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                                        adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+                                        singleContainerFullSize="false" >
+                                        <f:content> 
+                                        <uxap:ObjectPageSection titleUppercase="false" id="opsPicturesSection" title="{i18n>Pictures}" importance="Medium">
+                                            <uxap:subSections>
+                                                <uxap:ObjectPageSubSection id="opsPicturesSubSection">
+                                                    <uxap:actions>
+                                                            <Label text="{i18n>ProductAttachmentInform}" design="Bold" class="LabelColor"/>
+                                                            <upload:UploadSet id="usProductAttachments" instantUpload="false" uploadEnabled="true" uploadCompleted="onFileUploadCompleted"
+                                                                mediaTypes="image/jpeg,image/png"></upload:UploadSet>
+                                                    </uxap:actions>
+                                                </uxap:ObjectPageSubSection>
+                                            </uxap:subSections>
+                                        </uxap:ObjectPageSection>
+                                    </f:content>
+                                    </f:SimpleForm> -->
                                     <f:SimpleForm title="{i18n>ProductInfo}" />
                                     <Text text="{i18n>ProductUpdateInfo}" wrapping="true" class="sapUiSmallMarginTop sapUiTinyMarginBottom sapUiSmallMarginBegin"/>
                                     <Text text="{i18n>UpdateNote}" wrapping="true" class="sapUiSmallMarginBottom sapUiSmallMarginBegin"/>
