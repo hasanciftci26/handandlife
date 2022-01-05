@@ -437,7 +437,6 @@ sap.ui.define([
                 var oUploadSet = this.getView().byId("usProductAttachments");
                 oUploadSet.setHttpRequestMethod("PUT");
                 oUploadSet.uploadItem(oItem);
-            },
-
+            }
         });
     });

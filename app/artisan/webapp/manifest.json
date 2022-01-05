@@ -204,6 +204,10 @@
                     "clearControlAggregation": false,
                     "viewId": "ResetPassword",
                     "viewName": "ResetPassword"
+                },
+                "NoObject": {
+                    "viewName": "NoObject",
+                    "viewId": "NoObject"
                 }
             }
         }

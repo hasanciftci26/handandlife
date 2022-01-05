@@ -27,3 +27,10 @@
     max-width: 20rem;
     max-height: 15rem;
   }
+  .responsiveImageCarousel {
+    max-height: 400px;
+  }
+  .marginLink{
+      margin-top: 1.7px;
+      margin-left: 4px;
+  }

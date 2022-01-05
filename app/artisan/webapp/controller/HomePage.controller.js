@@ -48,6 +48,10 @@ sap.ui.define([
             },
             onNavToOrders: function () {
                 this.getRouter().navTo("Orders");
+            },
+            onOpenNotifications:function(oEvent){
+                var oButton = oEvent.getSource();
+                this.displayIncomingOrders(this,oButton);
             }
         });
     });

@@ -32,11 +32,11 @@
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>
 		</m:Button>
-		<m:Button icon="sap-icon://comment" type="Transparent">
-			<m:layoutData>
-				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
-			</m:layoutData>
-		</m:Button>
+		<m:Button icon="sap-icon://bell" type="Transparent" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onOpenNotifications">
+            <m:layoutData>
+                <m:OverflowToolbarLayoutData priority="NeverOverflow"/>
+            </m:layoutData>
+        </m:Button>
 		<m:MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
 			<m:layoutData>
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>

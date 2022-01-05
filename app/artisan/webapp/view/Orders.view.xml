@@ -29,7 +29,7 @@
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
 						</Button>
-						<Button icon="sap-icon://comment" type="Transparent">
+						<Button icon="sap-icon://bell" type="Transparent" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onOpenNotifications">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
@@ -62,7 +62,7 @@
 												<FlexItemData growFactor="1" shrinkFactor="0"/><!-- Don't shrink below minimum size. Fill space if available. --></layoutData>
 											<VBox class="sapUiSmallMargin">
 												<FlexBox height="16rem" alignItems="Center" justifyContent="Center">
-													<Image src="{NewOrders>pictureURL}" class="responsiveImage"/>
+													<Image src="{= !!${NewOrders>pictureURL} === true ? ${NewOrders>pictureURL}:'img/Photograph.png'}" class="responsiveImage"/>
 												</FlexBox>
 												<HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
 													<Title text="{NewOrders>productName}" wrapping="true"/>
@@ -96,7 +96,7 @@
 												<FlexItemData growFactor="1" shrinkFactor="0"/><!-- Don't shrink below minimum size. Fill space if available. --></layoutData>
 											<VBox class="sapUiSmallMargin">
 												<FlexBox height="16rem" alignItems="Center" justifyContent="Center">
-													<Image src="{PreparedOrders>pictureURL}" class="responsiveImage"/>
+													<Image src="{= !!${PreparedOrders>pictureURL} === true ? ${PreparedOrders>pictureURL}:'img/Photograph.png'}" class="responsiveImage"/>
 												</FlexBox>
 												<HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
 													<Title text="{PreparedOrders>productName}" wrapping="true"/>
@@ -130,7 +130,7 @@
 												<FlexItemData growFactor="1" shrinkFactor="0"/><!-- Don't shrink below minimum size. Fill space if available. --></layoutData>
 											<VBox class="sapUiSmallMargin">
 												<FlexBox height="16rem" alignItems="Center" justifyContent="Center">
-													<Image src="{CargoOrders>pictureURL}" class="responsiveImage"/>
+													<Image src="{= !!${CargoOrders>pictureURL} === true ? ${CargoOrders>pictureURL}:'img/Photograph.png'}" class="responsiveImage"/>
 												</FlexBox>
 												<HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
 													<Title text="{CargoOrders>productName}" wrapping="true"/>
@@ -165,7 +165,7 @@
 												<FlexItemData growFactor="1" shrinkFactor="0"/><!-- Don't shrink below minimum size. Fill space if available. --></layoutData>
 											<VBox class="sapUiSmallMargin">
 												<FlexBox height="16rem" alignItems="Center" justifyContent="Center">
-													<Image src="{CompletedOrders>pictureURL}" class="responsiveImage"/>
+													<Image src="{= !!${CompletedOrders>pictureURL} === true ? ${CompletedOrders>pictureURL}:'img/Photograph.png'}" class="responsiveImage"/>
 												</FlexBox>
 												<HBox justifyContent="SpaceBetween" class="sapUiSmallMarginTop">
 													<Title text="{CompletedOrders>productName}" wrapping="true"/>

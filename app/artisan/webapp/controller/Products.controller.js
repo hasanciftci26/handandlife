@@ -7,12 +7,13 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/ui/util/Storage",
-    "sap/m/MessageToast"
+    "sap/m/MessageToast",
+    "sap/ui/core/Fragment"
 ],
 	/**
 	 * @param {typeof sap.ui.core.mvc.Controller} Controller
 	 */
-    function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage, MessageToast) {
+    function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage, MessageToast, Fragment) {
         "use strict";
         var gProduct;
 
@@ -69,21 +70,22 @@ sap.ui.define([
                         $$groupId: "directRequest"
                     });
 
+                sap.ui.core.BusyIndicator.show();
                 oBindProduct.requestObject().then((oData) => {
                     that.getView().setModel(new JSONModel(oData.value), "ArtisanProducts");
                     if (oData.value.length !== 0) {
+                        that.getView().byId("ProductDetails").setVisible(true);
                         if (vProductId !== undefined) {
                             vIndex = oData.value.findIndex((element) => { return element.productID === vProductId });
                         }
                         that.getProductDetails(oData.value[vIndex].productID);
                         that.getView().byId("lstArtisanProducts").getItems()[vIndex].focus();
+                    } else {
+                        that.getView().byId("ProductDetails").setVisible(false);
                     }
                     that.getView().byId("AllProducts").setTitle(this.getResourceBundle().getText("AllProducts", [oData.value.length]));
                 });
-
-                this.getView().byId("sfAttach").setVisible(false);
             },
-
             getCategories: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
@@ -171,10 +173,11 @@ sap.ui.define([
                     return item.productID === vProductId;
                 });
                 this.getView().setModel(new JSONModel(sProduct), "Product");
+                sap.ui.core.BusyIndicator.hide();
                 this.getProductPictures(vProductId);
-               // this.getView().byId("sfAttach").setVisible(false);
+                // this.getView().byId("sfAttach").setVisible(false);
 
-               // this.getProperties(vProductId);
+                // this.getProperties(vProductId);
             },
             getProductPictures: function (vProductId) {
                 var that = this;
@@ -193,6 +196,7 @@ sap.ui.define([
                     }
                     else {
                         that.getView().byId("crProductPictures").setVisible(true);
+                        sap.ui.core.BusyIndicator.show();
                         for (var oPicture of aPictures) {
                             var oBlobData = await that.getPictureBlobData(oPicture.url);
                             var vPictureURL = window.URL.createObjectURL(oBlobData);
@@ -203,6 +207,7 @@ sap.ui.define([
                             });
                             if (aPictures.length === aPictureURL.length) {
                                 that.getView().setModel(new JSONModel(aPictureURL), "ProductPictures");
+                                sap.ui.core.BusyIndicator.hide();
                             }
                         }
                     }
@@ -431,15 +436,16 @@ sap.ui.define([
                     $$groupId: "directRequest"
                 });
 
-                oBindPictures.requestContexts().then((aContext)=>{
-                    aContext[0].delete("directRequest").then(()=>{
-                        that.getArtisanProducts(0,sProduct.productId)
+                oBindPictures.requestContexts().then((aContext) => {
+                    aContext[0].delete("directRequest").then(() => {
+                        that.getArtisanProducts(0, sProduct.productId)
                     });
                 });
             },
-            onNewPicture: function(){
-                  //  this.getView().byId("sfAttach").setVisible(true);
-                  this.getAddPictureDialog().open();
+            onNewPicture: function () {
+                this.getAddPictureDialog().open();
+                sap.ui.getCore().byId("diaAddPicture").getContent()[0].removeAllItems();
+                sap.ui.getCore().byId("diaAddPicture").getContent()[0].removeAllIncompleteItems();
             },
             getAddPictureDialog: function () {
                 if (!this.oAddPictureDialog) {
@@ -452,12 +458,18 @@ sap.ui.define([
             onCancelPicture: function () {
                 this.getAddPictureDialog().close();
             },
-            onAddPicture: function(){
+            onAddPicture: function () {
+                if (sap.ui.getCore().byId("diaAddPicture").getContent()[0].getIncompleteItems().length === 0) {
+                    MessageToast.show(this.getResourceBundle().getText("AtLeastOnePicture"));
+                    return;
+                }
+                this.totalPictureCount = sap.ui.getCore().byId("diaAddPicture").getContent()[0].getIncompleteItems().length;
+                this.uploadedPictureCount = 0;
                 this.onUploadAttachments();
-                oDataModel.submitBatch("batchRequest");
             },
             onUploadAttachments: function () {
-                this.getView().byId("usProductAttachments").getIncompleteItems().forEach((oItem) => {
+                var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
+                oUploadSet.getIncompleteItems().forEach((oItem) => {
                     this.createFileEntity(oItem).then((FileKeys) => {
                         this.uploadFileContent(oItem, FileKeys);
                     }).catch((err) => {
@@ -466,16 +478,22 @@ sap.ui.define([
                 });
             },
             onFileUploadCompleted: function (oEvent) {
-                var oUploadSet = this.getView().byId("usProductAttachments");
+                this.uploadedPictureCount++;
+                var sProduct = this.getView().getModel("Product").getData();
+                var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
+                sap.ui.core.BusyIndicator.show();
                 oUploadSet.removeAllIncompleteItems();
+                this.getAddPictureDialog().close();
                 oUploadSet.removeItem(oEvent.getParameters().item);
-                if (oUploadSet.getItems().length === 0) {
-                    this.getRouter().navTo("Products");
+                if (this.uploadedPictureCount === this.totalPictureCount) {
+                    this.getArtisanProducts(0, sProduct.productID);
                 }
             },
             createFileEntity: function (oItem) {
+                var sProduct = this.getView().getModel("Product").getData();
+
                 var sPayloadData = {
-                    productID_productID: this.vProductId,
+                    productID_productID: sProduct.productID,
                     email_email: sap.ui.getCore().email,
                     mediaType: oItem.getMediaType(),
                     fileName: oItem.getFileName()
@@ -501,9 +519,9 @@ sap.ui.define([
             uploadFileContent: function (oItem, FileKeys) {
                 var vUrl = `/hand-and-life/ProductAttachments(productID_productID=${FileKeys.productID},fileID=${FileKeys.fileID})/mediaContent`
                 oItem.setUploadUrl(vUrl);
-                var oUploadSet = this.getView().byId("usProductAttachments");
+                var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
                 oUploadSet.setHttpRequestMethod("PUT");
                 oUploadSet.uploadItem(oItem);
-            },
+            }
         });
     });

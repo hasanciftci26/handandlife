@@ -3,8 +3,11 @@ sap.ui.define([
     "sap/ui/core/mvc/Controller",
     "sap/ui/model/json/JSONModel",
     "sap/ui/util/Storage",
-    "sap/m/MessageToast"
-], function (Controller, JSONModel, Storage, MessageToast) {
+    "sap/m/MessageToast",
+    "sap/ui/model/Filter",
+    "sap/ui/model/FilterOperator",
+    "sap/ui/core/Fragment"
+], function (Controller, JSONModel, Storage, MessageToast, Filter, FilterOperator, Fragment) {
     "use strict";
     return Controller.extend("renova.hl.ui.artisan.controller.BaseController", {
         /* =========================================================== */
@@ -216,6 +219,110 @@ sap.ui.define([
 
                 oBindArtisanCredentials.requestObject().then((oData) => {
                     resolve(!!oData.value.length);
+                });
+            });
+        },
+        displayIncomingOrders: async function (oThis, oButton) {
+            await this.getNewOrders(oThis);
+            await this.getNonExistOrders(oThis);
+            this.openNotificationPopover(oThis, oButton);
+        },
+        getNewOrders: function (oThis) {
+            var that = this;
+            var oDataModel = this.getView().getModel();
+            // oDataModel.setSizeLimit(25000);
+            var aProductId = [];
+
+            return new Promise((resolve) => {
+                var oBindProduct = oDataModel.bindContext("/ArtisanProducts", undefined,
+                    {
+                        // @ts-ignore
+                        $filter: "email_email eq '" + sap.ui.getCore().email + "'",
+                        $$groupId: "directRequest"
+                    });
+
+                oBindProduct.requestObject().then(async (oData) => {
+                    oData.value.forEach((item) => {
+                        aProductId.push(item.productID);
+                    });
+                    await that.getAllCurrentOrders(aProductId, oThis);
+                    resolve();
+                });
+            });
+        },
+        getAllCurrentOrders: async function (aProductId, oThis) {
+            var that = this;
+            var oDataModel = this.getView().getModel();
+            // oDataModel.setSizeLimit(25000);
+            var aFilter = [];
+            var aOrderItems = [];
+
+            return new Promise((resolve) => {
+                aProductId.forEach((element) => {
+                    aFilter.push(new Filter("productID_productID", FilterOperator.EQ, element));
+                });
+
+                var oBindOrderItems = oDataModel.bindList("/OrderItems", undefined, undefined, undefined,
+                    {
+                        // @ts-ignore
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                sap.ui.core.BusyIndicator.show();
+                oBindOrderItems.requestContexts().then((oContext) => {
+                    oContext.forEach((element) => {
+                        aOrderItems.push({
+                            OrderNo: element.getProperty("orderID_orderID"),
+                            statusID: element.getProperty("status_statusID"),
+                            OrderDate: new Date(element.getProperty("createdAt"))
+                        });
+                    });
+                    sap.ui.core.BusyIndicator.hide();
+                    var aNewOrders = aOrderItems.filter((item) => { return item.statusID === "CRTD"; });
+                    oThis.getView().setModel(new JSONModel(aNewOrders), "NotificationsNewOrder");
+                    resolve();
+                });
+            });
+        },
+        openNotificationPopover: function (oThis, oButton) {
+            var oView = oThis.getView();
+            if (!oThis._pPopover) {
+                oThis._pPopover = Fragment.load({
+                    id: oView.getId(),
+                    name: "renova.hl.ui.artisan.fragments.Notifications",
+                    controller: this
+                }).then(function (oPopover) {
+                    oView.addDependent(oPopover);
+                    return oPopover;
+                });
+            }
+            oThis._pPopover.then(function (oPopover) {
+                oPopover.openBy(oButton);
+            });
+        },
+        getNonExistOrders: function (oThis) {
+            var that = this;
+            var oDataModel = this.getView().getModel();
+            // oDataModel.setSizeLimit(25000);
+            var aNonExistOrder = [];
+
+            return new Promise((resolve) => {
+                var oBindProduct = oDataModel.bindContext("/ArtisanOffers", undefined,
+                    {
+                        // @ts-ignore
+                        $filter: "email_email eq '" + sap.ui.getCore().email + "' and status_statusID eq 'WAIT'",
+                        $$groupId: "directRequest"
+                    });
+
+                oBindProduct.requestObject().then(async (oData) => {
+                    oData.value.forEach((item) => {
+                        aNonExistOrder.push({
+                            OrderNo: item.orderID,
+                            ExpireDate: new Date(item.offerExpireEnd)
+                        })
+                    });
+                    oThis.getView().setModel(new JSONModel(aNonExistOrder), "NotificationsOffer");
+                    resolve();
                 });
             });
         }

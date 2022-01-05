@@ -138,7 +138,7 @@ entity Orders : managed {
                          on items.orderID = $self;
 };
 
-entity OrderItems {
+entity OrderItems : managed {
     key itemNo           : Integer;
     key orderID          : Association to Orders;
         productType      : String(1)@assert.range enum {

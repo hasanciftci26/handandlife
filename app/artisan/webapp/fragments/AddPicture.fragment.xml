@@ -1,14 +1,8 @@
  <core:FragmentDefinition xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns="sap.m"
-	xmlns:mvc="sap.ui.core.mvc">
+	xmlns:mvc="sap.ui.core.mvc" xmlns:upload="sap.m.upload">
     <Dialog id="diaAddPicture" title="{i18n>NewPicture}">
-	<UploadCollection id="UploadCollection" maximumFilenameLength="55" multiple="true" change="onChange" fileDeleted="onFileDeleted"
-		fileRenamed="onFileRenamed" fileSizeExceed="onFileSizeExceed" items="{/DataAttachment}" typeMissmatch="onTypeMissmatch"
-		uploadComplete="onUploadComplete">
-		<items>
-		 <UploadCollectionItem contributor="{contributor}" documentId="{documentId}" fileName="{fileName}" fileSize="{fileSize}"
-				mimeType="{mimeType}" thumbnailUrl="{thumbnailUrl}" uploadedDate="{uploadedDate}" enableEdit="{enableEdit}" enableDelete="{enableDelete}"/>
-		</items>
-	</UploadCollection>
+	<upload:UploadSet id="usProductAttachments" instantUpload="false" uploadEnabled="true" uploadCompleted="onFileUploadCompleted"
+    mediaTypes="image/jpeg,image/png"></upload:UploadSet>
     <beginButton>
 		<Button text="{i18n>AddPicture}" press="onAddPicture"/>
 	</beginButton>
