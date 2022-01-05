@@ -16,7 +16,7 @@ module.exports = async (srv) => {
         ProductAttachments,
         Properties } = db.entities;
 
-    //Tüm ürünleri döner
+    //Tüm ürünleri/kategorik ürünleri döner
     srv.on(["getProducts", "getCategoricalProducts"], async (req) => {
         let aReturnProducts = [];
 

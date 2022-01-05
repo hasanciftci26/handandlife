@@ -357,19 +357,19 @@ sap.ui.define([
                 oPromise.then((resolve) => {
                     aNewOrders.forEach((item) => {
                         var sPicture = resolve.find((element) => { return element.productID_productID === item.productID_productID });
-                        item.pictureURL = sPicture.pictureURL;
+                        item.pictureURL = sPicture ? sPicture.pictureURL : "";
                     });
                     aPreparedOrders.forEach((item) => {
                         var sPicture = resolve.find((element) => { return element.productID_productID === item.productID_productID });
-                        item.pictureURL = sPicture.pictureURL;
+                        item.pictureURL = sPicture ? sPicture.pictureURL : "";
                     });
                     aCargoOrders.forEach((item) => {
                         var sPicture = resolve.find((element) => { return element.productID_productID === item.productID_productID });
-                        item.pictureURL = sPicture.pictureURL;
+                        item.pictureURL = sPicture ? sPicture.pictureURL : "";
                     });
                     aCompletedOrders.forEach((item) => {
                         var sPicture = resolve.find((element) => { return element.productID_productID === item.productID_productID });
-                        item.pictureURL = sPicture.pictureURL;
+                        item.pictureURL = sPicture ? sPicture.pictureURL : "";
                     });
 
                     oNewOrders.setData(aNewOrders);

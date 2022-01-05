@@ -1,0 +1,40 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	<ResponsivePopover id="rspNotifications" title="{i18n>Notifications}" class="sapUiContentPadding"
+		placement="Bottom" contentWidth="610px">
+        <content>
+            <NotificationList>
+                <layoutData>
+                    <FlexItemData maxWidth="600px" />
+                </layoutData>
+                <NotificationListGroup
+                    title="{i18n>NewOrders}"
+                    showCloseButton="false"
+                    items="{path:'NotificationsNewOrder>/',templateShareable: true}">
+                    <NotificationListItem
+                        title="{i18n>NewOrderStatus} ({NotificationsNewOrder>OrderNo})"
+                        description="test\ntest"
+                        showCloseButton="false"
+                        datetime="{path:'NotificationsNewOrder>OrderDate', type:'sap.ui.model.type.Date', formatOptions:{style:'long'}}"
+                        unread="true"
+                        press="onNewOrderPressed"
+                        authorPicture="sap-icon://loan"
+                        authorAvatarColor="Accent8" />
+                </NotificationListGroup>
+                <NotificationListGroup
+                    title="{i18n>WaitingOffer}"
+                    showCloseButton="false"
+                    items="{path:'NotificationsOffer>/',templateShareable: true}">
+                    <NotificationListItem
+                        title="{i18n>OfferRequest} ({NotificationsOffer>OrderNo})"
+                        description="test\ntest"
+                        showCloseButton="false"
+                        datetime="{i18n>ExpireDate}: {path:'NotificationsOffer>ExpireDate', type:'sap.ui.model.type.Date', formatOptions:{style:'long'}}"
+                        unread="true"
+                        press="onNewOfferRequestPressed"
+                        authorPicture="sap-icon://history"
+                        authorAvatarColor="Accent4" />
+                </NotificationListGroup>
+            </NotificationList>
+        </content>
+	</ResponsivePopover>
+</core:FragmentDefinition>
