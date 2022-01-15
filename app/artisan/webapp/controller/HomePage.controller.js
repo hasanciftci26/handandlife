@@ -24,6 +24,9 @@ sap.ui.define([
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
             },
+            onNavToOffers: function () {
+                this.getRouter().navTo("Offers");
+            },
             onLogout: function () {
                 var that = this;
                 var oStorage = new Storage(Storage.Type.local, "userLogin");
@@ -49,9 +52,9 @@ sap.ui.define([
             onNavToOrders: function () {
                 this.getRouter().navTo("Orders");
             },
-            onOpenNotifications:function(oEvent){
+            onOpenNotifications: function (oEvent) {
                 var oButton = oEvent.getSource();
-                this.displayIncomingOrders(this,oButton);
+                this.displayIncomingOrders(this, oButton);
             }
         });
     });

@@ -5,26 +5,26 @@
 			<Page id="HomePage" showHeader="false">
 				<content>
 					<tnt:ToolHeader design="Transparent" class="testClass">
-						<Image src="img/HandAndLife Logo.jpg"/>
-						<Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+						<Image src="img/HandAndLifeLogo.jpg"/>
+						<Button type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
 							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
 						</Button>
-						<Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}"
+						<Button type="Transparent" text="{i18n>MyOrders}"
 							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
 						</Button>
-						<Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}"
-							visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+						<Button type="Transparent" text="{i18n>GiveOffer}"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOffers">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
 						</Button>
-						<Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+						<Button type="Transparent" text="{i18n>About}">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>

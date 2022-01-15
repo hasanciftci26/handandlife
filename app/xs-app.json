@@ -1,11 +1,16 @@
 {
-  "authenticationMethod": "none",
-  "routes": [
-    {
-      "source": "/hand-and-life/(.*)",
-      "destination": "srv-api",
-      "csrfProtection": true
-    }
-  ],
-  "welcomeFile": "/renovahluiartisan"
+    "authenticationMethod": "route",
+    "routes": [
+        {
+            "source": "/hand-and-life/(.*)",
+            "destination": "srv-api",
+            "csrfProtection": false
+        },
+        {
+            "source": "/hand-and-life-integration/(.*)",
+            "destination": "srv-api",
+            "csrfProtection": false
+        }
+    ],
+    "welcomeFile": "/renovahluiartisan"
 }

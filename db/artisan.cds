@@ -40,7 +40,7 @@ entity ArtisanProfessions {
 
 entity Professions {
     key professionID : Integer;
-        profession   : String(100);
+        profession   : localized String(100);
 };
 
 entity ArtisanSystems {
@@ -96,7 +96,7 @@ entity ProductProperties {
 
 entity Properties {
     key propertyID     : Integer;
-        property       : String(100);
+        property       : localized String(100);
         category       : Association to Categories;
         commonProperty : Boolean;
         isSize         : Boolean;
@@ -108,7 +108,7 @@ entity Properties {
 
 entity Categories {
     key categoryID : String(4);
-        category   : String(100);
+        category   : localized String(100);
 };
 
 entity ProfessionCategories {

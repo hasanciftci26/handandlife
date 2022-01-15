@@ -34,3 +34,10 @@
       margin-top: 1.7px;
       margin-left: 4px;
   }
+
+  .sapTntToolHeader .sapMBtn .sapMBtnTransparent, .sapTntToolHeader .sapMBtn .sapMBtnDefault, .sapTntToolHeader .sapMBtn .sapMBtnBack, .sapTntToolHeader .sapMBtn .sapMBtnUp{
+      color:#ffffff !important;
+  }
+  .sapTntToolHeader .sapMBtn .sapMBtnTransparent .sapUiIcon, .sapTntToolHeader .sapMBtn .sapMBtnDefault .sapUiIcon, .sapTntToolHeader .sapMBtn .sapMBtnBack .sapUiIcon, .sapTntToolHeader .sapMBtn .sapMBtnUp .sapUiIcon {
+    color: #ffffff !important;
+}

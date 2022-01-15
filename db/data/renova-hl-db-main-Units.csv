@@ -1,6 +1,0 @@
-unitID;unit;isSize;isWeight
-ST;Adet;false;false
-KG;Kilogram;false;true
-MT;Metre;true;false
-CM;Santimetre;true;false
-GR;Gram;false;true

@@ -82,8 +82,7 @@
                             "submit": "API"
                         }
                     },
-                 "updateGroupId": "batchRequest"
-                  
+                    "updateGroupId": "batchRequest"
                 }
             }
         },
@@ -153,6 +152,13 @@
                     "target": [
                         "ResetPassword"
                     ]
+                },
+                {
+                    "name": "Offers",
+                    "pattern": "Offers",
+                    "target": [
+                        "Offers"
+                    ]
                 }
             ],
             "targets": {
@@ -208,6 +214,13 @@
                 "NoObject": {
                     "viewName": "NoObject",
                     "viewId": "NoObject"
+                },
+                "Offers": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "Offers",
+                    "viewName": "Offers"
                 }
             }
         }

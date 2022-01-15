@@ -2,6 +2,15 @@ _schema-version: '3.1'
 ID: handandlife
 description: Hand and Life Project.
 version: 1.0.0
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm install --production
+        - npx -p @sap/cds-dk cds build --production
 modules:
   - name: handandlife-srv
     type: nodejs
@@ -12,6 +21,8 @@ modules:
           srv-url: '${default-url}'
     parameters:
       buildpack: nodejs_buildpack
+    requires:
+      - name: handandlife-db
   - name: app
     type: approuter.nodejs
     path: app
@@ -31,8 +42,8 @@ modules:
           name: ui5
           url: 'https://ui5.sap.com'
     parameters:
-      disk-quota: 256M
-      memory: 256M
+      disk-quota: 1024M
+      memory: 1024M
   - name: handandlife_ui_deployer
     type: com.sap.application.content
     path: .
@@ -47,6 +58,13 @@ modules:
             - renovahluiartisan.zip
           name: renovahluiartisan
           target-path: resources/
+  - name: handandlife-db-deployer
+    type: hdb
+    path: gen/db
+    requires:
+    - name: handandlife-db
+    parameters:
+      buildpack: nodejs_buildpack
   - name: renovahluiartisan
     type: html5
     path: app/artisan
@@ -77,6 +95,10 @@ resources:
       service-plan: app-host
   - name: handandlife-dest-srv
     type: org.cloudfoundry.managed-service
+    requires: 
+      - name: srv-api
+        properties: 
+          backend-url: '~{srv-url}'
     parameters:
       config:
         HTML5Runtime_enabled: true
@@ -88,17 +110,22 @@ resources:
                 ProxyType: Internet
                 Type: HTTP
                 URL: 'https://ui5.sap.com'
+              - Authentication: NoAuthentication
+                Name: hana-app-api
+                ProxyType: Internet
+                Type: HTTP
+                URL: '~{srv-api/srv-url}'
+                HTML5.ForwardAuthToken: true
+                HTML5.DynamicDestination: true
             existing_destinations_policy: update
         version: 1.0.0
       service: destination
       service-name: handandlife-dest-srv
       service-plan: lite
-parameters:
-  deploy_mode: html5-repo
-  enable-parallel-deployments: true
-build-parameters:
-  before-all:
-    - builder: custom
-      commands:
-        - npm install --production
-        - npx -p @sap/cds-dk cds build --production
+  - name: handandlife-db
+    type: com.sap.xs.hdi-container
+    parameters:
+      service: hanatrial
+      service-plan: hdi-shared
+    properties:
+      hdi-service-name: '${service-name}'

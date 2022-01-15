@@ -28,6 +28,9 @@ sap.ui.define([
             onChangeAccountPassword: function () {
                 this.onChangePassword(this);
             },
+            onNavToOffers: function () {
+                this.getRouter().navTo("Offers");
+            },
             // @ts-ignore
             _onObjectMatched: async function () {
                 var that = this;
@@ -344,14 +347,15 @@ sap.ui.define([
                         var index = 0;
                         for (var picture of oPictures) {
                             aPictures.push(picture.getObject());
-                            var oPictureBlob = await that.getProductPicture(picture.getObject().url);
-                            var vPictureURL = window.URL.createObjectURL(oPictureBlob);
-                            aPictures[index].pictureURL = vPictureURL;
+                            // var oPictureBlob = await that.getProductPicture(picture.getObject().url);
+                            // var vPictureURL = window.URL.createObjectURL(oPictureBlob);
+                            aPictures[index].pictureURL = picture.getObject().url ? picture.getObject().url : "";
                             index++;
-                            if (index === oPictures.length) {
-                                resolve(aPictures);
-                            }
+                            // if (index === oPictures.length) {
+                            //     resolve(aPictures);
+                            // }
                         }
+                        resolve(aPictures);
                     });
                 });
                 oPromise.then((resolve) => {

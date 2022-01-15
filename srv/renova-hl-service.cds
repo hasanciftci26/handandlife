@@ -8,11 +8,14 @@ service HandAndLife @(impl : './renova-hl-service') {
         select from artisan.Artisans {
                 * ,
             key email,
-                residenceCountry.country           as residenceCountry,
-                birthCountry.country               as birthCountry,
-                residenceCityAssoc.city            as residenceCity,
-                birthCityAssoc.city                as birthCity,
-                profession.professionID.profession as profession,
+            key profession.professionID.professionID as professionID,
+                residenceCountry.country             as residenceCountry,
+                birthCountry.country                 as birthCountry,
+                residenceCityAssoc.city              as residenceCity,
+                birthCityAssoc.city                  as birthCity,
+                profession.professionID.profession   as profession,
+                profession.experience                as experience,
+                profession.description               as professionDescr,
                 products : redirected to ArtisanProducts,
                 registrationStatus.status
         };

@@ -394,6 +394,9 @@ sap.ui.define([
             },
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
-            }
+            },
+            onNavToOffers: function () {
+                this.getRouter().navTo("Offers");
+            },
         });
     });

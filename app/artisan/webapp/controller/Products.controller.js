@@ -29,6 +29,9 @@ sap.ui.define([
             onNavToOrders: function () {
                 this.getRouter().navTo("Orders");
             },
+            onNavToOffers: function () {
+                this.getRouter().navTo("Offers");
+            },
             _onObjectMatched: function (oEvent) {
                 var that = this;
                 this.sessionControl(this);
@@ -82,6 +85,7 @@ sap.ui.define([
                         that.getView().byId("lstArtisanProducts").getItems()[vIndex].focus();
                     } else {
                         that.getView().byId("ProductDetails").setVisible(false);
+                        sap.ui.core.BusyIndicator.hide();
                     }
                     that.getView().byId("AllProducts").setTitle(this.getResourceBundle().getText("AllProducts", [oData.value.length]));
                 });
@@ -198,18 +202,20 @@ sap.ui.define([
                         that.getView().byId("crProductPictures").setVisible(true);
                         sap.ui.core.BusyIndicator.show();
                         for (var oPicture of aPictures) {
-                            var oBlobData = await that.getPictureBlobData(oPicture.url);
-                            var vPictureURL = window.URL.createObjectURL(oBlobData);
+                            // var oBlobData = await that.getPictureBlobData(oPicture.url);
+                            // var vPictureURL = window.URL.createObjectURL(oBlobData);
                             aPictureURL.push({
-                                pictureURL: vPictureURL,
+                                pictureURL: oPicture.url,
                                 fileId: oPicture.fileID,
                                 productId: oPicture.productID_productID
                             });
-                            if (aPictures.length === aPictureURL.length) {
-                                that.getView().setModel(new JSONModel(aPictureURL), "ProductPictures");
-                                sap.ui.core.BusyIndicator.hide();
-                            }
+                            // if (aPictures.length === aPictureURL.length) {
+                            //     that.getView().setModel(new JSONModel(aPictureURL), "ProductPictures");
+                            //     sap.ui.core.BusyIndicator.hide();
+                            // }
                         }
+                        that.getView().setModel(new JSONModel(aPictureURL), "ProductPictures");
+                        sap.ui.core.BusyIndicator.hide();
                     }
                 });
             },

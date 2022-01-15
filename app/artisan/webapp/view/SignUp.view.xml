@@ -2,26 +2,26 @@
 	xmlns:m="sap.m" xmlns:tnt="sap.tnt" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core"
 	xmlns:upload="sap.m.upload">
 	<tnt:ToolHeader design="Transparent">
-		<m:Image src="img/HandAndLife Logo.jpg" press="onNavToHomePage"/>
-		<m:Button icon="sap-icon://product" type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+		<m:Image src="img/HandAndLifeLogo.jpg" press="onNavToHomePage"/>
+		<m:Button type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
 			visible="{= ${UserCredential>/isLogin} === true ? true : false}">
 			<m:layoutData>
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>
 		</m:Button>
-		<m:Button icon="sap-icon://sales-order" type="Transparent" text="{i18n>MyOrders}"
+		<m:Button type="Transparent" text="{i18n>MyOrders}"
 			visible="{= ${UserCredential>/isLogin} === true ? true : false}">
 			<m:layoutData>
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>
 		</m:Button>
-		<m:Button icon="sap-icon://paid-leave" type="Transparent" text="{i18n>GiveOffer}"
-			visible="{= ${UserCredential>/isLogin} === true ? true : false}">
+		<m:Button type="Transparent" text="{i18n>GiveOffer}"
+			visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOffers">
 			<m:layoutData>
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>
 		</m:Button>
-		<m:Button icon="sap-icon://question-mark" type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+		<m:Button type="Transparent" text="{i18n>About}">
 			<m:layoutData>
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>

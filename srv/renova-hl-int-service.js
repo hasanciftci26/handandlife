@@ -158,11 +158,11 @@ module.exports = async (srv) => {
                 productID_productID: item.productID == null ? uuidv4() : item.productID,
                 price: parseFloat(item.price),
                 currency_currencyCode: item.currency,
-                quantity: parseFloat(item.quantity),
+                quantity: item.quantity,
                 unit_unitID: item.unit,
                 status_statusID: "CRTD",
-                cargoBranch: "test",
-                cargoNumber: "test2"
+                cargoBranch: "",
+                cargoNumber: ""
             });
         });
 

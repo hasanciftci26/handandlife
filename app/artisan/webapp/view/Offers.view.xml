@@ -1,0 +1,184 @@
+<mvc:View controllerName="renova.hl.ui.artisan.controller.Offers" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
+	xmlns:tnt="sap.tnt">
+	<App id="OffersApp">
+		<pages>
+			<Page id="Offers" showHeader="false">
+				<content>
+					<tnt:ToolHeader design="Transparent" >
+						<Image src="img/HandAndLifeLogo.jpg" press="onNavToHomePage"/>
+						<Button type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button type="Transparent" text="{i18n>MyOrders}"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button type="Transparent" text="{i18n>About}" >
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<ToolbarSpacer/>
+						<Button icon="sap-icon://search" type="Transparent">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://bell" type="Transparent" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onOpenNotifications">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+							<Menu>
+								<MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+									visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+								<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+							</Menu>
+						</MenuButton>
+					</tnt:ToolHeader>
+					<IconTabBar id="itbOffers" class="sapUiResponsiveContentPadding">
+						<items>
+							<IconTabFilter id="itfWaitingOffers" icon="sap-icon://in-progress" iconColor="Critical" design="Horizontal" text="{i18n>WaitingOffers}" key="WaitingOffers">
+                                <Table id="tblWaitingOffers"
+                                inset="false"
+                                items="{WaitingOffers>/}">
+                                <headerToolbar>
+                                    <OverflowToolbar>
+                                        <content>
+                                            <Title text="{i18n>WaitingOffersProducts}" level="H2"/>
+                                        </content>
+                                    </OverflowToolbar>
+                                </headerToolbar>
+                                <infoToolbar>
+                                    <OverflowToolbar>
+                                        <Label text="{i18n>WaitingOfferInfo}"/>
+                                    </OverflowToolbar>
+                                </infoToolbar>
+                                <columns>
+                                    <Column>
+                                        <Text text="{i18n>OrderNo}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>Category}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>OfferQuantity}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>CustomerCountry}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>CustomerCity}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>LastOfferDate}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>Details}" />
+                                    </Column>
+                                    <Column>
+                                        <Text text="{i18n>GiveOffer}" />
+                                    </Column>
+                                </columns>
+                                <items>
+                                    <ColumnListItem vAlign="Middle">
+                                        <cells>
+                                            <ObjectIdentifier title="{WaitingOffers>OrderNo}"/>
+                                            <Text text="{WaitingOffers>Category}"/>
+                                            <Text text="{WaitingOffers>Quantity} {WaitingOffers>UnitText}"/>
+                                            <Text text="{WaitingOffers>CustomerCountry}"/>
+                                            <Text text="{WaitingOffers>CustomerCity}"/>
+                                            <Text text="{path:'WaitingOffers>LastOfferDate', type:'sap.ui.model.type.Date', formatOptions:{style:'long'}}"/>
+                                            <Button text="{i18n>Details}" />
+                                            <Button text="{i18n>GiveOffer}"/>
+                                        </cells>
+                                    </ColumnListItem>
+                                </items>
+                            </Table>
+                            </IconTabFilter>
+							<IconTabSeparator/>
+							<IconTabFilter id="itfGivenOffers" icon="sap-icon://accept" iconColor="Positive" design="Horizontal" text="{i18n>GivenOffers}"
+								key="GivenOffers">
+                                <Table id="tblGivenOffers"
+                                inset="false"
+                                items="{CompletedOffers>/}">
+                                    <headerToolbar>
+                                        <OverflowToolbar>
+                                            <content>
+                                                <Title text="{i18n>TitleGivenOffers}" level="H2"/>
+                                            </content>
+                                        </OverflowToolbar>
+                                    </headerToolbar>
+                                    <infoToolbar>
+                                        <OverflowToolbar>
+                                            <Label text="{i18n>InfoGivenOffers}"/>
+                                        </OverflowToolbar>
+                                    </infoToolbar>
+                                    <columns>
+                                        <Column>
+                                            <Text text="{i18n>OrderNo}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>Category}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>OfferQuantity}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>CustomerCountry}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>CustomerCity}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>Price}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>OfferStatus}" />
+                                        </Column>
+                                        <Column>
+                                            <Text text="{i18n>Details}" />
+                                        </Column>
+                                    </columns>
+                                    <items>
+                                        <ColumnListItem vAlign="Middle">
+                                            <cells>
+                                                <ObjectIdentifier title="{CompletedOffers>OrderNo}"/>
+                                                <Text text="{CompletedOffers>Category}"/>
+                                                <Text text="{CompletedOffers>Quantity} {CompletedOffers>UnitText}"/>
+                                                <Text text="{CompletedOffers>CustomerCountry}"/>
+                                                <Text text="{CompletedOffers>CustomerCity}"/>
+                                                <ObjectNumber
+                                                    number="{
+                                                        parts:[{path:'CompletedOffers>Price'},{path:'CompletedOffers>CurrencyCode'}],
+                                                        type: 'sap.ui.model.type.Currency',
+                                                        formatOptions: {showMeasure: false}
+                                                    }"
+                                                    unit="{CompletedOffers>CurrencyCode}" />
+                                                <ObjectStatus text="{CompletedOffers>OfferStatusText}" state="{CompletedOffers>OfferStatus}" icon="{CompletedOffers>OfferStatusIcon}"/>
+                                                <Button text="{i18n>Details}" />
+                                            </cells>
+                                        </ColumnListItem>
+                                    </items>
+                                </Table>
+							</IconTabFilter>
+						</items>
+					</IconTabBar>
+				</content>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>
