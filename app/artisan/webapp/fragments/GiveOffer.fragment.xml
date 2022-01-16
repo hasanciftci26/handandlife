@@ -1,0 +1,28 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+	<Dialog id="diaGiveOffer" title="{i18n>GiveOffer}">
+		<f:SimpleForm id="sfGiveOffer" editable="false" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+			adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+			singleContainerFullSize="false">
+			<f:content>
+				<Label text="{i18n>Price}"/>
+				<Input value="{GivenOfferDetails>/Price}"/>
+				<Label text="{i18n>Currency}"/>
+                <ComboBox items="{Currencies>/}" selectedKey="{GivenOfferDetails>/Currency}">
+                    <items>
+                        <core:Item xmlns:core="sap.ui.core" key="{Currencies>currencyCode}" text="{Currencies>currency}"/>
+                    </items>
+                </ComboBox>
+                <Label text="{i18n>WorkDays}"/>
+				<Input value="{GivenOfferDetails>/WorkDays}" type="Number"/>
+                <Label text="{i18n>Details}"/>
+                <TextArea value="{GivenOfferDetails>/Details}" rows="5"/>
+			</f:content>
+		</f:SimpleForm>
+		<beginButton>
+			<Button text="{i18n>Complete}" press="onCompleteGiveOffer"/>
+		</beginButton>
+		<endButton>
+			<Button text="{i18n>Cancel}" press="onCancelGiveOffer"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

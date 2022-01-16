@@ -6,12 +6,13 @@ sap.ui.define([
     "sap/m/MessageBox",
     "sap/ui/util/Storage",
     "sap/ui/model/Filter",
-    "sap/ui/model/FilterOperator"
+    "sap/ui/model/FilterOperator",
+    "sap/m/MessageToast"
 ],
 	/**
 	 * @param {typeof sap.ui.core.mvc.Controller} Controller
 	 */
-    function (BaseController, Controller, JSONModel, MessageBox, Storage, Filter, FilterOperator) {
+    function (BaseController, Controller, JSONModel, MessageBox, Storage, Filter, FilterOperator, MessageToast) {
         "use strict";
 
         return BaseController.extend("renova.hl.ui.artisan.controller.Offers", {
@@ -41,8 +42,8 @@ sap.ui.define([
                 await this.getCategories();
                 await this.getCountries();
                 await this.getCities();
-                await this.getProductProperties();
                 await this.getUnits();
+                await this.getCurrencies();
                 this.getWaitingOffers();
             },
             onNavToLoginPage: function () {
@@ -52,60 +53,76 @@ sap.ui.define([
                 var that = this;
                 var oDataModel = this.getView().getModel();
 
-                var oBindCategories = oDataModel.bindContext("/Categories", undefined, {
-                    $$groupId: "directRequest"
-                });
+                return new Promise((resolve) => {
+                    var oBindCategories = oDataModel.bindContext("/Categories", undefined, {
+                        $$groupId: "directRequest"
+                    });
 
-                oBindCategories.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Categories");
+                    oBindCategories.requestObject().then((oData) => {
+                        that.getView().setModel(new JSONModel(oData.value), "Categories");
+                        resolve();
+                    });
+                });
+            },
+            getCurrencies: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+
+                return new Promise((resolve) => {
+                    var oBindCurrencies = oDataModel.bindContext("/Currencies", undefined, {
+                        $$groupId: "directRequest"
+                    });
+
+                    oBindCurrencies.requestObject().then((oData) => {
+                        that.getView().setModel(new JSONModel(oData.value), "Currencies");
+                        resolve();
+                    });
                 });
             },
             getCountries: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
 
-                var oBindCountries = oDataModel.bindContext("/Countries", undefined, {
-                    $$groupId: "directRequest"
-                });
+                return new Promise((resolve) => {
+                    var oBindCountries = oDataModel.bindContext("/Countries", undefined, {
+                        $$groupId: "directRequest"
+                    });
 
-                oBindCountries.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Countries");
+                    oBindCountries.requestObject().then((oData) => {
+                        that.getView().setModel(new JSONModel(oData.value), "Countries");
+                        resolve();
+                    });
                 });
             },
             getCities: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
 
-                var oBindCities = oDataModel.bindContext("/Cities", undefined, {
-                    $$groupId: "directRequest"
-                });
+                return new Promise((resolve) => {
+                    var oBindCities = oDataModel.bindContext("/Cities", undefined, {
+                        $$groupId: "directRequest"
+                    });
 
-                oBindCities.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Cities");
-                });
-            },
-            getProductProperties: function () {
-                var that = this;
-                var oDataModel = this.getView().getModel();
-
-                var oBindProperties = oDataModel.bindContext("/Properties", undefined, {
-                    $$groupId: "directRequest"
-                });
-
-                oBindProperties.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Properties");
+                    oBindCities.requestObject().then((oData) => {
+                        that.getView().setModel(new JSONModel(oData.value), "Cities");
+                        resolve();
+                    });
                 });
             },
             getUnits: function () {
                 var that = this;
                 var oDataModel = this.getView().getModel();
 
-                var oBindUnits = oDataModel.bindContext("/Units", undefined, {
-                    $$groupId: "directRequest"
-                });
+                return new Promise((resolve) => {
+                    var oBindUnits = oDataModel.bindContext("/Units", undefined, {
+                        $$groupId: "directRequest"
+                    });
 
-                oBindUnits.requestObject().then((oData) => {
-                    that.getView().setModel(new JSONModel(oData.value), "Units");
+                    oBindUnits.requestObject().then((oData) => {
+                        that.getView().setModel(new JSONModel(oData.value), "Units");
+                        sap.ui.getCore().setModel(new JSONModel(oData.value), "Units");
+                        resolve();
+                    });
                 });
             },
             onLogout: function () {
@@ -152,33 +169,11 @@ sap.ui.define([
 
                 oBindOffers.requestObject().then((oData) => {
                     if (oData.value.length) {
-                        that.getNonExistProductProperties(oData.value);
+                        that.getOrderDetails(oData.value);
                     }
                 });
             },
-            getNonExistProductProperties: function (aOffers) {
-                var that = this;
-                var aFilter = [];
-                var oDataModel = this.getView().getModel();
-                var aProperties = [];
-
-                aOffers.forEach((item) => {
-                    aFilter.push(new Filter("productID_productID", FilterOperator.EQ, item.productID));
-                });
-
-
-                var oBindProperties = oDataModel.bindList("/ProductProperties", undefined, undefined, undefined, {
-                    $$groupId: "directRequest"
-                }).filter(aFilter);
-
-                oBindProperties.requestContexts().then((aContext) => {
-                    aContext.forEach((item) => {
-                        aProperties.push(item.getObject());
-                    });
-                    that.getOrderDetails(aProperties, aOffers);
-                });
-            },
-            getOrderDetails: function (aProperties, aOffers) {
+            getOrderDetails: function (aOffers) {
                 var that = this;
                 var aFilter = [];
                 var oDataModel = this.getView().getModel();
@@ -196,10 +191,10 @@ sap.ui.define([
                     aContext.forEach((item) => {
                         aOrders.push(item.getObject());
                     });
-                    that.getOrderItems(aProperties, aOffers, aOrders, aFilter);
+                    that.getOrderItems(aOffers, aOrders, aFilter);
                 });
             },
-            getOrderItems: function (aProperties, aOffers, aOrders, aFilter) {
+            getOrderItems: function (aOffers, aOrders, aFilter) {
                 var that = this;
                 var oDataModel = this.getView().getModel();
                 var aOrderItems = [];
@@ -216,10 +211,10 @@ sap.ui.define([
                     aContext.forEach((item) => {
                         aOrderItems.push(item.getObject());
                     });
-                    that.setAllData(aProperties, aOffers, aOrders, aOrderItems);
+                    that.setAllData(aOffers, aOrders, aOrderItems);
                 });
             },
-            setAllData: function (aProperties, aOffers, aOrders, aOrderItems) {
+            setAllData: function (aOffers, aOrders, aOrderItems) {
                 var aCountries = this.getView().getModel("Countries").getData();
                 var aCities = this.getView().getModel("Cities").getData();
                 var aUnits = this.getView().getModel("Units").getData();
@@ -248,22 +243,23 @@ sap.ui.define([
                         OfferId: item.offerID,
                         ProductId: item.productID,
                         Status: item.status_statusID,
-                        CustomerCountryCode: sCountry.countryCode ? sCountry.countryCode : "",
-                        CustomerCityCode: sCity.cityCode ? sCity.cityCode : "",
-                        CustomerCountry: sCountry.country ? sCountry.country : "",
-                        CustomerCity: sCity.city ? sCity.city : "",
-                        Quantity: sOrderItem.quantity ? sOrderItem.quantity : "",
-                        UnitId: sUnit.unitID ? sUnit.unitID : "",
-                        UnitText: sUnit.unit ? sUnit.unit : "",
-                        CustomerFirstName: sOrder.firstName ? sOrder.firstName : "",
-                        CustomerLastName: sOrder.lastName ? sOrder.lastName : "",
-                        CustomerAddress: sOrder.address ? sOrder.address : "",
-                        CategoryId: sCategory.categoryID ? sCategory.categoryID : "",
-                        Category: sCategory.category ? sCategory.category : "",
+                        CustomerCountryCode: sCountry ? sCountry.countryCode : "",
+                        CustomerCityCode: sCity ? sCity.cityCode : "",
+                        CustomerCountry: sCountry ? sCountry.country : "",
+                        CustomerCity: sCity ? sCity.city : "",
+                        Quantity: sOrderItem ? sOrderItem.quantity : "",
+                        UnitId: sUnit ? sUnit.unitID : "",
+                        UnitText: sUnit ? sUnit.unit : "",
+                        CustomerFirstName: sOrder ? sOrder.firstName : "",
+                        CustomerLastName: sOrder ? sOrder.lastName : "",
+                        CustomerAddress: sOrder ? sOrder.address : "",
+                        CategoryId: sCategory ? sCategory.categoryID : "",
+                        Category: sCategory ? sCategory.category : "",
                         Price: item.price,
                         CurrencyCode: item.currency_currencyCode,
-                        WorkDays: item.wordDays,
-                        ExpireDateAfterOffer: sOrderItem.offerExpireEnd ? new Date(sOrderItem.offerExpireEnd) : ""
+                        WorkDays: item.workDays,
+                        ExpireDateAfterOffer: sOrderItem ? new Date(sOrderItem.offerExpireEnd) : "",
+                        OfferDetails: item.details
                     });
                 });
 
@@ -295,9 +291,104 @@ sap.ui.define([
                 });
 
                 this.getView().setModel(new JSONModel(aWaitingOffers), "WaitingOffers");
+                sap.ui.getCore().setModel(new JSONModel(aWaitingOffers), "WaitingOffers");
                 this.getView().setModel(new JSONModel(aCompletedOffers), "CompletedOffers");
+                sap.ui.getCore().setModel(new JSONModel(aCompletedOffers), "CompletedOffers");
                 this.getView().byId("itfWaitingOffers").setCount(aWaitingOffers.length);
                 this.getView().byId("itfGivenOffers").setCount(aCompletedOffers.length);
+            },
+            onNavToOfferDetails: function (oEvent) {
+                var vOfferId = oEvent.getSource().getBindingContext("WaitingOffers").getProperty("OfferId");
+                this.getRouter().navTo("OfferDetails", {
+                    offerId: vOfferId + "#W" //Eğer teklif bekleyenden detaya giderse teklif ver butonu görünür olacak
+                });
+            },
+            onNavToCompletedOfferDetails: function (oEvent) {
+                var vOfferId = oEvent.getSource().getBindingContext("CompletedOffers").getProperty("OfferId");
+                this.getRouter().navTo("OfferDetails", {
+                    offerId: vOfferId + "#C" //Eğer teklif verilmişlerden detaya giderse teklif ver butonu görünmeyecek
+                });
+            },
+            onGiveOffer: function (oEvent) {
+                var sWaitingOffer = oEvent.getSource().getBindingContext("WaitingOffers").getObject();
+                this.getView().setModel(new JSONModel({}), "GivenOfferDetails");
+                this.getView().setModel(new JSONModel(sWaitingOffer), "GivenOfferData");
+                this.getOfferDialog().open();
+            },
+            getOfferDialog: function () {
+                if (!this.oOfferDialog) {
+                    this.oOfferDialog = sap.ui.xmlfragment("renova.hl.ui.artisan.fragments.GiveOffer", this);
+                    this.getView().addDependent(this.oOfferDialog);
+                    jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oOfferDialog);
+                }
+                return this.oOfferDialog;
+            },
+            onCancelGiveOffer: function () {
+                this.getOfferDialog().close();
+            },
+            onCompleteGiveOffer: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var sOfferDetail = this.getView().getModel("GivenOfferDetails").getData();
+                var vRegexPrice = /^\d{1,7}([\.,]\d{2})?$/;
+                var vRegexWorkdays = /^\d+$/;
+
+                if (!sOfferDetail.Price || !sOfferDetail.WorkDays || !sOfferDetail.Details) {
+                    var vMessage = this.getResourceBundle().getText("FillRequireBlanks");
+                    MessageToast.show(vMessage);
+                    return;
+                }
+                if (!sOfferDetail.Currency) {
+                    MessageToast.show(this.getResourceBundle().getText("CurrencySelectList"));
+                    return;
+                }
+
+                if (!vRegexPrice.test(sOfferDetail.Price)) {
+                    MessageToast.show(this.getResourceBundle().getText("PriceFormat"));
+                    return;
+                }
+                if (!vRegexWorkdays.test(sOfferDetail.WorkDays)) {
+                    MessageToast.show(this.getResourceBundle().getText("WorkDaysWarning"));
+                    return;
+                }
+                this.getOfferDialog().close();
+
+                var sOffer = this.getView().getModel("GivenOfferData").getData();
+                sOfferDetail.Price = sOfferDetail.Price.replace(",", ".");
+                var vFilter = "orderID eq '" + sOffer.OrderNo + "' and offerID eq " + sOffer.OfferId;
+
+                var oBindArtisanOffer = oDataModel.bindList("/ArtisanOffers", undefined, undefined, undefined, {
+                    $filter: vFilter,
+                    $$groupId: "directRequest"
+                });
+
+                oBindArtisanOffer.attachPatchCompleted(this.onGiveOfferPatchCompleted, this);
+
+                oBindArtisanOffer.requestContexts().then((aContext) => {
+                    aContext[0].setProperty("price", parseFloat(sOfferDetail.Price));
+                    aContext[0].setProperty("currency_currencyCode", sOfferDetail.Currency);
+                    aContext[0].setProperty("workDays", parseInt(sOfferDetail.WorkDays, 10));
+                    aContext[0].setProperty("details", sOfferDetail.Details);
+                    aContext[0].setProperty("status_statusID", "OFRD");
+                    aContext[0].setProperty("offerExpireEnd", "9999-12-31T00:00:00Z");
+
+                    oDataModel.submitBatch("batchRequest");
+                });
+            },
+            onGiveOfferPatchCompleted: function (oEvent) {
+                var that = this;
+
+                MessageBox.information(
+                    this.getResourceBundle().getText("OfferSuccessful"), {
+                    icon: MessageBox.Icon.INFORMATION,
+                    title: this.getResourceBundle().getText("Information"),
+                    actions: [MessageBox.Action.OK],
+                    emphasizedAction: MessageBox.Action.OK,
+                    onClose: function (oAction) {
+                        that._onObjectMatched();
+                    }
+                }
+                );
             }
         });
     });

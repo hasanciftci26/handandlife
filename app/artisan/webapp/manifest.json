@@ -159,6 +159,13 @@
                     "target": [
                         "Offers"
                     ]
+                },
+                {
+                    "name": "OfferDetails",
+                    "pattern": "OfferDetails/{offerId}",
+                    "target": [
+                        "OfferDetails"
+                    ]
                 }
             ],
             "targets": {
@@ -221,6 +228,13 @@
                     "clearControlAggregation": false,
                     "viewId": "Offers",
                     "viewName": "Offers"
+                },
+                "OfferDetails": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "OfferDetails",
+                    "viewName": "OfferDetails"
                 }
             }
         }

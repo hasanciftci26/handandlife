@@ -102,8 +102,8 @@
                                             <Text text="{WaitingOffers>CustomerCountry}"/>
                                             <Text text="{WaitingOffers>CustomerCity}"/>
                                             <Text text="{path:'WaitingOffers>LastOfferDate', type:'sap.ui.model.type.Date', formatOptions:{style:'long'}}"/>
-                                            <Button text="{i18n>Details}" />
-                                            <Button text="{i18n>GiveOffer}"/>
+                                            <Button text="{i18n>Details}" press="onNavToOfferDetails"/>
+                                            <Button text="{i18n>GiveOffer}" press="onGiveOffer"/>
                                         </cells>
                                     </ColumnListItem>
                                 </items>
@@ -169,7 +169,7 @@
                                                     }"
                                                     unit="{CompletedOffers>CurrencyCode}" />
                                                 <ObjectStatus text="{CompletedOffers>OfferStatusText}" state="{CompletedOffers>OfferStatus}" icon="{CompletedOffers>OfferStatusIcon}"/>
-                                                <Button text="{i18n>Details}" />
+                                                <Button text="{i18n>Details}" press="onNavToCompletedOfferDetails"/>
                                             </cells>
                                         </ColumnListItem>
                                     </items>

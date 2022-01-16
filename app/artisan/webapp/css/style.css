@@ -41,3 +41,6 @@
   .sapTntToolHeader .sapMBtn .sapMBtnTransparent .sapUiIcon, .sapTntToolHeader .sapMBtn .sapMBtnDefault .sapUiIcon, .sapTntToolHeader .sapMBtn .sapMBtnBack .sapUiIcon, .sapTntToolHeader .sapMBtn .sapMBtnUp .sapUiIcon {
     color: #ffffff !important;
 }
+.footerSize{
+    width: 90% !important;
+}

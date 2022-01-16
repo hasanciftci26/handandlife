@@ -1,0 +1,140 @@
+<mvc:View controllerName="renova.hl.ui.artisan.controller.OfferDetails" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
+	xmlns:tnt="sap.tnt" xmlns:f="sap.ui.layout.form">
+	<App id="OfferDetailsApp">
+		<pages>
+			<Page id="OfferDetails" showHeader="false" floatingFooter="true">
+				<content>
+					<tnt:ToolHeader design="Transparent" >
+						<Image src="img/HandAndLifeLogo.jpg" press="onNavToHomePage"/>
+						<Button type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button type="Transparent" text="{i18n>MyOrders}"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+                        <Button type="Transparent" text="{i18n>GiveOffer}"
+								visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOffers">
+                            <layoutData>
+                                <OverflowToolbarLayoutData priority="NeverOverflow"/>
+                            </layoutData>
+                        </Button>
+                        <Button type="Transparent" text="{i18n>About}" >
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<ToolbarSpacer/>
+						<Button icon="sap-icon://search" type="Transparent">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://bell" type="Transparent" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onOpenNotifications">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+							<Menu>
+								<MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+									visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+								<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+							</Menu>
+						</MenuButton>
+					</tnt:ToolHeader>
+                    <f:SimpleForm id="sfOfferDetails" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                        adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+                        singleContainerFullSize="false" title="{i18n>OrderDetails}" class="sapUiMediumMarginTop">
+                        <f:content>
+                            <Label text="{i18n>OrderNo}"/>
+                            <Input value="{OfferDetails>/OrderNo}" editable="false"/>
+                            <Label text="{i18n>ProductID}"/>
+                            <Input value="{OfferDetails>/ProductId}" editable="false"/>
+                            <Label text="{i18n>OfferID}"/>
+                            <Input value="{OfferDetails>/OfferId}" editable="false"/>
+                            <Label text="{i18n>Category}"/>
+                            <Input value="{OfferDetails>/Category}" editable="false"/>
+                            <Label text="{i18n>CustomerName}"/>
+                            <Input value="{OfferDetails>/CustomerFirstName} {OfferDetails>/CustomerLastName}" editable="false"/>
+                            <Label text="{i18n>CustomerCountry}"/>
+                            <Input value="{OfferDetails>/CustomerCountry}" editable="false"/>
+                            <Label text="{i18n>CustomerCity}"/>
+                            <Input value="{OfferDetails>/CustomerCity}" editable="false"/>
+                            <Label text="{i18n>CustomerAddress}"/>
+                            <TextArea value="{OfferDetails>/CustomerAddress}" editable="false" rows="4"/>
+                            <Label text="{i18n>OrderQuantity}"/>
+                            <Input value="{OfferDetails>/Quantity} {OfferDetails>/UnitText}" editable="false"/>
+                            <Label text="{i18n>LastOfferDate}"/>
+                            <Input value="{path:'OfferDetails>/LastOfferDate', type:'sap.ui.model.type.Date', formatOptions:{style:'long'}}" editable="false"/>
+                            <!-- <Label text="{i18n>ProductID}"/>
+                            <Input value="{OfferDetails>/ProductId}" editable="false"/>
+                            <Label text="{i18n>ProductID}"/>
+                            <Input value="{OfferDetails>/ProductId}" editable="false"/> -->
+                        </f:content>
+                    </f:SimpleForm>
+                    <f:SimpleForm id="sfOfferGivenBefore" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                        adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+                        singleContainerFullSize="false" title="{i18n>OfferDetails}" class="sapUiMediumMarginTop">
+                        <f:content>
+                            <Label text="{i18n>Price}"/>
+                            <Input value="{OfferDetails>/Price} {OfferDetails>/CurrencyCode}" editable="false"/>
+                            <Label text="{i18n>Details}"/>
+                            <TextArea value="{OfferDetails>/OfferDetails}" editable="false" rows="5"/>
+                            <Label text="{i18n>WorkDays}"/>
+                            <Input value="{OfferDetails>/WorkDays}" editable="false" />
+                        </f:content>
+                    </f:SimpleForm>
+                    <Table id="tblWaitingOffers"
+                        inset="false"
+                        width="95%"
+                        items="{ProductProperties>/}" class="sapUiMediumMarginBegin sapUiMediumMarginEnd sapUiMediumMarginTop sapUiMediumMarginBottom">
+                        <headerToolbar>
+                            <OverflowToolbar>
+                                <content>
+                                    <Title text="{i18n>DesiredProperties}" level="H2"/>
+                                </content>
+                            </OverflowToolbar>
+                        </headerToolbar>
+                        <columns>
+                            <Column width="20%">
+                                <Text text="{i18n>Property}" />
+                            </Column>
+                            <Column hAlign="Left">
+                                <Text text="{i18n>PropertyValue}" />
+                            </Column>
+                        </columns>
+                        <items>
+                            <ColumnListItem>
+                                <cells>
+                                    <ObjectIdentifier title="{ProductProperties>Property}"/>
+                                    <Text text="{ProductProperties>PropertyValue} {ProductProperties>UnitText}"/>
+                                </cells>
+                            </ColumnListItem>
+                        </items>
+                    </Table>
+                    <Text text="" />
+				</content>
+                <footer>
+                    <OverflowToolbar width="99%">
+                        <ToolbarSpacer/>
+                        <Button type="Accept" text="{i18n>GiveOffer}" press="onGiveOffer"/>
+                        <ToolbarSpacer/>
+                    </OverflowToolbar>
+                </footer>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>

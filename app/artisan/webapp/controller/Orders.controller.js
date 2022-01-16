@@ -219,7 +219,9 @@ sap.ui.define([
                     emphasizedAction: sap.m.MessageBox.Action.OK,
                     initialFocus: null,
                     onClose: function (oAction) {
-                        that.setOrderPrepared(sOrder);
+                        if (oAction === "OK") {
+                            that.setOrderPrepared(sOrder);
+                        }
                     }
                 });
             },
