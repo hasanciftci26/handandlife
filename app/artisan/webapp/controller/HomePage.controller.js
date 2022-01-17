@@ -55,6 +55,9 @@ sap.ui.define([
             onOpenNotifications: function (oEvent) {
                 var oButton = oEvent.getSource();
                 this.displayIncomingOrders(this, oButton);
+            },
+            onNavToAccountSettings:function(){
+                this.getRouter().navTo("AccountSettings");
             }
         });
     });

@@ -50,6 +50,9 @@ sap.ui.define([
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
             },
+            onNavToAccountSettings:function(){
+                this.getRouter().navTo("AccountSettings");
+            },
             onLogout: function () {
                 var that = this;
                 var oStorage = new Storage(Storage.Type.local, "userLogin");
@@ -124,11 +127,13 @@ sap.ui.define([
                     var sOfferDetails = aWaitingOffers.find((item) => { return item.OfferId === vOfferId });
                     this.getView().byId("OfferDetails").setShowFooter(true);
                     this.getView().byId("sfOfferGivenBefore").setVisible(false);
+                    this.getView().byId("sfOrderStatus").setVisible(false);
                 } else {
                     var aCompletedOffers = sap.ui.getCore().getModel("CompletedOffers").getData();
                     var sOfferDetails = aCompletedOffers.find((item) => { return item.OfferId === vOfferId });
                     this.getView().byId("OfferDetails").setShowFooter(false);
                     this.getView().byId("sfOfferGivenBefore").setVisible(true);
+                    this.getView().byId("sfOrderStatus").setVisible(true);
                     sOfferDetails.Price = Number(sOfferDetails.Price);
                 }
                 this.getView().setModel(new JSONModel(sOfferDetails), "OfferDetails");

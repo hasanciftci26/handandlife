@@ -131,8 +131,8 @@ module.exports = async (srv) => {
         let aOrder = [{
             orderID: vOrderId,
             customerID: oOrder.customerID,
-            totalPrice: parseFloat(oOrder.totalPrice),
-            currency_currencyCode: oOrder.currency,
+            totalPrice: oOrder.totalPrice ? parseFloat(oOrder.totalPrice) : 0,
+            currency_currencyCode: oOrder.currency ? oOrder.currency : "",
             country_countryCode: oOrder.country,
             cityCode: oOrder.cityCode,
             address: oOrder.address,
@@ -156,8 +156,8 @@ module.exports = async (srv) => {
                 offerExpireEnd: vOfferExpireEnd,
                 artisanCount: item.artisanCount == null ? 15 : item.artisanCount,
                 productID_productID: item.productID == null ? uuidv4() : item.productID,
-                price: parseFloat(item.price),
-                currency_currencyCode: item.currency,
+                price: item.price ? parseFloat(item.price) : 0,
+                currency_currencyCode: item.currency ? item.currency : "",
                 quantity: item.quantity,
                 unit_unitID: item.unit,
                 status_statusID: "CRTD",
@@ -176,7 +176,8 @@ module.exports = async (srv) => {
                 aOrderItems.forEach((item) => {
                     if (item.productType == "N") {
                         aNonExistProductID.push({
-                            productID: item.productID_productID
+                            productID: item.productID_productID,
+                            itemNo: item.itemNo
                         });
                     }
                 });

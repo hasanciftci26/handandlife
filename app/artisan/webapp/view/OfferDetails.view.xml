@@ -24,11 +24,11 @@
                                 <OverflowToolbarLayoutData priority="NeverOverflow"/>
                             </layoutData>
                         </Button>
-                        <Button type="Transparent" text="{i18n>About}" >
+                        <!-- <Button type="Transparent" text="{i18n>About}" >
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
-						</Button>
+						</Button> -->
 						<ToolbarSpacer/>
 						<Button icon="sap-icon://search" type="Transparent">
 							<layoutData>
@@ -49,7 +49,7 @@
 									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
 								<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
 									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-								<MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+								<MenuItem text="{i18n>Account}" icon="sap-icon://action-settings" press="onNavToAccountSettings"
 									visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
 								<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
 							</Menu>
@@ -95,6 +95,18 @@
                             <TextArea value="{OfferDetails>/OfferDetails}" editable="false" rows="5"/>
                             <Label text="{i18n>WorkDays}"/>
                             <Input value="{OfferDetails>/WorkDays}" editable="false" />
+                        </f:content>
+                    </f:SimpleForm>
+                    <f:SimpleForm id="sfOrderStatus" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12"
+                        adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1"
+                        singleContainerFullSize="false" title="{i18n>OrderStatus}" class="sapUiMediumMarginTop">
+                        <f:content>
+                            <Label text="{i18n>OrderStatus}"/>
+                            <Input value="{OfferDetails>/OrderStatusText}" editable="false"/>
+                            <Label text="{i18n>ShipmentNo}"/>
+                            <Input value="{OfferDetails>/CargoNumber}" editable="false"/>
+                            <Label text="{i18n>CargoBranch}"/>
+                            <Input value="{OfferDetails>/CargoBranch}" editable="false" />
                         </f:content>
                     </f:SimpleForm>
                     <Table id="tblWaitingOffers"

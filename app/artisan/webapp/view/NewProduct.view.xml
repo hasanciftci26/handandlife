@@ -21,11 +21,11 @@
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>
 		</m:Button>
-		<m:Button type="Transparent" text="{i18n>About}">
+		<!-- <m:Button type="Transparent" text="{i18n>About}">
 			<m:layoutData>
 				<m:OverflowToolbarLayoutData priority="NeverOverflow"/>
 			</m:layoutData>
-		</m:Button>
+		</m:Button> -->
 		<m:ToolbarSpacer/>
 		<m:Button icon="sap-icon://search" type="Transparent">
 			<m:layoutData>
@@ -44,7 +44,7 @@
 			<m:Menu>
 				<m:MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
 					visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-				<m:MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+				<m:MenuItem text="{i18n>Account}" icon="sap-icon://action-settings" press="onNavToAccountSettings"
 					visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
 				<m:MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
 			</m:Menu>

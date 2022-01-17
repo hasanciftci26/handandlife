@@ -193,35 +193,6 @@ sap.ui.define([
             var oThis = this.changePassThis;
             this.getForgottenPasswordDialog(oThis).close();
         },
-        onChangePasswordComplete: async function () {
-            var oThis = this.changePassThis;
-            var sChangePassword = oThis.getView().getModel("ChangePassword").getData();
-            if (sChangePassword.CurrentPassword === "" || sChangePassword.NewPassword === "" ||
-                sChangePassword.ReNewPassword === "") {
-                MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
-                return;
-            }
-            var bOldPassword = await this.checkCurrentPassword(sChangePassword.CurrentPassword);
-            if (!bOldPassword) {
-                MessageToast.show(this.getResourceBundle().getText("CurrentPasswordWrong"));
-                return;
-            }
-        },
-        checkCurrentPassword: function (vCurrentPassword) {
-            var oDataModel = this.getView().getModel();
-            var vFilter = "email eq '" + sap.ui.getCore().email + "' and password eq '" + vCurrentPassword + "'";
-
-            return new Promise((resolve) => {
-                var oBindArtisanCredentials = oDataModel.bindContext("/ArtisanCredentialsView", undefined, {
-                    $filter: vFilter,
-                    $$groupId: "directRequest"
-                });
-
-                oBindArtisanCredentials.requestObject().then((oData) => {
-                    resolve(!!oData.value.length);
-                });
-            });
-        },
         displayIncomingOrders: async function (oThis, oButton) {
             await this.getNewOrders(oThis);
             await this.getNonExistOrders(oThis);

@@ -30,6 +30,9 @@ sap.ui.define([
             },
             onAfterRendering: function () {
             },
+            onNavToAccountSettings:function(){
+                this.getRouter().navTo("AccountSettings");
+            },
             //Sayfaya her yönlenişte ülke ve uzmanlık bilgisini al
             _onObjectMatched: async function () {
                 this.sessionControl(this);

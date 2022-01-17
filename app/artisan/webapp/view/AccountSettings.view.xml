@@ -1,0 +1,244 @@
+<mvc:View controllerName="renova.hl.ui.artisan.controller.AccountSettings"
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns="sap.m"
+	xmlns:tnt="sap.tnt"
+	xmlns:f="sap.ui.layout.form">
+	<App id="AccountSettingsApp">
+		<pages>
+			<tnt:ToolPage id="toolPageAccountSettings">
+				<tnt:header>
+					<tnt:ToolHeader design="Transparent" >
+						<Button icon="sap-icon://menu2" type="Transparent" press="onSideNavButtonPress">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow" />
+							</layoutData>
+						</Button>
+						<Image src="img/HandAndLifeLogo.jpg" press="onNavToHomePage"/>
+						<Button type="Transparent" text="{i18n>MyProducts}" class="sapUiMediumMarginBegin"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToProducts">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button type="Transparent" text="{i18n>MyOrders}"
+							visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOrders">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button type="Transparent" text="{i18n>GiveOffer}"
+								visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onNavToOffers">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<!-- <Button type="Transparent" text="{i18n>About}" >
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button> -->
+						<ToolbarSpacer/>
+						<Button icon="sap-icon://search" type="Transparent">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<Button icon="sap-icon://bell" type="Transparent" visible="{= ${UserCredential>/isLogin} === true ? true : false}" press="onOpenNotifications">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+						</Button>
+						<MenuButton icon="sap-icon://customer" type="Transparent" text="{= ${UserCredential>/isLogin} === true ? ${i18n>Account} : ${i18n>Login}}">
+							<layoutData>
+								<OverflowToolbarLayoutData priority="NeverOverflow"/>
+							</layoutData>
+							<Menu>
+								<MenuItem text="{i18n>Login}" icon="sap-icon://visits" press="onNavToLoginPage"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
+									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
+								<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
+							</Menu>
+						</MenuButton>
+					</tnt:ToolHeader>
+				</tnt:header>
+				<tnt:sideContent >
+					<tnt:SideNavigation expanded="true"  class="sideContentMargin" itemSelect="onItemSelect">
+						<tnt:NavigationList>
+							<tnt:NavigationListItem key="personalInfo" icon="sap-icon://customer" text="{i18n>PersonalInfo}"></tnt:NavigationListItem>
+							<tnt:NavigationListItem key="changePassword" icon="sap-icon://key" text="{i18n>ChangePassword}"></tnt:NavigationListItem>
+						</tnt:NavigationList>
+					</tnt:SideNavigation>
+				</tnt:sideContent>
+				<tnt:mainContents>
+					<NavContainer id="pageContainer" initialPage="personalInfo">
+						<pages>
+							<ScrollContainer class="sideContentMargin"
+                            id="personalInfo"
+                            horizontal="false"
+                            vertical="true"
+                            height="100%">
+								<f:SimpleForm id="sfPersonalForm" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3"
+								labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1"
+								columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                	<f:toolbar>
+                                        <Toolbar>
+                                            <Title text="{i18n>PersonalInfo}"/>
+                                            <ToolbarSpacer />
+                                            <Button visible="{ButtonVisible>/Edit}" press="onEditForm" icon="sap-icon://edit" text="{i18n>Edit}"/>
+                                            <Button visible="{ButtonVisible>/Others}" press="onSaveForm" icon="sap-icon://save" type="Success" text="{i18n>Save}"/>
+                                            <Button visible="{ButtonVisible>/Others}" press="onCancelEdit" icon="sap-icon://cancel" type="Reject" text="{i18n>Cancellation}"/>
+                                        </Toolbar>
+                                    </f:toolbar>
+                                    <f:content>
+                                        <Label text="{i18n>Name}"/>
+                                        <Input id="inpArtisanName" value="{PersonalFormData>/Name}" maxLength="40" liveChange="onGeneralChange" editable="{PersonalFormEditable>/Editable}"/>
+                                        <Label text="{i18n>LastName}"/>
+                                        <Input value="{PersonalFormData>/LastName}" maxLength="40" liveChange="onGeneralChange" editable="{PersonalFormEditable>/Editable}"/>
+                                        <Label text="{i18n>BirthDate}"/>
+                                        <DatePicker dateValue="{PersonalFormData>/BirthDate}" displayFormat="dd/MM/yyyy" change="onGeneralChange" editable="{PersonalFormEditable>/Editable}"/>
+                                        <Label text="{i18n>BirthCountry}"/>
+                                        <ComboBox items="{BirthCountries>/}" selectedKey="{PersonalFormData>/BirthCountry}" editable="{PersonalFormEditable>/Editable}" change="onChangeBirthCountry">
+                                            <items>
+                                                <core:Item xmlns:core="sap.ui.core" key="{BirthCountries>countryCode}" text="{BirthCountries>country}"/>
+                                            </items>
+                                        </ComboBox>
+                                        <Label text="{i18n>BirthCity}"/>
+                                        <ComboBox id="cbBirthCities" items="{BirthCities>/}" selectedKey="{PersonalFormData>/BirthCity}" editable="{PersonalFormEditable>/Editable}">
+                                            <items>
+                                                <core:Item xmlns:core="sap.ui.core" key="{BirthCities>cityCode}" text="{BirthCities>city}"/>
+                                            </items>
+                                        </ComboBox>
+                                        <Label text="{i18n>Gender}"/>
+                                        <ComboBox selectedKey="{PersonalFormData>/Gender}" editable="{PersonalFormEditable>/Editable}">
+                                            <items>
+                                                <core:Item xmlns:core="sap.ui.core" key="M" text="{i18n>Male}"/>
+                                                <core:Item xmlns:core="sap.ui.core" key="F" text="{i18n>Female}"/>
+                                                <core:Item xmlns:core="sap.ui.core" key="N" text="{i18n>NoGender}"/>
+                                            </items>
+                                        </ComboBox>
+                                        <Label text="{i18n>Introduction}"/>
+                                        <TextArea value="{PersonalFormData>/Introduction}" rows="5" maxLength="1000" showExceededText="true" liveChange="onGeneralChange"
+                                            placeholder="{i18n>IntroductionPlaceholder}" editable="{PersonalFormEditable>/Editable}"/>
+                                    </f:content>
+                                </f:SimpleForm>
+                                <f:SimpleForm id="sfContactForm" editable="true" title="{i18n>ContactInfo}" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3"
+								labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1"
+								columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                    <f:content>
+                                        <Label text="{i18n>ResidenceCountry}"/>
+                                        <ComboBox items="{ResidenceCountries>/}" selectedKey="{PersonalFormData>/ResidenceCountry}" editable="{PersonalFormEditable>/Editable}"  change="onChangeResidenceCountry">
+                                            <items>
+                                                <core:Item xmlns:core="sap.ui.core" key="{ResidenceCountries>countryCode}" text="{ResidenceCountries>country}"/>
+                                            </items>
+                                        </ComboBox>
+                                        <Label text="{i18n>ResidenceCity}"/>
+                                        <ComboBox id="cbResidenceCities" items="{ResidenceCities>/}" selectedKey="{PersonalFormData>/ResidenceCity}" editable="{PersonalFormEditable>/Editable}">
+                                            <items>
+                                                <core:Item xmlns:core="sap.ui.core" key="{ResidenceCities>cityCode}" text="{ResidenceCities>city}"/>
+                                            </items>
+                                        </ComboBox>
+                                        <Label text="{i18n>Gsm}"/>
+                                        <MaskInput placeholderSymbol="_" id="maskInpGsm" change="onGeneralChange" value="{PersonalFormData>/Gsm}" editable="{PersonalFormEditable>/Editable}">
+                                            <rules>
+                                                <MaskInputRule maskFormatSymbol="C" regex="[0-9]"/>
+                                            </rules>
+                                        </MaskInput>
+                                        <Label text="{i18n>Email}"/>
+                                        <Input value="{PersonalFormData>/Email}" maxLength="160" type="Email" editable="false"/>
+                                        <Label text="{i18n>Address}"/>
+                                        <TextArea value="{PersonalFormData>/Address}" rows="5" maxLength="1000" showExceededText="true" editable="{PersonalFormEditable>/Editable}"/>
+                                    </f:content>
+                                </f:SimpleForm>
+                                <VBox>
+                                    <f:SimpleForm id="sfProfessionForm" editable="true" title="{i18n>ProfessionInfo}" layout="ResponsiveGridLayout" labelSpanXL="3"
+                                        labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                                        columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                        <f:content>
+                                            <Label text="{i18n>Profession}"/>
+                                            <ComboBox items="{Professions>/}" id="cbArtisanProfessions" editable="{PersonalFormEditable>/Editable}" selectedKey="{ArtisanRegistration>/SelectedProfession}">
+                                                <items>
+                                                    <core:Item xmlns:core="sap.ui.core" key="{Professions>professionID}" text="{Professions>profession}"/>
+                                                </items>
+                                            </ComboBox>
+                                            <Label text="{i18n>Experience}"/>
+                                            <MaskInput mask="CC" placeholderSymbol=" " id="maskInpExperience" value="{ArtisanRegistration>/Experience}" editable="{PersonalFormEditable>/Editable}">
+                                                <rules>
+                                                    <MaskInputRule maskFormatSymbol="C" regex="[0-9]"/>
+                                                </rules>
+                                            </MaskInput>
+                                            <Label text="{i18n>Details}"/>
+                                            <TextArea value="{ArtisanRegistration>/ProfessionDescription}" rows="3" maxLength="500" showExceededText="true" editable="{PersonalFormEditable>/Editable}"/>
+                                            <Label text=""/>
+                                            <Button text="{i18n>Add}" press="onAddProfession" type="Accept" enabled="{PersonalFormEditable>/Editable}"/>
+                                        </f:content>
+                                    </f:SimpleForm>
+                                    <VBox alignItems="Center">
+                                        <Table id="tblProfessions" items="{ArtisanProfessions>/}" width="60rem" delete="onDeleteProfession">
+                                            <columns>
+                                                <Column width="20%">
+                                                    <Label design="Bold" text="{i18n>Profession}"/>
+                                                </Column>
+                                                <Column width="20%">
+                                                    <Label design="Bold" text="{i18n>Experience}"/>
+                                                </Column>
+                                                <Column width="60%">
+                                                    <Label design="Bold" text="{i18n>Details}"/>
+                                                </Column>
+                                            </columns>
+                                            <items>
+                                                <ColumnListItem>
+                                                    <Text text="{ArtisanProfessions>Profession}"/>
+                                                    <Input value="{ArtisanProfessions>Experience}" editable="{PersonalFormEditable>/Editable}" liveChange="onChangeProfessionExperience"/>
+                                                    <TextArea value="{ArtisanProfessions>Details}" rows="1" growing="true" growingMaxLines="5" class="sapUiSmallMarginTop sapUiSmallMarginBottom" editable="{PersonalFormEditable>/Editable}" width="30rem"/>
+                                                </ColumnListItem>
+                                            </items>
+                                        </Table>
+                                    </VBox>
+                                    <Text text=""/>
+                                    <Text text=""/>
+                                    <Text text=""/>
+                                    <Text text=""/>
+                                    <Text text=""/>
+                                    <Text text=""/>
+                                    <Text text=""/>
+                                    <Text text=""/>
+								</VBox>
+							</ScrollContainer>
+							<ScrollContainer class="sideContentMargin"
+                            id="changePassword"
+                            horizontal="false"
+                            vertical="true"
+                            height="100%">
+                                <f:SimpleForm id="sfChangePassword" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3"
+                                        labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0"
+                                        columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                    <f:toolbar>
+                                        <Toolbar>
+                                            <Title text="{i18n>ChangePassword}"/>
+                                            <ToolbarSpacer />
+                                            <Button press="onChangePassword" icon="sap-icon://save" type="Success" text="{i18n>Save}"/>
+                                        </Toolbar>
+                                    </f:toolbar>
+                                    <f:content>
+                                        <Label text="{i18n>CurrentPassword}"/>
+                                        <Input value="{ChangePassword>/CurrentPassword}" type="Password" width="30rem"/>
+                                        <Label text="{i18n>NewPassword}"/>
+                                        <HBox>
+                                            <Input id="inpNewPassword" value="{ChangePassword>/NewPassword}" type="Password" width="30rem"
+                                            valueHelpIconSrc="{= ${ShowNewPassword>/Display} === true ? 'sap-icon://hide' : 'sap-icon://show' }" showValueHelp="true"
+											valueHelpRequest="onDisplayHideNewPassword"/>
+                                            <Button icon="sap-icon://message-information" type="Transparent" press="onShowPasswordInfo"/>
+                                        </HBox>
+                                        <Label text="{i18n>RetypePassword}"/>
+                                        <Input value="{ChangePassword>/ReNewPassword}" type="Password" width="30rem"/>
+                                    </f:content>
+                                </f:SimpleForm>
+							</ScrollContainer>
+						</pages>
+					</NavContainer>
+				</tnt:mainContents>
+			</tnt:ToolPage>
+		</pages>
+	</App>
+</mvc:View>

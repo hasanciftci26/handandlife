@@ -6,11 +6,11 @@
 				<content>
 					<tnt:ToolHeader design="Transparent" class="testClass">
 						<Image src="img/HandAndLifeLogo.jpg" press="onNavToHomePage"/>
-						<Button type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
+						<!-- <Button type="Transparent" text="{i18n>About}" class="sapUiMediumMarginBegin">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
-						</Button>
+						</Button> -->
 						<ToolbarSpacer/>
 						<MenuButton icon="sap-icon://customer" type="Transparent" text="{i18n>Signup}">
 							<layoutData>

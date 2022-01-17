@@ -46,6 +46,9 @@ sap.ui.define([
                 await this.getCurrencies();
                 this.getWaitingOffers();
             },
+            onNavToAccountSettings:function(){
+                this.getRouter().navTo("AccountSettings");
+            },
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
             },
@@ -259,7 +262,11 @@ sap.ui.define([
                         CurrencyCode: item.currency_currencyCode,
                         WorkDays: item.workDays,
                         ExpireDateAfterOffer: sOrderItem ? new Date(sOrderItem.offerExpireEnd) : "",
-                        OfferDetails: item.details
+                        OfferDetails: item.details,
+                        OrderStatus: sOrderItem ? sOrderItem.status_statusID : "",
+                        CargoBranch: sOrderItem ? sOrderItem.cargoBranch : "",
+                        CargoNumber: sOrderItem ? sOrderItem.cargoNumber : "",
+                        OrderStatusText: ""
                     });
                 });
 
@@ -287,6 +294,20 @@ sap.ui.define([
                         item.OfferStatusText = this.getResourceBundle().getText("OfferTimeExpired");
                         item.OfferStatus = "Error";
                         item.OfferStatusIcon = "sap-icon://decline";
+                    }
+                    if (item.OrderStatus === "CRTD") {
+                        item.OrderStatusText = this.getResourceBundle().getText("WaitingPreparation");
+                        item.OrderState = "Error";
+                    } else if (item.OrderStatus === "PRPR") {
+                        item.OrderStatusText = this.getResourceBundle().getText("WaitingCargo");
+                        item.OrderState = "Information";
+                    } else if (item.OrderStatus === "CRGO") {
+                        item.OrderStatusText = this.getResourceBundle().getText("CargoInfo");
+                        item.OrderState = "Warning";
+                    }
+                    else if (item.OrderStatus === "CMPL") {
+                        item.OrderStatusText = this.getResourceBundle().getText("CompletedOrder");
+                        item.OrderState = "Success";
                     }
                 });
 
@@ -389,6 +410,117 @@ sap.ui.define([
                     }
                 }
                 );
+            },
+            onPrepareOrder: function (oEvent) {
+                var that = this;
+                var sCompletedOffer = oEvent.getSource().getBindingContext("CompletedOffers").getObject();
+                var aMessage = [sCompletedOffer.OrderNo];
+
+                MessageBox.confirm(this.getResourceBundle().getText("ConfirmPreparationV2", aMessage), {
+                    title: this.getResourceBundle().getText("PleaseConfirm"),
+                    actions: [sap.m.MessageBox.Action.OK,
+                    sap.m.MessageBox.Action.CANCEL],
+                    emphasizedAction: sap.m.MessageBox.Action.OK,
+                    initialFocus: null,
+                    onClose: function (oAction) {
+                        if (oAction === "OK") {
+                            that.setOrderPrepared(sCompletedOffer);
+                        }
+                    }
+                });
+            },
+            setOrderPrepared: function (sOrder) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                // oDataModel.setSizeLimit(25000);
+                var aFilter = [];
+
+                aFilter.push(new Filter("orderID_orderID", FilterOperator.EQ, sOrder.OrderNo));
+                aFilter.push(new Filter("itemNo", FilterOperator.EQ, sOrder.ItemNo));
+
+                var oBindOrderItems = oDataModel.bindList("/OrderItems", undefined, undefined, undefined,
+                    {
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                oBindOrderItems.requestContexts().then((oContext) => {
+                    oContext[0].setProperty("status_statusID", "PRPR");
+                    sap.ui.core.BusyIndicator.show();
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        sap.ui.core.BusyIndicator.hide();
+                        that._onObjectMatched();
+                    });
+                })
+            },
+            onStartShipment: function (oEvent) {
+                var sOrder = oEvent.getSource().getBindingContext("CompletedOffers").getObject();
+                this.sOrder = sOrder;
+
+                var sOrderInformations = {
+                    OrderNo: this.getResourceBundle().getText("OrderNo") + ": " + sOrder.OrderNo,
+                    ProductID: this.getResourceBundle().getText("ProductID") + ": " + sOrder.ProductId,
+                };
+
+                this.getView().setModel(new JSONModel(sOrderInformations), "OrderInformation");
+                this.getView().setModel(new JSONModel({}), "CargoInformation");
+                this.getShipmentDialog().open();
+            },
+            getShipmentDialog: function () {
+                if (!this.oShipmentDialog) {
+                    this.oShipmentDialog = sap.ui.xmlfragment("renova.hl.ui.artisan.fragments.Shipment", this);
+                    this.getView().addDependent(this.oShipmentDialog);
+                    jQuery.sap.syncStyleClass("sapUiSizeCompact", this.getView(), this.oShipmentDialog);
+                }
+                return this.oShipmentDialog;
+            },
+            onCompleteShipment: function (oEvent) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                // oDataModel.setSizeLimit(25000);
+                var aFilter = [];
+
+                var sCargoInfo = this.getView().getModel("CargoInformation").getData();
+                var sOrder = this.sOrder;
+
+                if (sCargoInfo.ShipmentNo === undefined || sCargoInfo.CargoBranch === undefined ||
+                    sCargoInfo.ShipmentNo === "" || sCargoInfo.CargoBranch === "") {
+                    MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                    return;
+                }
+
+                aFilter.push(new Filter("orderID_orderID", FilterOperator.EQ, sOrder.OrderNo));
+                aFilter.push(new Filter("itemNo", FilterOperator.EQ, sOrder.ItemNo));
+
+                var oBindOrderItems = oDataModel.bindList("/OrderItems", undefined, undefined, undefined,
+                    {
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                oBindOrderItems.requestContexts().then((oContext) => {
+                    oContext[0].setProperty("status_statusID", "CRGO");
+                    oContext[0].setProperty("cargoNumber", sCargoInfo.ShipmentNo);
+                    oContext[0].setProperty("cargoBranch", sCargoInfo.CargoBranch);
+                    sap.ui.core.BusyIndicator.show();
+                    oDataModel.submitBatch("batchRequest").then(() => {
+                        sap.ui.core.BusyIndicator.hide();
+                        that.getShipmentDialog().close();
+                        that._onObjectMatched();
+                    });
+                })
+            },
+            onCancelShipment: function () {
+                this.getShipmentDialog().close();
+            },
+            onChangeOrderStatus: function (oEvent) {
+                var aSelectedKeys = oEvent.getSource().getSelectedKeys();
+                var aFilter = [];
+                if (aSelectedKeys.length) {
+                    aSelectedKeys.forEach((item) => {
+                        aFilter.push(new Filter("Status", FilterOperator.EQ, "ACTD"));
+                        aFilter.push(new Filter("OrderStatus", FilterOperator.EQ, item));
+                    });
+                }
+                this.getView().byId("tblGivenOffers").getBinding("items").filter(aFilter);
             }
         });
     });

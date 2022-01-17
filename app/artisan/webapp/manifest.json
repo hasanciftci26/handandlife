@@ -166,6 +166,13 @@
                     "target": [
                         "OfferDetails"
                     ]
+                },
+                {
+                    "name": "AccountSettings",
+                    "pattern": "AccountSettings",
+                    "target": [
+                        "AccountSettings"
+                    ]
                 }
             ],
             "targets": {
@@ -235,6 +242,13 @@
                     "clearControlAggregation": false,
                     "viewId": "OfferDetails",
                     "viewName": "OfferDetails"
+                },
+                "AccountSettings": {
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false,
+                    "viewId": "AccountSettings",
+                    "viewName": "AccountSettings"
                 }
             }
         }

@@ -1,5 +1,8 @@
-<mvc:View controllerName="renova.hl.ui.artisan.controller.HomePage" xmlns:mvc="sap.ui.core.mvc" displayBlock="true" xmlns="sap.m"
-	xmlns:tnt="sap.tnt">
+<mvc:View controllerName="renova.hl.ui.artisan.controller.HomePage"
+	xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns="sap.m"
+	xmlns:tnt="sap.tnt"
+	xmlns:l="sap.ui.layout">
 	<App id="HomePageApp">
 		<pages>
 			<Page id="HomePage" showHeader="false">
@@ -24,11 +27,11 @@
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
 						</Button>
-						<Button type="Transparent" text="{i18n>About}">
+						<!-- <Button type="Transparent" text="{i18n>About}">
 							<layoutData>
 								<OverflowToolbarLayoutData priority="NeverOverflow"/>
 							</layoutData>
-						</Button>
+						</Button> -->
 						<ToolbarSpacer/>
 						<Button icon="sap-icon://search" type="Transparent">
 							<layoutData>
@@ -49,24 +52,70 @@
 									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
 								<MenuItem text="{i18n>Signup}" icon="sap-icon://add-employee" press="onSignUp"
 									visible="{= ${UserCredential>/isLogin} === true ? false : true}"/>
-								<MenuItem text="{i18n>ChangePassword}" icon="sap-icon://action-settings" press="onNavToAccount"
+								<MenuItem text="{i18n>Account}" icon="sap-icon://action-settings" press="onNavToAccountSettings"
 									visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
 								<MenuItem text="{i18n>Logout}" icon="sap-icon://log" press="onLogout" visible="{= ${UserCredential>/isLogin} === true ? true : false}"/>
 							</Menu>
 						</MenuButton>
 					</tnt:ToolHeader>
-					<Table items="{/Artisans}">
-						<columns>
-							<Column>
-								<Text text="Deneme"/>
-							</Column>
-						</columns>
-						<items>
-							<ColumnListItem>
-								<Text text="{firstName}"/>
-							</ColumnListItem>
-						</items>
-					</Table>
+					<Carousel
+                        id="welcomeCarousel"
+                        class="PictureSizeTest"
+                        showPageIndicator="false"
+                        loop="true"
+                        visible="{=!${device>/system/phone}}" height="50%">
+						<pages>
+							<VBox renderType="Bare">
+								<Image
+                                    src="img/HomepageSecondPicture.jpg"
+                                    width="100%"
+                                    height="100%"/>
+								<Text
+                                    text="{i18n>HomepageSecondPictureText}"
+                                    class="welcomeCarouselText"/>
+							</VBox>
+							<VBox renderType="Bare">
+								<Image
+                                    src="img/HomepageFirstPicture.jpg"
+                                    width="100%"
+                                    height="100%"/>
+								<Text
+                                    text="{i18n>HomepageFirstPictureText}"
+                                    class="welcomeCarouselText"/>
+							</VBox>
+							<VBox renderType="Bare">
+								<Image
+                                    src="img/HomepageThirdPicture.jpg"
+                                    width="100%"
+                                    height="100%"/>
+								<Text
+                                    text="{i18n>HomepageThirdPictureText}"
+                                    class="welcomeCarouselText"/>
+							</VBox>
+							<VBox renderType="Bare">
+								<Image
+                                    src="img/HomepageFourthPicture.jpg"
+                                    width="100%"
+                                    height="100%"/>
+								<Text
+                                    text="{i18n>HomepageFourthPictureText}"
+                                    class="welcomeCarouselText"/>
+							</VBox>
+						</pages>
+					</Carousel>
+					<FlexBox justifyContent="Center" class="sapUiMediumMarginTop">
+						<Text text="Hand and Life" class="fontSizeText"/>
+					</FlexBox>
+					<l:BlockLayout background="Light" class="sapUiMediumMarginTop">
+						<l:BlockLayoutRow>
+							<l:BlockLayoutCell title="{i18n>Whatisit}">
+								<Text wrappingType="Hyphenated" text="{i18n>WhatisitText}"/>
+							</l:BlockLayoutCell>
+							<l:BlockLayoutCell title="{i18n>Howitsused}">
+								<Text wrappingType="Hyphenated" text="{i18n>HowitsusedText}"/>
+							</l:BlockLayoutCell>
+						</l:BlockLayoutRow>
+					</l:BlockLayout>
 				</content>
 			</Page>
 		</pages>

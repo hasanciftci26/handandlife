@@ -44,3 +44,24 @@
 .footerSize{
     width: 90% !important;
 }
+.sideContentMargin{
+    margin-top:20px !important;
+}
+.PictureSizeTest{
+margin-left: auto !important;
+margin-right: auto !important;
+}
+.welcomeCarouselText {
+	color: white;
+	display: block;
+	position: fixed;
+	bottom: 0;
+	padding: 1rem;
+	font-size: 1.5rem;
+	width: 100%;
+	text-shadow: 0 0 0.125rem black;
+}
+.fontSizeText{
+    font-weight: bold;
+    font-size: xx-large;
+}

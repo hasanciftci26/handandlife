@@ -37,6 +37,9 @@ sap.ui.define([
             onNavToOrders: function () {
                 this.getRouter().navTo("Orders");
             },
+            onNavToAccountSettings:function(){
+                this.getRouter().navTo("AccountSettings");
+            },
             onNavToOffers: function () {
                 this.getRouter().navTo("Offers");
             },
