@@ -14,7 +14,14 @@ module.exports = async (srv) => {
         ArtisanProfessions,
         ArtisanOffers,
         ProductAttachments,
-        Properties } = db.entities;
+        Properties,
+        Artisans,
+        Professions,
+        Countries,
+        Cities,
+        Colors,
+        Currencies,
+        Statuses } = db.entities;
 
     //Tüm ürünleri/kategorik ürünleri döner
     srv.on(["getProducts", "getCategoricalProducts"], async (req) => {
@@ -348,6 +355,7 @@ module.exports = async (srv) => {
         return aReturnOffers;
     });
 
+    //Gelen offerlardan birini kabul etmeyi sağlar.
     srv.on("setOfferAccepted", async (req) => {
         let vOrderId = req.data.orderID,
             vOfferId = req.data.offerID,
@@ -360,6 +368,21 @@ module.exports = async (srv) => {
             orderID: vOrderId,
             offerID: vOfferId
         };
+
+        let aOffer = await SELECT.from(ArtisanOffers).where({ orderID: vOrderId }).and({ offerID: vOfferId });
+        let sArtisanOffer = aOffer[0];
+
+        let sPrice = {
+            price: sArtisanOffer.price,
+            currency_currencyCode: sArtisanOffer.currency_currencyCode
+        };
+
+        let sOrderItem = {
+            orderID_orderID: vOrderId,
+            itemNo: sArtisanOffer.itemNo
+        };
+
+        await UPDATE(OrderItems, sOrderItem).with(sPrice);
 
         let vResponse = await UPDATE(ArtisanOffers, sOffer).with(sStatus);
 
@@ -379,6 +402,7 @@ module.exports = async (srv) => {
         return sReturn;
     });
 
+    //Offer alınmak için geçerli olan tarihi günceller.
     srv.on("updateOfferExpireDate", async (req) => {
         let sOfferExpire = {
             offerExpireBegin: req.data.offerExpireBegin,
@@ -401,6 +425,7 @@ module.exports = async (srv) => {
         return sResponse;
     });
 
+    //Bir ürüne ait resimleri base64 formatında döner
     srv.on("getProductPictures", async (req) => {
         let vProductId = req.data.productID;
         var aPictureResponse = [];
@@ -418,6 +443,219 @@ module.exports = async (srv) => {
             });
         });
         return aPictureResponse;
+    });
+
+    //Tüm üreticilerin bilgilerini döner.
+    srv.on("getArtisanInformations", async (req) => {
+        let aArtisanResponse = [];
+        let aArtisans = await SELECT.from(Artisans);
+        let aArtisanProfessions = await SELECT.from(ArtisanProfessions);
+        let aProfessions = await SELECT.from(Professions);
+
+        aArtisans.forEach((item) => {
+            var aResponseProfessions = [];
+
+            var aFilteredProfessions = aArtisanProfessions.filter((element) => {
+                return element.email_email == item.email;
+            });
+
+            aFilteredProfessions.forEach((profession) => {
+                var sProfession = aProfessions.find((element) => {
+                    return element.professionID == profession.professionID_professionID;
+                });
+
+                aResponseProfessions.push({
+                    professionID: profession.professionID_professionID,
+                    profession: sProfession ? sProfession.profession : "",
+                    experience: profession.experience
+                });
+            });
+
+            aArtisanResponse.push({
+                email: item.email,
+                firstName: item.firstName,
+                lastName: item.lastName,
+                residenceCountry: item.residenceCountry_countryCode,
+                residenceCity: item.residenceCityCode,
+                gsm: item.gsm,
+                address: item.address,
+                professions: aResponseProfessions,
+            });
+        });
+
+        return aArtisanResponse;
+    });
+
+    //Tek bir üreticinin bilgilerini döner.
+    srv.on("getSingleArtisanInformation", async (req) => {
+        let vEmail = req.data.email;
+
+        if (!vEmail) {
+            req.reject(404, "Artisan not found");
+        }
+        let sArtisanResponse = {};
+        let aArtisan = await SELECT.from(Artisans).where({ email: vEmail });
+
+        if (!aArtisan.length) {
+            req.reject(404, "Artisan not found");
+        }
+
+        let aArtisanProfessions = await SELECT.from(ArtisanProfessions).where({ email_email: vEmail });
+        let aProfessions = await SELECT.from(Professions);
+
+        var sArtisan = aArtisan[0];
+
+        var aResponseProfessions = [];
+
+        aArtisanProfessions.forEach((profession) => {
+            var sProfession = aProfessions.find((element) => {
+                return element.professionID == profession.professionID_professionID;
+            });
+
+            aResponseProfessions.push({
+                professionID: profession.professionID_professionID,
+                profession: sProfession ? sProfession.profession : "",
+                experience: profession.experience
+            });
+        });
+
+        sArtisanResponse.email = sArtisan.email;
+        sArtisanResponse.firstName = sArtisan.firstName;
+        sArtisanResponse.lastName = sArtisan.lastName;
+        sArtisanResponse.residenceCountry = sArtisan.residenceCountry_countryCode;
+        sArtisanResponse.residenceCity = sArtisan.residenceCityCode;
+        sArtisanResponse.gsm = sArtisan.gsm;
+        sArtisanResponse.address = sArtisan.address;
+        sArtisanResponse.professions = aResponseProfessions;
+
+        return sArtisanResponse;
+    });
+
+    //Tek bir üreticinin ürünlerini döner.
+    srv.on("getArtisanProducts", async (req) => {
+        let vEmail = req.data.email;
+
+        if (!vEmail) {
+            req.reject(404, "Artisan not found");
+        }
+
+        let aReturnProducts = [];
+
+        let aUnits = await SELECT.from(Units);
+        let aCategories = await SELECT.from(Categories);
+
+        let aProducts = await SELECT.from(ArtisanProducts).where({ email_email: vEmail }).and({ status_statusID: "AVLB" });
+
+        if (!aProducts.length) {
+            req.reject(404, "Products not found");
+        }
+
+        let aProductID = [];
+
+        aProducts.forEach((item) => {
+            aProductID.push(item.productID);
+        });
+
+        let aProperties = await SELECT.from(ProductProperties).where({ productID_productID: { in: aProductID } });
+
+        aProducts.forEach((item) => {
+            let aProp = aProperties.filter((element) => {
+                return element.productID_productID == item.productID;
+            });
+
+            let sCategory = aCategories.find((category) => { return category.categoryID == item.category_categoryID; });
+            let sUnit = aUnits.find((unit) => { return unit.unitID == item.unit_unitID; })
+
+            aReturnProducts.push({
+                productID: item.productID,
+                categoryID: item.category_categoryID,
+                categoryText: sCategory.category,
+                email: item.email_email,
+                stock: item.stock,
+                stockUnit: item.unit_unitID,
+                stockUnitText: sUnit.unit,
+                price: item.price,
+                currency: item.currency_currencyCode,
+                productName: item.productName,
+                properties: aProp,
+                details: item.details
+            });
+        });
+        return aReturnProducts;
+    });
+
+    //Tüm ülkeleri döner
+    srv.on("getCountries", async (req) => {
+        let aCountries = await SELECT.from(Countries);
+        let aCountriesResponse = [];
+
+        aCountries.forEach((item) => {
+            aCountriesResponse.push({
+                countryCode: item.countryCode,
+                country: item.country
+            });
+        });
+
+        return aCountriesResponse;
+    });
+
+    //Tüm şehirleri döner
+    srv.on("getCities", async (req) => {
+        let aCities = await SELECT.from(Cities);
+        let aCitiesResponse = [];
+
+        aCities.forEach((item) => {
+            aCitiesResponse.push({
+                countryCode: item.countryCode_countryCode,
+                cityCode: item.cityCode,
+                city: item.city
+            });
+        });
+
+        return aCitiesResponse;
+    });
+
+    //Tüm renkleri döner
+    srv.on("getColors", async (req) => {
+        let aColors = await SELECT.from(Colors);
+        return aColors;
+    });
+
+    //Tüm para birimlerini döner.
+    srv.on("getCurrencies", async (req) => {
+        let aCurrencies = await SELECT.from(Currencies);
+        return aCurrencies;
+    });
+
+    //Tüm statüleri döner.
+    srv.on("getStatuses", async (req) => {
+        let aStatus = await SELECT.from(Statuses);
+        return aStatus;
+    });
+
+    srv.on("setOrderItemCompleted", async (req) => {
+        let sOrderItem = {
+            orderID_orderID: req.data.orderID,
+            itemNo: req.data.itemNo
+        },
+            sResponse = {},
+            sStatus = {
+                status_statusID: "CMPL"
+            };
+
+        let vResponse = await UPDATE(OrderItems, sOrderItem).with(sStatus);
+        if (vResponse > 0) {
+            sResponse = {
+                orderID: req.data.orderID,
+                itemNo: req.data.itemNo
+            };
+        } else {
+            sResponse = {
+                orderID: "",
+                itemNo: ""
+            };
+        }
+        return sResponse;
     });
 }
 

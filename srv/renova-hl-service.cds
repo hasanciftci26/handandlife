@@ -266,7 +266,54 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         productID : artisan.ArtisanProducts:productID;
         fileID    : artisan.ProductAttachments:fileID;
         picture   : String;
-    }
+    };
+
+    type ArtisanResponse {
+        email            : artisan.Artisans:email;
+        firstName        : artisan.Artisans:firstName;
+        lastName         : artisan.Artisans:lastName;
+        residenceCountry : main.Countries:countryCode;
+        residenceCity    : main.Cities:cityCode;
+        gsm              : artisan.Artisans:gsm;
+        address          : artisan.Artisans:address;
+        professions      : many {
+            professionID : artisan.Professions:professionID;
+            profession   : artisan.Professions:profession;
+            experience   : artisan.ArtisanProfessions:experience;
+        }
+    };
+
+    type CountriesResponse {
+        countryCode : main.Countries:countryCode;
+        country     : main.Countries:country;
+    };
+
+    type CitiesResponse {
+        countryCode : main.Countries:countryCode;
+        cityCode    : main.Cities:cityCode;
+        city        : main.Cities:city;
+    };
+
+    type ColorsResponse {
+        colorID : main.Colors:colorID;
+        color   : main.Colors:color;
+        hexCode : main.Colors:hexCode;
+    };
+
+    type CurrenciesResponse {
+        currencyCode : main.Currencies:currencyCode;
+        currency     : main.Currencies:currency;
+    };
+
+    type StatusesResponse {
+        statusID : main.Statuses:statusID;
+        status   : main.Statuses:status;
+    };
+
+    type OrderItemCompletedResponse {
+        orderID : artisan.Orders:orderID;
+        itemNo  : artisan.OrderItems:itemNo;
+    };
 
     function getProducts() returns array of Products;
     function getSingleProduct(productID : UUID) returns Products;
@@ -279,8 +326,17 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
     function getUnits() returns array of Units;
     function getOrderOffers(orderID : artisan.Orders:orderID) returns array of OrderOffers;
     function getProductPictures(productID : artisan.ArtisanProducts:productID) returns array of PictureResponse;
+    function getArtisanInformations() returns array of ArtisanResponse;
+    function getSingleArtisanInformation(email : artisan.Artisans:email) returns ArtisanResponse;
+    function getArtisanProducts(email : artisan.Artisans:email) returns array of Products;
+    function getCountries() returns array of CountriesResponse;
+    function getCities() returns array of CitiesResponse;
+    function getColors() returns array of ColorsResponse;
+    function getCurrencies() returns array of CurrenciesResponse;
+    function getStatuses() returns array of StatusesResponse;
     action createOrder(order : AllOrders) returns OrderResponse;
     action saveProductProperties(productProperties : ProductPropertiesInput) returns PropertyResponse;
     action setOfferAccepted(orderID : artisan.Orders:orderID, offerID : artisan.ArtisanOffers:offerID) returns OfferResponse;
     action updateOfferExpireDate(orderID : artisan.Orders:orderID, productID : UUID, offerExpireBegin : DateTime, offerExpireEnd : DateTime) returns OfferExpireResponse;
+    action setOrderItemCompleted(orderID : artisan.Orders:orderID, itemNo : artisan.OrderItems:itemNo) returns OrderItemCompletedResponse;
 };
