@@ -10,6 +10,13 @@
             "source": "/hand-and-life-integration/(.*)",
             "destination": "srv-api",
             "csrfProtection": false
+        },
+        {
+            "source": "^/globalbpmwfruntime/(.*)$",
+            "target": "/$1",
+            "destination": "WorkflowRESTAPI",
+            "authenticationType": "xsuaa",
+            "csrfProtection": false
         }
     ],
     "welcomeFile": "/renovahluiartisan"

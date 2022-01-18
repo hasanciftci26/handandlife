@@ -6,8 +6,14 @@
             "source": "/hand-and-life/(.*)",
             "csrfProtection": true,
             "destination": "hana-app-api",
-            "authenticationType":"xsuaa"
-            
+            "authenticationType": "xsuaa"
+        },
+        {
+            "source": "^/globalbpmwfruntime/(.*)$",
+            "target": "/$1",
+            "destination": "WorkflowRESTAPI",
+            "authenticationType": "xsuaa",
+            "csrfProtection": false
         },
         {
             "source": "^/resources/(.*)$",

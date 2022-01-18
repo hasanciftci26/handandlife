@@ -262,6 +262,12 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         isSuccess : Boolean;
     };
 
+    type PictureResponse {
+        productID : artisan.ArtisanProducts:productID;
+        fileID    : artisan.ProductAttachments:fileID;
+        picture   : String;
+    }
+
     function getProducts() returns array of Products;
     function getSingleProduct(productID : UUID) returns Products;
     function getCategoricalProducts(categoryID : String(4)) returns array of Products;
@@ -272,6 +278,7 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
     function getCategoricalProperties(categoryID : artisan.Categories:categoryID) returns array of Properties;
     function getUnits() returns array of Units;
     function getOrderOffers(orderID : artisan.Orders:orderID) returns array of OrderOffers;
+    function getProductPictures(productID : artisan.ArtisanProducts:productID) returns array of PictureResponse;
     action createOrder(order : AllOrders) returns OrderResponse;
     action saveProductProperties(productProperties : ProductPropertiesInput) returns PropertyResponse;
     action setOfferAccepted(orderID : artisan.Orders:orderID, offerID : artisan.ArtisanOffers:offerID) returns OfferResponse;

@@ -20,7 +20,6 @@ module.exports = async (srv) => {
     srv.on(["getProducts", "getCategoricalProducts"], async (req) => {
         let aReturnProducts = [];
 
-        let aPictures = await SELECT.from(ProductAttachments);
         let aUnits = await SELECT.from(Units);
         let aCategories = await SELECT.from(Categories);
 
@@ -43,9 +42,9 @@ module.exports = async (srv) => {
                 return element.productID_productID == item.productID;
             });
 
-            let aPic = aPictures.filter((element) => {
-                return element.productID_productID == item.productID;
-            });
+            // let aPic = aPictures.filter((element) => {
+            //     return element.productID_productID == item.productID;
+            // });
 
             let sCategory = aCategories.find((category) => { return category.categoryID == item.category_categoryID; });
             let sUnit = aUnits.find((unit) => { return unit.unitID == item.unit_unitID; })
@@ -400,6 +399,25 @@ module.exports = async (srv) => {
             };
         }
         return sResponse;
+    });
+
+    srv.on("getProductPictures", async (req) => {
+        let vProductId = req.data.productID;
+        var aPictureResponse = [];
+
+        if (!vProductId) {
+            req.reject(404, "Product not found");
+        }
+        var aProductPictures = await SELECT.from(ProductAttachments).where({ productID_productID: vProductId });
+
+        aProductPictures.forEach((item) => {
+            aPictureResponse.push({
+                productID: vProductId,
+                fileID: item.fileID,
+                picture: Buffer.from(item.mediaContent).toString("base64")
+            });
+        });
+        return aPictureResponse;
     });
 }
 

@@ -65,7 +65,7 @@
 									<m:Label text="{i18n>LastName}"/>
 									<m:Input value="{ArtisanRegistration>/LastName}" maxLength="40" liveChange="onGeneralChange"/>
 									<m:Label text="{i18n>BirthDate}"/>
-									<m:DatePicker value="{ArtisanRegistration>/BirthDate}" displayFormat="dd/MM/yyyy" change="onGeneralChange"/>
+									<m:DatePicker dateValue="{ArtisanRegistration>/BirthDate}" displayFormat="dd/MM/yyyy" change="onGeneralChange"/>
 									<m:Label text="{i18n>BirthCountry}"/>
 									<m:ComboBox items="{BirthCountries>/}" selectionChange="onChangeBirthCountry" id="cbBirthCountries">
 										<m:items>

@@ -30,7 +30,7 @@ sap.ui.define([
             },
             onAfterRendering: function () {
             },
-            onNavToAccountSettings:function(){
+            onNavToAccountSettings: function () {
                 this.getRouter().navTo("AccountSettings");
             },
             //Sayfaya her yönlenişte ülke ve uzmanlık bilgisini al
@@ -270,11 +270,7 @@ sap.ui.define([
                     }
                 }
 
-                if (sArtisanRegistration.BirthDate.length < 10) {
-                    sArtisanRegistration.BirthDate = "0" + sArtisanRegistration.BirthDate;
-                }
-                var vBirthDate = sArtisanRegistration.BirthDate.substring(6, 10) +
-                    "-" + sArtisanRegistration.BirthDate.substring(3, 5) + "-" + sArtisanRegistration.BirthDate.substring(0, 2);
+                var vBirthDate = this.convertDate(sArtisanRegistration.BirthDate);
 
                 var oBindArtisan = oDataModel.bindList("/Artisans", undefined, undefined, undefined, {
                     $$groupId: "batchRequest"
@@ -320,9 +316,19 @@ sap.ui.define([
                     MessageBox.information("Hata");
                 });
             },
-            createWorkflowInstance: function () {
-                MessageBox.information(this.getResourceBundle().getText("RegistrationCompleted"));
-                this.getRouter().navTo("HomePage");
+            createWorkflowInstance: async function () {
+                var that = this;
+                var sArtisanRegistration = this.getView().getModel("ArtisanRegistration").getData();
+                var vCountry = this.getView().byId("cbResidenceCountries").getSelectedKey();
+
+                var vToken = "";
+                // var vToken = await this.fetchCsrfToken();
+                this.startWorkflow(sArtisanRegistration.Email, vCountry, vToken).then((resolve) => {
+                    MessageBox.information(this.getResourceBundle().getText("RegistrationCompleted"));
+                    that.getRouter().navTo("HomePage");
+                }).catch((reject) => {
+                    MessageBox.information(this.getResourceBundle().getText("RegistrationFail"));
+                });
             },
             //Genel boş alan kontrolüne göre state'i boş yap
             onGeneralChange: function (oEvent) {
@@ -401,5 +407,61 @@ sap.ui.define([
             onNavToOffers: function () {
                 this.getRouter().navTo("Offers");
             },
+            fetchCsrfToken: function () {
+                // return new Promise((resolve, reject) => {
+                //     $.ajax({
+                //         url: "/renovahluiartisan/globalbpmwfruntime/v1/xsrf-token",
+                //         method: "GET",
+                //         headers: {
+                //             "X-CSRF-Token": "Fetch"
+                //         },
+                //         success: function (results, xhr, data) {
+                //             var token = data.getResponseHeader("X-CSRF-Token");
+                //             resolve(token);
+                //         },
+                //         error: function (data) {
+                //             MessageToast.show("Workflow failed");
+                //             reject();
+                //         }
+                //     });
+                // });
+            },
+            startWorkflow: function (email, country, token) {
+                //start workflow
+                return new Promise((resolve, reject) => {
+                    $.ajax({
+                        url: "/renovahluiartisan/globalbpmwfruntime/rest/v1/workflow-instances",
+                        method: "POST",
+                        data: JSON.stringify({
+                            definitionId: "renova.hl.wf.approvalprocess",
+                            context: {
+                                email: email,
+                                country: country,
+                            }
+                        }),
+                        headers: {
+                            //     "X-CSRF-Token": token,
+                            "Content-Type": "application/json"
+                        },
+                        async: false,
+                        success: function (data) {
+                            resolve();
+                        },
+                        error: function (data) {
+                            MessageToast.show("Workflow failed");
+                            reject();
+                        }
+                    });
+                });
+            },
+            convertDate: function (date) {
+                var vDate = "";
+                var vDay = date.getDate().toString().length === 1 ? "0" + date.getDate() : date.getDate();
+                var vMonth = (date.getMonth() + 1).toString().length === 1 ? "0" + (date.getMonth() + 1) : (date.getMonth() + 1);
+                var vYear = date.getFullYear();
+
+                vDate = vYear + "-" + vMonth + "-" + vDay;
+                return vDate;
+            }
         });
     });

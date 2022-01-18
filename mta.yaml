@@ -41,6 +41,7 @@ modules:
           forwardAuthToken: false
           name: ui5
           url: 'https://ui5.sap.com'
+      - name: workflow
     parameters:
       disk-quota: 1024M
       memory: 1024M
@@ -62,7 +63,7 @@ modules:
     type: hdb
     path: gen/db
     requires:
-    - name: handandlife-db
+      - name: handandlife-db
     parameters:
       buildpack: nodejs_buildpack
   - name: renovahluiartisan
@@ -75,6 +76,8 @@ modules:
         - npm install
         - 'npm run build:cf'
       supported-platforms: []
+    requires:
+      - name: handandlife-dest-srv
 resources:
   - name: handandlife_html_repo_runtime
     type: org.cloudfoundry.managed-service
@@ -95,9 +98,9 @@ resources:
       service-plan: app-host
   - name: handandlife-dest-srv
     type: org.cloudfoundry.managed-service
-    requires: 
+    requires:
       - name: srv-api
-        properties: 
+        properties:
           backend-url: '~{srv-url}'
     parameters:
       config:
@@ -129,3 +132,8 @@ resources:
       service-plan: hdi-shared
     properties:
       hdi-service-name: '${service-name}'
+  - name: workflow
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: workflow
+      service-plan: lite
