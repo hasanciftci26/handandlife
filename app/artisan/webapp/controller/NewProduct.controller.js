@@ -37,7 +37,7 @@ sap.ui.define([
             onNavToOrders: function () {
                 this.getRouter().navTo("Orders");
             },
-            onNavToAccountSettings:function(){
+            onNavToAccountSettings: function () {
                 this.getRouter().navTo("AccountSettings");
             },
             onNavToOffers: function () {
@@ -359,6 +359,16 @@ sap.ui.define([
                         vPropertyValue = this.getView().getModel("Color").getData().ColorText;
                     }
 
+                    if (sProperty.isBodySize) {
+                        item.getCells()[2].getItems().forEach((element) => {
+                            if (element.getMetadata().getName() === "sap.m.Select") {
+                                if (element.getVisible()) {
+                                    vPropertyValue = element.getSelectedKey();
+                                }
+                            }
+                        });
+                    }
+
                     oBindProperty.create({
                         productID_productID: vProductId,
                         propertyID_propertyID: vPropertyId,
@@ -443,6 +453,10 @@ sap.ui.define([
                 var oUploadSet = this.getView().byId("usProductAttachments");
                 oUploadSet.setHttpRequestMethod("PUT");
                 oUploadSet.uploadItem(oItem);
+            },
+            onOpenNotifications: function (oEvent) {
+                var oButton = oEvent.getSource();
+                this.displayIncomingOrders(this, oButton);
             }
         });
     });

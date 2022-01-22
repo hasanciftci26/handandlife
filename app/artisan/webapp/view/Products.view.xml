@@ -128,6 +128,75 @@
                                             <Button id="btnUpdateDetails" text="{i18n>Update}" press="onUpdateProductDetails"/>
                                         </f:content>
                                     </f:SimpleForm>
+                                    <VBox>
+                                        <f:SimpleForm id="sfPropertiesForm" editable="true" layout="ResponsiveGridLayout" labelSpanXL="3" labelSpanL="3"
+                                            labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="4" emptySpanL="4" emptySpanM="4" emptySpanS="0" columnsXL="1"
+                                            columnsL="1" columnsM="1" singleContainerFullSize="false">
+                                            <f:toolbar>
+                                                <Toolbar>
+                                                    <Title text="{i18n>Properties}"/>
+                                                    <ToolbarSpacer />
+                                                    <Button text="{i18n>Update}" press="onUpdateProperties" visible="{= !!!${PropertyEditable>/Edit}}"/>
+                                                    <Button text="{i18n>CancelUpdate}" press="onCancelProperties" type="Reject" visible="{PropertyEditable>/Edit}"/>
+                                                </Toolbar>
+                                            </f:toolbar>
+                                            <f:content></f:content>
+                                        </f:SimpleForm>
+                                        <Label text="{i18n>PropertyInformProduct}" design="Bold" class="LabelColor sapUiSmallMarginTop sapUiSmallMarginBegin"/>
+                                        <VBox alignItems="Center">
+                                            <Table id="tblProperties" items="{Properties>/}" width="60rem" class="TableMargin" mode="MultiSelect">
+                                                <columns>
+                                                    <Column visible="false"></Column>
+                                                    <Column >
+                                                        <Label design="Bold" text="{i18n>Property}"/>
+                                                    </Column>
+                                                    <Column >
+                                                        <Label design="Bold" text="{i18n>PropertyValue}"/>
+                                                    </Column>
+                                                    <Column >
+                                                        <Label design="Bold" text="{i18n>Unit}"/>
+                                                    </Column>
+                                                </columns>
+                                                <items>
+                                                    <ColumnListItem>
+                                                        <Text text="{Properties>propertyID}" visible="false"/>
+                                                        <Label text="{Properties>property}" class="sapUiSmallMarginTop sapUiSmallMarginBottom" required="{Properties>mandatory}"/>
+                                                        <HBox>
+                                                            <Input visible="{Properties>CommonInputVisible}" width="160%" value="{Properties>CommonProperty}"  editable="{PropertyEditable>/Edit}"/>
+                                                            <Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Height}" editable="{PropertyEditable>/Edit}"/>
+                                                            <Text text="X" visible="{= ${Properties>isSize} === true ? true:false}"
+                                                                class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
+                                                            <Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Width}" editable="{PropertyEditable>/Edit}"/>
+                                                            <Text text="X" visible="{= ${Properties>isSize} === true ? true:false}"
+                                                                class="sapUiSmallMarginTop sapUiTinyMarginBegin sapUiTinyMarginEnd"/>
+                                                            <Input visible="{= ${Properties>isSize} === true ? true:false}" value="{Properties>Depth}" editable="{PropertyEditable>/Edit}"/>
+                                                            <Select items="{path:'BodySizes>/', templateShareable:true}" visible="{= ${Properties>isBodySize} === true ? true:false}" selectedKey="{Properties>BodySize}" editable="{PropertyEditable>/Edit}">
+                                                                <items>
+                                                                    <core:Item xmlns:core="sap.ui.core" key="{BodySizes>key}" text="{BodySizes>text}"/>
+                                                                </items>
+                                                            </Select>
+                                                            <Button icon="sap-icon://palette" press="onSelectColor" visible="{= ${Properties>isColor} === true ? true:false}" width="18.2rem" enabled="{PropertyEditable>/Edit}"/>
+                                                        </HBox>
+                                                        <HBox>
+                                                            <Label design="Bold" text="{Color>/ColorText}" visible="{= ${Properties>isColor} === true ? true:false}"/>
+                                                            <Select items="{path:'Units>/', filters:[{ path: 'isWeight', operator:'EQ', value1: true }], templateShareable:true}"
+                                                                visible="{= ${Properties>isWeight} === true ? true:false}" selectedKey="{Properties>WeightUnit}" editable="{PropertyEditable>/Edit}">
+                                                                <items>
+                                                                    <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
+                                                                </items>
+                                                            </Select>
+                                                            <Select items="{path:'Units>/', filters:[{ path: 'isSize', operator:'EQ', value1: true }], templateShareable:true}"
+                                                                visible="{= ${Properties>isSize} === true ? true:false}" selectedKey="{Properties>SizeUnit}" editable="{PropertyEditable>/Edit}">
+                                                                <items>
+                                                                    <core:Item xmlns:core="sap.ui.core" key="{Units>unitID}" text="{Units>unit}"/>
+                                                                </items>
+                                                            </Select>
+                                                        </HBox>
+                                                    </ColumnListItem>
+                                                </items>
+                                            </Table>
+                                        </VBox>
+                                    </VBox>
 									<semantic:customFooterContent>
 										<Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}"
 											visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>

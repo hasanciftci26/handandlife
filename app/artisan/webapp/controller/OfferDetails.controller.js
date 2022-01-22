@@ -50,7 +50,7 @@ sap.ui.define([
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
             },
-            onNavToAccountSettings:function(){
+            onNavToAccountSettings: function () {
                 this.getRouter().navTo("AccountSettings");
             },
             onLogout: function () {

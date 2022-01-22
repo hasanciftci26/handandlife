@@ -462,6 +462,10 @@ sap.ui.define([
 
                 vDate = vYear + "-" + vMonth + "-" + vDay;
                 return vDate;
+            },
+            onOpenNotifications: function (oEvent) {
+                var oButton = oEvent.getSource();
+                this.displayIncomingOrders(this, oButton);
             }
         });
     });

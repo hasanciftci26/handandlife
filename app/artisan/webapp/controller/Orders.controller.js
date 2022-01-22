@@ -485,6 +485,10 @@ sap.ui.define([
                 this.getRouter().navTo("Products", {
                     productId: vProductId
                 });
+            },
+            onOpenNotifications: function (oEvent) {
+                var oButton = oEvent.getSource();
+                this.displayIncomingOrders(this, oButton);
             }
         });
     });

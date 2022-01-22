@@ -603,6 +603,10 @@ sap.ui.define([
                     }
                 }
                 );
+            },
+            onOpenNotifications: function (oEvent) {
+                var oButton = oEvent.getSource();
+                this.displayIncomingOrders(this, oButton);
             }
         });
     });

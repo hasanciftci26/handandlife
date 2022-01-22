@@ -8,20 +8,37 @@ sap.ui.define([
     "sap/ui/model/FilterOperator",
     "sap/ui/util/Storage",
     "sap/m/MessageToast",
-    "sap/ui/core/Fragment"
+    "sap/ui/core/Fragment",
+    "sap/m/ColorPalettePopover",
+    "sap/ui/unified/ColorPickerDisplayMode"
 ],
 	/**
 	 * @param {typeof sap.ui.core.mvc.Controller} Controller
 	 */
-    function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage, MessageToast, Fragment) {
+    function (BaseController, Controller, JSONModel, MessageBox, Filter, FilterOperator, Storage, MessageToast, Fragment, ColorPalettePopover, ColorPickerDisplayMode) {
         "use strict";
-        var gProduct;
 
         return BaseController.extend("renova.hl.ui.artisan.controller.Products", {
             onInit: function () {
                 this.getRouter().getRoute("Products").attachPatternMatched(this._onObjectMatched, this);
                 this.setComboboxReadonly("cbUnits", this);
                 this.setComboboxReadonly("cbCurrencies", this);
+                var oPropertyTable = this.getView().byId("tblProperties");
+
+                oPropertyTable.addEventDelegate({
+                    onAfterRendering: function () {
+                        var oTableHeader = this.$().find('thead');
+                        var oSelectAllCheckBox = oTableHeader.find('.sapMCb');
+                        var oSelectAll = sap.ui.getCore().byId(oSelectAllCheckBox.attr('id'));
+                        oSelectAll.setEnabled(false);
+
+                        this.getItems().forEach(function (item) {
+                            var oCheckLineBox = item.$().find('.sapMCb');
+                            var oCheckBox = sap.ui.getCore().byId(oCheckLineBox.attr('id'));
+                            oCheckBox.setEnabled(false);
+                        });
+                    }
+                }, oPropertyTable);
             },
             onSignUp: function () {
                 this.getRouter().navTo("SignUp");
@@ -29,7 +46,7 @@ sap.ui.define([
             onNavToOrders: function () {
                 this.getRouter().navTo("Orders");
             },
-            onNavToAccountSettings:function(){
+            onNavToAccountSettings: function () {
                 this.getRouter().navTo("AccountSettings");
             },
             onNavToOffers: function () {
@@ -65,6 +82,24 @@ sap.ui.define([
                 // this.getCategories();
                 this.getUnits();
                 this.getCurrencies();
+                this.getColors();
+                this.getView().setModel(new JSONModel(this.getBodySizes()), "BodySizes");
+                this.getView().setModel(new JSONModel({ ColorText: "" }), "Color");
+                this.getView().setModel(new JSONModel({ Edit: false }), "PropertyEditable");
+                this.setPropertyTableEnabled(false);
+            },
+            getColors: function () {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oBindColors = oDataModel.bindContext("/Colors", undefined, {
+                    $$groupId: "directRequest"
+                });
+
+                oBindColors.requestObject().then((oData) => {
+                    that.aColors = oData.value;
+                    sap.ui.getCore().aColors = oData.value;
+                    sap.ui.getCore().vThis = that;
+                });
             },
             getArtisanProducts: function (vIndex = 0, vProductId) {
                 var that = this;
@@ -75,6 +110,10 @@ sap.ui.define([
                         $filter: "email_email eq '" + sap.ui.getCore().email + "'",
                         $$groupId: "directRequest"
                     });
+
+                this.getView().setModel(new JSONModel({ ColorText: "" }), "Color");
+                this.getView().setModel(new JSONModel({ Edit: false }), "PropertyEditable");
+                this.setPropertyTableEnabled(false);
 
                 sap.ui.core.BusyIndicator.show();
                 oBindProduct.requestObject().then((oData) => {
@@ -126,21 +165,6 @@ sap.ui.define([
                     that.getView().setModel(new JSONModel(oData.value), "Currencies");
                 });
             },
-            // getProperties: function (vProductId) {
-            //     var that = this;
-            //     var oDataModel = this.getView().getModel();
-            //     var oBindProperties = oDataModel.bindContext("/ProductProperties", undefined, {
-            //         $filter: "productID_productID eq " + vProductId,
-            //         $$groupId: "directRequest"
-            //     });
-
-            //     oBindProperties.requestObject().then((oData) => {
-            //         that.getView().setModel(new JSONModel(oData.value), "Prop");
-            //     });
-            //     var oProperty = this.getView().getModel("Prop");
-
-            // },
-
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
             },
@@ -170,9 +194,11 @@ sap.ui.define([
             },
             onSelectProduct: function (oEvent) {
                 var vProductId = oEvent.getSource().getAttributes()[0].getText();
+                this.getView().getModel("PropertyEditable").setProperty("/Edit", false);
+                this.setPropertyTableEnabled(false);
                 this.getProductDetails(vProductId);
             },
-            getProductDetails: function (vProductId) {
+            getProductDetails: async function (vProductId) {
                 this.setFormEditable(["inpProductName", "inpStock", "cbUnits", "inpPrice", "cbCurrencies", "taDetails"],
                     ["btnUpdateName", "btnUpdateDetails", "btnUpdatePrice", "btnUpdateStock"]);
 
@@ -180,11 +206,116 @@ sap.ui.define([
                     return item.productID === vProductId;
                 });
                 this.getView().setModel(new JSONModel(sProduct), "Product");
+                var vCategoryId = await this.getCategoryId(sProduct.productID, sProduct.email_email);
+                await this.getCategoricalProperties(vCategoryId);
+                this.getProductProperties(sProduct.productID);
                 sap.ui.core.BusyIndicator.hide();
                 this.getProductPictures(vProductId);
                 // this.getView().byId("sfAttach").setVisible(false);
 
                 // this.getProperties(vProductId);
+            },
+            getCategoryId: function (vProductId, Email) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+
+                return new Promise((resolve) => {
+                    var oArtisanProducts = oDataModel.bindContext("/ArtisanProducts", undefined, {
+                        $filter: "email_email eq '" + Email + "' and productID eq " + vProductId,
+                        $$groupId: "directRequest"
+                    });
+
+                    oArtisanProducts.requestObject().then((oData) => {
+                        var vCategoryId = oData.value[0].category_categoryID;
+                        resolve(vCategoryId);
+                    });
+                });
+            },
+            getCategoricalProperties: function (vCategoryId) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+
+                return new Promise((resolve) => {
+                    var oProperties = oDataModel.bindContext("/Properties", undefined, {
+                        $filter: "category_categoryID eq '" + vCategoryId + "' or commonProperty eq " + true,
+                        $$groupId: "directRequest"
+                    });
+
+                    oProperties.requestObject().then((oData) => {
+                        oData.value.forEach((item) => {
+                            item.CommonInputVisible = that.setCommonInputVisible(item);
+                            item.Width = "";
+                            item.Height = "";
+                            item.Depth = "";
+                            item.CommonProperty = "";
+                        });
+                        that.getView().setModel(new JSONModel(oData.value), "Properties");
+                        resolve();
+                    });
+                });
+            },
+            getProductProperties: function (vProductId) {
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                var oPropertyTable = this.getView().byId("tblProperties");
+                var aPropertyTableItems = this.getView().byId("tblProperties").getItems();
+
+                var oProperties = oDataModel.bindContext("/ProductProperties", undefined, {
+                    $filter: "productID_productID eq " + vProductId,
+                    $$groupId: "directRequest"
+                });
+
+                oProperties.requestObject().then((oData) => {
+                    var oProperties = that.getView().getModel("Properties");
+                    var aProperties = oProperties.getData();
+
+                    aProperties.forEach((item, index) => {
+                        var sProduct = oData.value.find((element) => {
+                            return element.propertyID_propertyID === item.propertyID;
+                        });
+
+                        if (sProduct) {
+
+                            oPropertyTable.setSelectedItem(aPropertyTableItems[index]);
+
+                            if (item.CommonInputVisible) {
+                                item.CommonProperty = sProduct.propertyValue;
+                            }
+
+                            if (item.commonProperty) {
+                                item.CommonProperty = sProduct.propertyValue;
+                            }
+
+                            if (item.isSize) {
+                                var aSizes = sProduct.propertyValue.split("x");
+                                item.Depth = aSizes[0];
+                                item.Height = aSizes[1];
+                                item.Width = aSizes[2];
+                                item.SizeUnit = sProduct.unit_unitID;
+                            }
+
+                            if (item.isWeight) {
+                                item.CommonProperty = sProduct.propertyValue;
+                                item.WeightUnit = sProduct.unit_unitID;
+                            }
+                            if (item.isBodySize) {
+                                item.BodySize = sProduct.propertyValue;
+                            }
+
+                            if (item.isColor) {
+                                var sSelectedColor = sap.ui.getCore().aColors.find((element) => {
+                                    return element.color === sProduct.propertyValue;
+                                });
+                                if (sSelectedColor) {
+                                    that.getView().getModel("Color").setProperty("/ColorText", sSelectedColor.color);
+                                }
+                            }
+                        }
+
+                    });
+                    oProperties.setData(aProperties);
+                    oProperties.refresh();
+                });
             },
             getProductPictures: function (vProductId) {
                 var that = this;
@@ -383,37 +514,41 @@ sap.ui.define([
                 var bUpdateDetails = this.getView().byId("btnUpdateDetails").getType() === "Default" ? false : true;
 
                 if (!bUpdateName && !bUpdateStock && !bUpdatePrice && !bUpdateDetails) {
-                    return;
+                    this.vUpdatedProductId = sProduct.productID;
+                    this.updateProductProperties();
+                } else {
+                    this.updateProductProperties();
+
+                    aFilter.push(new Filter("productID", FilterOperator.EQ, sProduct.productID));
+                    this.vUpdatedProductId = sProduct.productID;
+
+                    var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
+                        $$groupId: "directRequest"
+                    }).filter(aFilter);
+
+                    oBindProduct.attachPatchCompleted(this.onUpdateCompleted, this);
+
+                    oBindProduct.requestContexts().then((aContext) => {
+                        if (bUpdateName) {
+                            aContext[0].setProperty("productName", sProduct.productName);
+                        }
+                        if (bUpdateStock) {
+                            aContext[0].setProperty("stock", sProduct.stock);
+                            aContext[0].setProperty("unit_unitID", sProduct.unit_unitID);
+                        }
+                        if (bUpdatePrice) {
+                            aContext[0].setProperty("price", sProduct.price);
+                            aContext[0].setProperty("currency_currencyCode", sProduct.currency_currencyCode);
+                        }
+                        if (bUpdateDetails) {
+                            aContext[0].setProperty("details", sProduct.details);
+                        }
+                        oDataModel.submitBatch("batchRequest");
+                    });
                 }
-
-                aFilter.push(new Filter("productID", FilterOperator.EQ, sProduct.productID));
-                this.vUpdatedProductId = sProduct.productID;
-
-                var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
-                    $$groupId: "directRequest"
-                }).filter(aFilter);
-
-                oBindProduct.attachPatchCompleted(this.onUpdateCompleted, this);
-
-                oBindProduct.requestContexts().then((aContext) => {
-                    if (bUpdateName) {
-                        aContext[0].setProperty("productName", sProduct.productName);
-                    }
-                    if (bUpdateStock) {
-                        aContext[0].setProperty("stock", sProduct.stock);
-                        aContext[0].setProperty("unit_unitID", sProduct.unit_unitID);
-                    }
-                    if (bUpdatePrice) {
-                        aContext[0].setProperty("price", sProduct.price);
-                        aContext[0].setProperty("currency_currencyCode", sProduct.currency_currencyCode);
-                    }
-                    if (bUpdateDetails) {
-                        aContext[0].setProperty("details", sProduct.details);
-                    }
-                    oDataModel.submitBatch("batchRequest");
-                });
             },
             onUpdateCompleted: function (oEvent) {
+                MessageToast.show(this.getResourceBundle().getText("UpdateCompleted"));
                 this.getArtisanProducts(0, this.vUpdatedProductId);
             },
             onPicturePressed: function (oEvent) {
@@ -531,6 +666,208 @@ sap.ui.define([
                 var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
                 oUploadSet.setHttpRequestMethod("PUT");
                 oUploadSet.uploadItem(oItem);
+            },
+            onSelectColor: function (oEvent) {
+                var aPaletteColors = [];
+                this.aColors.forEach((item) => {
+                    aPaletteColors.push(item.hexCode);
+                });
+
+                if (!this.oColorPalettePopoverMin) {
+                    this.oColorPalettePopoverMin = new ColorPalettePopover("oColorPalettePopoverMin", {
+                        showDefaultColorButton: false,
+                        showMoreColorsButton: false,
+                        colors: aPaletteColors,
+                        colorSelect: this.handleColorSelect.bind(this)
+                    });
+                }
+
+                this.oColorPalettePopoverMin.openBy(oEvent.getSource());
+            },
+            handleColorSelect: function (oEvent) {
+                var vSelectedColor = oEvent.getParameter("value");
+                var sSelectedColor = sap.ui.getCore().aColors.find((item) => {
+                    return item.hexCode === vSelectedColor;
+                });
+                this.getView().getModel("Color").setProperty("/ColorText", sSelectedColor.color);
+            },
+            onUpdateProperties: function () {
+                this.getView().getModel("PropertyEditable").setProperty("/Edit", true);
+                this.setPropertyTableEnabled(true);
+            },
+            setPropertyTableEnabled: function (bEnabled) {
+                var oPropertyTable = this.getView().byId("tblProperties");
+                var oTableHeader = oPropertyTable.$().find('thead');
+                var oSelectAllCheckBox = oTableHeader.find('.sapMCb');
+                var oSelectAll = sap.ui.getCore().byId(oSelectAllCheckBox.attr('id'));
+                oSelectAll.setEnabled(bEnabled);
+
+                oPropertyTable.getItems().forEach(function (item) {
+                    var oCheckLineBox = item.$().find('.sapMCb');
+                    var oCheckBox = sap.ui.getCore().byId(oCheckLineBox.attr('id'));
+                    oCheckBox.setEnabled(bEnabled);
+                });
+            },
+            onCancelProperties: function () {
+                this.getView().getModel("PropertyEditable").setProperty("/Edit", false);
+                this.setPropertyTableEnabled(false);
+            },
+            updateProductProperties: function () {
+                var that = this;
+                var vProductId = this.getView().getModel("Product").getData().productID;
+                var aProperties = this.getView().getModel("Properties").getData();
+                var oPropertyTable = this.getView().byId("tblProperties");
+                var oDataModel = this.getView().getModel();
+
+                var bEmptyProperty = false;
+                var bEmptyColor = false;
+
+                aProperties.forEach((item, index) => {
+                    if (item.mandatory) {
+                        oPropertyTable.setSelectedItem(oPropertyTable.getItems()[index]);
+                    }
+                });
+
+                var aPropertyItems = oPropertyTable.getItems();
+
+                for (var i = 0; i < aPropertyItems.length; i++) {
+                    if (!aPropertyItems[i].getSelected()) {
+                        continue;
+                    }
+                    var sProperty = aProperties[i];
+
+                    if (sProperty.isSize) {
+                        if (sProperty.Width === "" || sProperty.Height === "" || sProperty.Depth === "") {
+                            bEmptyProperty = true;
+                        }
+                    }
+                    if (!sProperty.isSize && !sProperty.isColor && !sProperty.isBodySize) {
+                        if (sProperty.CommonProperty === "") {
+                            bEmptyProperty = true;
+                        }
+                    }
+                    if (sProperty.isColor) {
+                        if (this.getView().getModel("Color").getData().ColorText === "") {
+                            bEmptyColor = true;
+                        }
+                    }
+                }
+
+                if (bEmptyProperty) {
+                    MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                    return;
+                }
+                if (bEmptyColor) {
+                    MessageToast.show(this.getResourceBundle().getText("SelectColor"));
+                    return;
+                }
+                var aSelectedItems = oPropertyTable.getSelectedItems();
+
+                var oBindProperties = oDataModel.bindList("/ProductProperties", undefined, undefined, undefined, {
+                    $filter: "productID_productID eq " + vProductId,
+                    $$groupId: "directRequest"
+                });
+
+                var oBindProperty = oDataModel.bindList("/ProductProperties", undefined, undefined, undefined, {
+                    $$groupId: "batchRequest"
+                });
+
+                // oBindProperties.attachPatchCompleted(this.saveFormCompleted, this);
+
+                oBindProperties.requestContexts().then((aContext) => {
+                    var aContextData = [];
+                    var aSelectedPropertyId = [];
+
+                    aSelectedItems.forEach((item) => {
+                        var vIndexP = parseInt(item.getBindingContextPath().split("/")[1], 10);
+                        var sPropertyP = aProperties[vIndexP];
+                        var vPropertyId = sPropertyP.propertyID;
+                        aSelectedPropertyId.push(vPropertyId);
+                    });
+
+                    aContext.forEach((item, index) => {
+                        var sData = item.getObject();
+                        aContextData.push(sData);
+
+                        if (aSelectedPropertyId.findIndex((element) => {
+                            return element === item.propertyID_propertyID;
+                        }) === -1) {
+                            item.delete("directRequest");
+                        }
+                    });
+
+                    aSelectedItems.forEach((item) => {
+                        var vIndex = parseInt(item.getBindingContextPath().split("/")[1], 10);
+                        var sProperty = aProperties[vIndex];
+
+                        var vPropertyId = sProperty.propertyID;
+                        var vPropertyValue = "";
+                        var vPropertyUnit = "";
+
+                        if (sProperty.CommonInputVisible) {
+                            vPropertyValue = sProperty.CommonProperty;
+                        }
+
+                        if (sProperty.isSize) {
+                            vPropertyValue = sProperty.Depth + "x" + sProperty.Height + "x" + sProperty.Width;
+                            item.getCells()[3].getItems().forEach((element) => {
+                                if (element.getMetadata().getName() === "sap.m.Select") {
+                                    if (element.getVisible()) {
+                                        vPropertyUnit = element.getSelectedKey();
+                                    }
+                                }
+                            });
+                        }
+
+                        if (sProperty.isWeight) {
+                            vPropertyValue = sProperty.CommonProperty;
+                            item.getCells()[3].getItems().forEach((element) => {
+                                if (element.getMetadata().getName() === "sap.m.Select") {
+                                    if (element.getVisible()) {
+                                        vPropertyUnit = element.getSelectedKey();
+                                    }
+                                }
+                            });
+                        }
+
+                        if (sProperty.isColor) {
+                            vPropertyValue = this.getView().getModel("Color").getData().ColorText;
+                        }
+
+                        if (sProperty.isBodySize) {
+                            item.getCells()[2].getItems().forEach((element) => {
+                                if (element.getMetadata().getName() === "sap.m.Select") {
+                                    if (element.getVisible()) {
+                                        vPropertyValue = element.getSelectedKey();
+                                    }
+                                }
+                            });
+                        }
+
+                        var vContextIndex = aContextData.findIndex((element) => {
+                            return element.propertyID_propertyID === vPropertyId;
+                        });
+
+                        if (vContextIndex !== -1) {
+                            aContext[vContextIndex].setProperty("propertyValue", vPropertyValue);
+                            aContext[vContextIndex].setProperty("unit_unitID", vPropertyUnit);
+                        } else {
+                            oBindProperty.create({
+                                productID_productID: vProductId,
+                                propertyID_propertyID: vPropertyId,
+                                propertyValue: vPropertyValue,
+                                unit_unitID: vPropertyUnit
+                            });
+                        }
+                    });
+                    oDataModel.submitBatch("batchRequest");
+                    MessageToast.show(that.getResourceBundle().getText("UpdateCompleted"));
+                    that.getArtisanProducts(0, that.vUpdatedProductId);
+                });
+            },
+            onOpenNotifications: function (oEvent) {
+                var oButton = oEvent.getSource();
+                this.displayIncomingOrders(this, oButton);
             }
         });
     });

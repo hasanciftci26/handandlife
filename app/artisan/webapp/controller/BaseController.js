@@ -245,7 +245,8 @@ sap.ui.define([
                         aOrderItems.push({
                             OrderNo: element.getProperty("orderID_orderID"),
                             statusID: element.getProperty("status_statusID"),
-                            OrderDate: new Date(element.getProperty("createdAt"))
+                            OrderDate: new Date(element.getProperty("createdAt")),
+                            Price: Number(element.getProperty("price")) + " " + element.getProperty("currency_currencyCode")
                         });
                     });
                     sap.ui.core.BusyIndicator.hide();
@@ -296,6 +297,12 @@ sap.ui.define([
                     resolve();
                 });
             });
+        },
+        onNewOrderPressed: function () {
+            this.getRouter().navTo("Orders");
+        },
+        onNewOfferRequestPressed: function () {
+            this.getRouter().navTo("Offers");
         }
     });
 });
