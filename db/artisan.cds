@@ -159,8 +159,8 @@ entity OrderItems : managed {
         quantity         : ArtisanProducts:stock;
         unit             : Association to main.Units;
         status           : Association to main.Statuses;
-        cargoNumber      : String(20);
-        cargoBranch      : String(10);
+        cargoNumber      : String(40);
+        cargoBranch      : String(200);
 };
 
 entity ArtisanOffers {
