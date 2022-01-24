@@ -255,6 +255,8 @@ module.exports = async (srv) => {
             }
         }
 
+        let aStatuses = await SELECT.from(Statuses);
+
         let aOrderReturn = [];
         let aOrders = [];
         if (req.event == "getCustomerOrders") {
@@ -270,6 +272,7 @@ module.exports = async (srv) => {
 
             let aItems = [];
             aFilteredOrderItems.forEach((oItem) => {
+                var sStatus = aStatuses.find((element) => { return element.statusID === oItem.status_statusID });
                 aItems.push({
                     itemNo: oItem.itemNo,
                     productType: oItem.productType,
@@ -281,7 +284,11 @@ module.exports = async (srv) => {
                     price: oItem.price,
                     currency: oItem.currency_currencyCode,
                     quantity: oItem.quantity,
-                    unit: oItem.unit_unitID
+                    unit: oItem.unit_unitID,
+                    statusID: oItem.status_statusID,
+                    status: sStatus ? sStatus.status : "",
+                    cargoBranch: oItem.cargoBranch,
+                    cargoNumber: oItem.cargoNumber
                 });
             });
 
@@ -334,8 +341,7 @@ module.exports = async (srv) => {
     //Ordera gelen offerları döner
     srv.on("getOrderOffers", async (req) => {
         let vOrderId = req.data.orderID;
-        let aOffers = await SELECT.from(ArtisanOffers).where({ status_statusID: "OFRD" });
-        let aItemNo = [];
+        let aOffers = await SELECT.from(ArtisanOffers).where({ orderID: vOrderId }).and({ status_statusID: "OFRD" });
         let aReturnOffers = [];
 
         aOffers.forEach((item) => {

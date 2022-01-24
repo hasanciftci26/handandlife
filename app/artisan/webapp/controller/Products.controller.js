@@ -205,6 +205,7 @@ sap.ui.define([
                 var sProduct = this.getView().getModel("ArtisanProducts").getData().find((item) => {
                     return item.productID === vProductId;
                 });
+                sProduct.price = Number(sProduct.price);
                 this.getView().setModel(new JSONModel(sProduct), "Product");
                 var vCategoryId = await this.getCategoryId(sProduct.productID, sProduct.email_email);
                 await this.getCategoricalProperties(vCategoryId);
@@ -383,6 +384,11 @@ sap.ui.define([
             },
             onDeactivateProduct: function () {
                 var that = this;
+                that.getView().byId("btnDeactiveProduct").setEnabled(false);
+                setTimeout(() => {
+                    this.getView().byId("btnDeactiveProduct").setEnabled(true);
+                }, 1000);
+
                 var oDataModel = this.getView().getModel();
                 var oArtisanProducts = this.getView().getModel("ArtisanProducts");
                 var aFilter = [];
@@ -409,6 +415,11 @@ sap.ui.define([
 
             onActivateProduct: function () {
                 var that = this;
+                this.getView().byId("btnActiveProduct").setEnabled(false);
+                setTimeout(() => {
+                    that.getView().byId("btnActiveProduct").setEnabled(true);
+                }, 1000);
+
                 var oDataModel = this.getView().getModel();
                 var oArtisanProducts = this.getView().getModel("ArtisanProducts");
                 var aFilter = [];
@@ -435,6 +446,11 @@ sap.ui.define([
 
             onDeleteProduct: function (oEvent) {
                 var that = this;
+                this.getView().byId("btnDeleteProduct").setEnabled(false);
+                setTimeout(() => {
+                    that.getView().byId("btnDeleteProduct").setEnabled(true);
+                }, 1000);
+
                 var oDataModel = this.getView().getModel();
                 var oProductModel = this.getView().getModel("Product");
                 var sSelected = oProductModel.getData();
@@ -451,6 +467,28 @@ sap.ui.define([
                         oProductModel.setData({});
                         oProductModel.refresh();
                         that.getArtisanProducts();
+                    });
+                });
+
+                var oProductAttachments = oDataModel.bindList("/ProductAttachments", undefined, undefined, undefined, {
+                    $filter: "productID_productID eq " + sSelected.productID,
+                    $$groupId: "directRequest"
+                });
+
+                oProductAttachments.requestContexts().then((aContext) => {
+                    aContext.forEach((item) => {
+                        item.delete("directRequest");
+                    });
+                });
+
+                var oProductProperties = oDataModel.bindList("/ProductProperties", undefined, undefined, undefined, {
+                    $filter: "productID_productID eq " + sSelected.productID,
+                    $$groupId: "directRequest"
+                });
+
+                oProductProperties.requestContexts().then((aContext) => {
+                    aContext.forEach((item) => {
+                        item.delete("directRequest");
                     });
                 });
             },
@@ -505,6 +543,12 @@ sap.ui.define([
             },
             onUpdateProduct: function () {
                 var that = this;
+                this.getView().byId("btnUpdateProduct").setEnabled(false);
+                setTimeout(() => {
+                    that.getView().byId("btnUpdateProduct").setEnabled(true);
+                }, 1000);
+
+                var vRegEx = /^\d{1,7}([\.,]\d{2})?$/;
                 var sProduct = this.getView().getModel("Product").getData();
                 var aFilter = [];
                 var oDataModel = this.getView().getModel();
@@ -517,10 +561,18 @@ sap.ui.define([
                     this.vUpdatedProductId = sProduct.productID;
                     this.updateProductProperties();
                 } else {
-                    this.updateProductProperties();
-
                     aFilter.push(new Filter("productID", FilterOperator.EQ, sProduct.productID));
                     this.vUpdatedProductId = sProduct.productID;
+
+                    if (bUpdatePrice) {
+                        if (!vRegEx.test(sProduct.price)) {
+                            MessageToast.show(this.getResourceBundle().getText("PriceFormat"));
+                            return;
+                        } else {
+                            sProduct.price = sProduct.price.replace(",", ".");
+                        }
+                    }
+                    this.updateProductProperties();
 
                     var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined, {
                         $$groupId: "directRequest"
@@ -537,7 +589,7 @@ sap.ui.define([
                             aContext[0].setProperty("unit_unitID", sProduct.unit_unitID);
                         }
                         if (bUpdatePrice) {
-                            aContext[0].setProperty("price", sProduct.price);
+                            aContext[0].setProperty("price", parseFloat(sProduct.price));
                             aContext[0].setProperty("currency_currencyCode", sProduct.currency_currencyCode);
                         }
                         if (bUpdateDetails) {
@@ -700,12 +752,16 @@ sap.ui.define([
                 var oTableHeader = oPropertyTable.$().find('thead');
                 var oSelectAllCheckBox = oTableHeader.find('.sapMCb');
                 var oSelectAll = sap.ui.getCore().byId(oSelectAllCheckBox.attr('id'));
-                oSelectAll.setEnabled(bEnabled);
+                if (oSelectAll) {
+                    oSelectAll.setEnabled(bEnabled);
+                }
 
                 oPropertyTable.getItems().forEach(function (item) {
                     var oCheckLineBox = item.$().find('.sapMCb');
                     var oCheckBox = sap.ui.getCore().byId(oCheckLineBox.attr('id'));
-                    oCheckBox.setEnabled(bEnabled);
+                    if (oCheckBox) {
+                        oCheckBox.setEnabled(bEnabled);
+                    }
                 });
             },
             onCancelProperties: function () {

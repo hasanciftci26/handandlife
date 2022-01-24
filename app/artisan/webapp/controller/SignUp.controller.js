@@ -240,9 +240,11 @@ sap.ui.define([
                 if (!vMailRegex.test(vEmail)) {
                     var vMessage = this.getResourceBundle().getText("NotValidEmail");
                     MessageToast.show(vEmail + " " + vMessage);
+                    this.InvalidEmail = true;
                     this.getView().byId("inpArtisanEmail").setValueState(sap.ui.core.ValueState.Error);
                 } else {
                     this.getView().byId("inpArtisanEmail").setValueState();
+                    this.InvalidEmail = false;
                 }
             },
             //Kaydı tamamla
@@ -324,8 +326,14 @@ sap.ui.define([
                 var vToken = "";
                 // var vToken = await this.fetchCsrfToken();
                 this.startWorkflow(sArtisanRegistration.Email, vCountry, vToken).then((resolve) => {
-                    MessageBox.information(this.getResourceBundle().getText("RegistrationCompleted"));
-                    that.getRouter().navTo("HomePage");
+                    MessageBox.information(this.getResourceBundle().getText("RegistrationCompleted"), {
+                        title: this.getResourceBundle().getText("Information"),
+                        actions: sap.m.MessageBox.Action.OK,
+                        emphasizedAction: sap.m.MessageBox.Action.OK,
+                        onClose: function () {
+                            that.getRouter().navTo("HomePage");
+                        }
+                    });
                 }).catch((reject) => {
                     MessageBox.information(this.getResourceBundle().getText("RegistrationFail"));
                 });

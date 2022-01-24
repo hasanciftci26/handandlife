@@ -202,6 +202,13 @@ sap.ui.define([
                 this.getRouter().navTo("HomePage");
             },
             onNewProductComplete: function () {
+                var that = this;
+                sap.ui.core.BusyIndicator.show();
+                this.getView().byId("btnComplete").setEnabled(false);
+                setTimeout(() => {
+                    that.getView().byId("btnComplete").setEnabled(true);
+                }, 1200);
+
                 var oDataModel = this.getView().getModel();
                 var oPropertyTable = this.getView().byId("tblProperties");
                 var vProductInfoControl = this.checkMandatoryFields("sfProductInfoForm", this);
@@ -209,11 +216,19 @@ sap.ui.define([
 
                 if (vProductInfoControl) {
                     MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                    sap.ui.core.BusyIndicator.hide();
                     return;
                 }
 
                 if (this.getView().byId("usProductAttachments").getIncompleteItems().length === 0) {
                     MessageToast.show(this.getResourceBundle().getText("AtLeastOnePicture"));
+                    sap.ui.core.BusyIndicator.hide();
+                    return;
+                }
+
+                if (this.InvalidPriceFormat) {
+                    MessageToast.show(this.getResourceBundle().getText("PriceFormat"));
+                    sap.ui.core.BusyIndicator.hide();
                     return;
                 }
 
@@ -267,10 +282,12 @@ sap.ui.define([
 
                 if (bEmptyProperty) {
                     MessageToast.show(this.getResourceBundle().getText("FillRequireBlanks"));
+                    sap.ui.core.BusyIndicator.hide();
                     return;
                 }
                 if (bEmptyColor) {
                     MessageToast.show(this.getResourceBundle().getText("SelectColor"));
+                    sap.ui.core.BusyIndicator.hide();
                     return;
                 }
 
@@ -280,10 +297,10 @@ sap.ui.define([
 
                 var sProduct = this.getView().getModel("NewProduct").getData();
                 // sProduct.Price = sProduct.Price.replaceAll(".", "");
-                // sProduct.Price = sProduct.Price.replace(",", ".");
+                sProduct.Price = sProduct.Price.replace(",", ".");
 
                 oBindProduct.attachCreateCompleted(this.onProductCreatedComplete, this);
-
+                sap.ui.core.BusyIndicator.show();
                 oBindProduct.create({
                     category_categoryID: this.getView().byId("cbCategories").getSelectedKey(),
                     // @ts-ignore
@@ -380,8 +397,10 @@ sap.ui.define([
                 oDataModel.submitBatch("batchRequest");
             },
             onPropertyCreatedComplete: function (oEvent) {
+                sap.ui.core.BusyIndicator.hide();
                 if (this.saveAttach) {
                     this.onUploadAttachments();
+                    this.getRouter().navTo("Products");
                 }
                 this.saveAttach = false;
             },
@@ -391,14 +410,16 @@ sap.ui.define([
                 this.generalChangeControl(oEvent);
                 if (vId.substring(vId.length - 8) === "inpPrice") {
                     var vValue = oEvent.getSource().getValue();
-                    var vRegEx = /^(\d+(\,\d{0,2})?|\,?\d{1,2})$/;
+                    var vRegEx = /^\d{1,7}([\.,]\d{2})?$/;
 
-                    if (vRegEx.test(vValue) === false || vValue.substring(vValue.length - 1) === ",") {
+                    if (!vRegEx.test(vValue)) {
                         MessageToast.show(this.getResourceBundle().getText("PriceFormat"));
                         oEvent.getSource().setValueState("Error");
+                        this.InvalidPriceFormat = true;
                     }
                     else {
                         oEvent.getSource().setValueState();
+                        this.InvalidPriceFormat = false;
                     }
                 }
             },
@@ -415,12 +436,12 @@ sap.ui.define([
                 });
             },
             onFileUploadCompleted: function (oEvent) {
-                var oUploadSet = this.getView().byId("usProductAttachments");
-                oUploadSet.removeAllIncompleteItems();
-                oUploadSet.removeItem(oEvent.getParameters().item);
-                if (oUploadSet.getItems().length === 0) {
-                    this.getRouter().navTo("Products");
-                }
+                // var oUploadSet = this.getView().byId("usProductAttachments");
+                // oUploadSet.removeAllIncompleteItems();
+                // oUploadSet.removeItem(oEvent.getParameters().item);
+                // if (oUploadSet.getItems().length === 0) {
+                //     this.getRouter().navTo("Products");
+                // }
             },
             createFileEntity: function (oItem) {
                 var sPayloadData = {

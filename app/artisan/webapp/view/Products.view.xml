@@ -105,9 +105,7 @@
                                             </ComboBox>
                                             <Button id="btnUpdateStock" text="{i18n>Update}" press="onUpdateStock"/>
                                             <Label text="{i18n>Price}"/>
-                                            <Input id="inpPrice"
-                                                value="{path:'Product>/price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}"
-                                                maxLength="40" liveChange="onGeneralChange" editable="false">
+                                            <Input id="inpPrice" value="{Product>/price}" maxLength="40" liveChange="onGeneralChange" editable="false">
                                                 <layoutData>
                                                     <l:GridData span="XL1 L2 M2 S4"/>
                                                 </layoutData>
@@ -199,11 +197,11 @@
                                     </VBox>
 									<semantic:customFooterContent>
 										<Button icon="sap-icon://activate" type="Ghost" press="onActivateProduct" text="{i18n>ActivateProduct}"
-											visible="{= ${Product>/statusID} === 'AVLB' ? false : true}"/>
+											visible="{= ${Product>/statusID} === 'AVLB' ? false : true}" id="btnActiveProduct"/>
 										<Button icon="sap-icon://pending" type="Ghost" press="onDeactivateProduct" text="{i18n>DeactivateProduct}"
-											visible="{= ${Product>/statusID} === 'AVLB' ? true : false}"/>
-                                        <Button icon="sap-icon://save" type="Accept" press="onUpdateProduct" text="{i18n>UpdateProduct}"/>
-										<Button icon="sap-icon://delete" type="Reject" press="onDeleteProduct" text="{i18n>DeleteProduct}"/>
+											visible="{= ${Product>/statusID} === 'AVLB' ? true : false}" id="btnDeactiveProduct"/>
+                                        <Button icon="sap-icon://save" type="Accept" press="onUpdateProduct" text="{i18n>UpdateProduct}" id="btnUpdateProduct"/>
+										<Button icon="sap-icon://delete" type="Reject" press="onDeleteProduct" text="{i18n>DeleteProduct}" id="btnDeleteProduct"/>
 									</semantic:customFooterContent>
 								</semantic:DetailPage>
 							</detailPages>

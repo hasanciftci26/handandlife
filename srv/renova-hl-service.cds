@@ -186,11 +186,37 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         };
     };
 
-    type AllOrders : Orders {};
-
-    type CustomerOrders : Orders {
-        orderID : String(9);
+    type CustomerOrders : {
+        orderID              : String(9);
+        customerID           : artisan.Orders:customerID;
+        totalPrice           : Decimal(10, 2);
+        currency             : main.Currencies:currencyCode;
+        country              : main.Countries:countryCode;
+        cityCode             : main.Cities:cityCode;
+        address              : String(1000);
+        gsm                  : String(20);
+        firstName            : artisan.Artisans:firstName;
+        lastName             : artisan.Artisans:lastName;
+        items                : many {
+            itemNo           : Integer;
+            productType      : artisan.OrderItems:productType;
+            category         : artisan.Categories:categoryID;
+            offerExpireBegin : DateTime;
+            offerExpireEnd   : DateTime;
+            artisanCount     : Integer;
+            productID        : artisan.ArtisanProducts:productID;
+            price            : Decimal(10, 2);
+            currency         : main.Currencies:currencyCode;
+            quantity         : String(25);
+            unit             : main.Units:unitID;
+            statusID         : main.Statuses:statusID;
+            status           : main.Statuses:status;
+            cargoBranch      : artisan.OrderItems:cargoBranch;
+            cargoNumber      : artisan.OrderItems:cargoNumber;
+        };
     };
+
+    type AllOrders : Orders {};
 
     type OrderResponse {
         orderID       : String(10);

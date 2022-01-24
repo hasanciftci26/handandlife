@@ -80,9 +80,7 @@
 										</m:items>
 									</m:ComboBox>
 									<m:Label text="{i18n>Price}"/>
-									<m:Input id="inpPrice"
-										value="{path:'NewProduct>/Price', type:'sap.ui.model.type.Float', formatOptions: {minFractionDigits: '2', maxFractionDigits: '2'}}"
-										maxLength="40" liveChange="onGeneralChange">
+									<m:Input id="inpPrice" value="{NewProduct>/Price}" maxLength="40" liveChange="onGeneralChange">
 										<m:layoutData>
 											<l:GridData span="XL1 L2 M2 S4"/>
 										</m:layoutData>
@@ -187,7 +185,7 @@
 		<footer>
 			<m:OverflowToolbar>
 				<m:ToolbarSpacer/>
-				<m:Button width="15rem" text="{i18n>Complete}" press="onNewProductComplete" type="Accept" icon="sap-icon://complete"/>
+				<m:Button id="btnComplete" width="15rem" text="{i18n>Complete}" press="onNewProductComplete" type="Accept" icon="sap-icon://complete"/>
 				<!-- <m:ToolbarSpacer /> -->
 			</m:OverflowToolbar>
 		</footer>

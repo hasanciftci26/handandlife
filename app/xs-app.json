@@ -1,5 +1,5 @@
 {
-    "authenticationMethod": "route",
+    "authenticationMethod": "none",
     "routes": [
         {
             "source": "/hand-and-life/(.*)",

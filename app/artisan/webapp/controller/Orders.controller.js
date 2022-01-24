@@ -28,7 +28,7 @@ sap.ui.define([
             onChangeAccountPassword: function () {
                 this.onChangePassword(this);
             },
-            onNavToAccountSettings:function(){
+            onNavToAccountSettings: function () {
                 this.getRouter().navTo("AccountSettings");
             },
             onNavToOffers: function () {
@@ -223,6 +223,7 @@ sap.ui.define([
                     initialFocus: null,
                     onClose: function (oAction) {
                         if (oAction === "OK") {
+                            that.updateProductQuantity(sOrder);
                             that.setOrderPrepared(sOrder);
                         }
                     }
@@ -250,7 +251,26 @@ sap.ui.define([
                         sap.ui.core.BusyIndicator.hide();
                         that._onObjectMatched();
                     });
-                })
+                });
+            },
+            updateProductQuantity:function(sOrder){
+                var that = this;
+                var oDataModel = this.getView().getModel();
+                // oDataModel.setSizeLimit(25000);
+                var aFilter = [];
+
+                var oBindProduct = oDataModel.bindList("/ArtisanProducts", undefined, undefined, undefined,
+                    {
+                        $filter: "productID eq " + sOrder.productID_productID,
+                        $$groupId: "directRequest"
+                    });
+
+                oBindProduct.requestContexts().then((oContext) => {
+                    var vOriginQuantity = parseFloat(oContext[0].getProperty("stock").replace(",", "."));
+                    var vRemainQuantity = vOriginQuantity - parseFloat(sOrder.quantity.replace(",", "."));
+                    oContext[0].setProperty("stock", vRemainQuantity.toString());
+                    oDataModel2.submitBatch("batchRequest")
+                });
             },
             onShipmentPress: function (oEvent) {
                 var sOrder = oEvent.getSource().getBindingContext("PreparedOrders").getProperty();
