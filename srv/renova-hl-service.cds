@@ -224,6 +224,8 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
         nonExistItems : many {
             productID : artisan.ArtisanProducts:productID;
             itemNo    : artisan.OrderItems:itemNo;
+            isSuccess : Boolean;
+            message   : String(50);
         };
     };
 

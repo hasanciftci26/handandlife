@@ -192,8 +192,24 @@ module.exports = async (srv) => {
                     return item.productType == "N";
                 });
 
-                await determineBestArtisans(aNonExistProducts, ProfessionCategories, ArtisanProfessions, vOrderId, ArtisanOffers);
+                if (aNonExistProducts.length) {
+                    let aResponse = await determineBestArtisans(aNonExistProducts, ProfessionCategories, ArtisanProfessions, vOrderId, ArtisanOffers);
+                    if (aResponse == false) {
+                        aNonExistProductID.forEach((item) => {
+                            item.isSuccess = false;
+                            item.message = "No category found.";
+                        });
+                    } else {
+                        aNonExistProductID.forEach((item) => {
+                            var sReturn = aResponse.find((element) => {
+                                return element.productID == item.productID && element.itemNo == item.itemNo;
+                            });
 
+                            item.isSuccess = sReturn.isSuccess;
+                            item.message = sReturn.message;
+                        });
+                    }                    
+                }
                 var sResponse = {
                     orderID: vOrderId,
                     isSuccess: true,
@@ -676,6 +692,7 @@ async function getNextOrderID(Orders) {
 
 //Eğer non-exist product ise en iyi artisanları bul ve offer tablosuna kaydet
 async function determineBestArtisans(aProducts, ProfessionCategories, ArtisanProfessions, vOrderId, ArtisanOffers) {
+    var aResponse = [];
     if (aProducts.length != 0) {
         let aCategories = [];
         aProducts.forEach((item) => {
@@ -685,8 +702,11 @@ async function determineBestArtisans(aProducts, ProfessionCategories, ArtisanPro
         });
         var aProfessionCategories = await SELECT.from(ProfessionCategories).where({ categoryID_categoryID: { in: aCategories } });
     }
+    if (!aProfessionCategories) {
+        return false;
+    }
     if (aProducts.length == 0) {
-        return;
+        return false;
     } else {
         for (const products of aProducts) {
             let aFilteredProfessions = aProfessionCategories.filter((element) => {
@@ -701,6 +721,15 @@ async function determineBestArtisans(aProducts, ProfessionCategories, ArtisanPro
             let aArtisans = await SELECT.from(ArtisanProfessions).where({ professionID_professionID: { in: aProfessions } })
                 .orderBy("point desc").limit({ rows: { val: products.artisanCount } });
 
+            if (!aArtisans.length) {
+                aResponse.push({
+                    productID: products.productID_productID,
+                    itemNo: products.itemNo,
+                    isSuccess: false,
+                    message: "No Artisan Found"
+                });
+                continue;
+            }
             let aArtisanEmails = [];
             aArtisans.forEach((artisan) => {
                 if (!aArtisanEmails.includes(artisan.email_email)) {
@@ -724,11 +753,23 @@ async function determineBestArtisans(aProducts, ProfessionCategories, ArtisanPro
             });
 
             let oInsertOffer = await INSERT.into(ArtisanOffers).entries(aArtisanOffer);
-            var bSuccess = false;
+
             if (oInsertOffer.affectedRows > 0) {
-                bSuccess = true;
+                aResponse.push({
+                    productID: products.productID_productID,
+                    itemNo: products.itemNo,
+                    isSuccess: true,
+                    message: "Success"
+                });
+            } else {
+                aResponse.push({
+                    productID: products.productID_productID,
+                    itemNo: products.itemNo,
+                    isSuccess: false,
+                    message: "Error"
+                });
             }
         }
-        return bSuccess;
+        return aResponse;
     }
 }

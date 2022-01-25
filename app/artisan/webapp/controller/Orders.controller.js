@@ -269,7 +269,7 @@ sap.ui.define([
                     var vOriginQuantity = parseFloat(oContext[0].getProperty("stock").replace(",", "."));
                     var vRemainQuantity = vOriginQuantity - parseFloat(sOrder.quantity.replace(",", "."));
                     oContext[0].setProperty("stock", vRemainQuantity.toString());
-                    oDataModel2.submitBatch("batchRequest")
+                    oDataModel.submitBatch("batchRequest");
                 });
             },
             onShipmentPress: function (oEvent) {
