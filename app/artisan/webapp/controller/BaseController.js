@@ -194,9 +194,12 @@ sap.ui.define([
             this.getForgottenPasswordDialog(oThis).close();
         },
         displayIncomingOrders: async function (oThis, oButton) {
-            await this.getNewOrders(oThis);
-            await this.getNonExistOrders(oThis);
-            this.openNotificationPopover(oThis, oButton);
+            var that = this;
+            // await this.getNewOrders(oThis);
+            // await this.getNonExistOrders(oThis);
+            Promise.all([this.getNewOrders(oThis), this.getNonExistOrders(oThis)]).then(() => {
+                that.openNotificationPopover(oThis, oButton);
+            });
         },
         getNewOrders: function (oThis) {
             var that = this;

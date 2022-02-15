@@ -137,6 +137,8 @@ service HandAndLife @(impl : './renova-hl-service') {
     @assert.integrity : false
     @readonly
     entity Units                  as projection on main.Units;
+
+    action uploadImagesToRemote(productID : UUID) returns Boolean;
 };
 
 service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
@@ -291,9 +293,9 @@ service HandAndLifeIntegration @(impl : './renova-hl-int-service') {
     };
 
     type PictureResponse {
-        productID : artisan.ArtisanProducts:productID;
-        fileID    : artisan.ProductAttachments:fileID;
-        picture   : String;
+        productID  : artisan.ArtisanProducts:productID;
+        fileID     : artisan.ProductAttachments:fileID;
+        pictureUrl : String;
     };
 
     type ArtisanResponse {

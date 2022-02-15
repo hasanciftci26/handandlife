@@ -208,7 +208,7 @@ module.exports = async (srv) => {
                             item.isSuccess = sReturn.isSuccess;
                             item.message = sReturn.message;
                         });
-                    }                    
+                    }
                 }
                 var sResponse = {
                     orderID: vOrderId,
@@ -461,7 +461,7 @@ module.exports = async (srv) => {
             aPictureResponse.push({
                 productID: vProductId,
                 fileID: item.fileID,
-                picture: Buffer.from(item.mediaContent).toString("base64")
+                pictureUrl: item.pictureUrl
             });
         });
         return aPictureResponse;

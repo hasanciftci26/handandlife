@@ -37,8 +37,10 @@ sap.ui.define([
             _onObjectMatched: async function () {
                 this.sessionControl(this);
 
-                await this.getCountries();
-                await this.getProfessions();
+                // await this.getCountries();
+                // await this.getProfessions();
+
+                Promise.all([this.getCountries(),this.getProfessions()]);
 
                 this.getView().setModel(new JSONModel({}), "ArtisanRegistration");
                 this.getView().setModel(new JSONModel([]), "ArtisanProfessions");
@@ -89,7 +91,7 @@ sap.ui.define([
                 var vSelectedCountry = oEvent.getSource().getSelectedKey();
                 this.getView().byId("cbBirthCities").setSelectedKey();
                 oEvent.getSource().setValueState();
-                await this.getCities("B", vSelectedCountry);
+                this.getCities("B", vSelectedCountry);
             },
             //Seçilen ikamet ülkesine göre o ülkeye ait şehirleri databaseden al ve gsm maskını ayarla
             onChangeResidenceCountry: async function (oEvent) {
@@ -110,7 +112,7 @@ sap.ui.define([
                 }
                 while (vIndex < aSelectedCountry[0].gsmLength);
                 this.getView().byId("maskInpGsm").setMask(vMask);
-                await this.getCities("R", vSelectedCountry);
+                this.getCities("R", vSelectedCountry);
             },
             //Şehirleri databaseden al
             getCities: function (CityType, SelectedCountry) {

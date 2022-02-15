@@ -7,10 +7,11 @@
   "private": true,
   "dependencies": {
     "@sap/cds": "^5",
+    "cloudinary": "^1.28.1",
     "crypto": "^1.0.1",
     "express": "^4",
-    "uuid": "^8.3.2",
-    "hdb": "^0.18.3"
+    "hdb": "^0.18.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@sap/eslint-plugin-ui5-jsdocs": "^2.0.5",

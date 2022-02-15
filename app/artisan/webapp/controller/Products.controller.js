@@ -664,6 +664,8 @@ sap.ui.define([
                 this.onUploadAttachments();
             },
             onUploadAttachments: function () {
+                var oDataModel = this.getView().getModel();
+                var sProduct = this.getView().getModel("Product").getData();
                 var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
                 oUploadSet.getIncompleteItems().forEach((oItem) => {
                     this.createFileEntity(oItem).then((FileKeys) => {
@@ -672,18 +674,31 @@ sap.ui.define([
                         console.log(err);
                     });
                 });
+                this.getAddPictureDialog().close();
+                setTimeout(function () {
+                    this.getArtisanProducts(0, sProduct.productID);
+                }.bind(this), 1000);
+                setTimeout(function () {
+                    var oBindAction = oDataModel.bindContext("/uploadImagesToRemote(...)");
+                    oBindAction.setParameter("productID", sProduct.productID);
+                    oBindAction.execute().then((resolve) => {
+                        var test = "x";
+                    }).catch((reject) => {
+
+                    });
+                }.bind(this), 5000);
             },
             onFileUploadCompleted: function (oEvent) {
-                this.uploadedPictureCount++;
-                var sProduct = this.getView().getModel("Product").getData();
-                var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
-                sap.ui.core.BusyIndicator.show();
-                oUploadSet.removeAllIncompleteItems();
-                this.getAddPictureDialog().close();
-                oUploadSet.removeItem(oEvent.getParameters().item);
-                if (this.uploadedPictureCount === this.totalPictureCount) {
-                    this.getArtisanProducts(0, sProduct.productID);
-                }
+                // this.uploadedPictureCount++;
+                // var sProduct = this.getView().getModel("Product").getData();
+                // var oUploadSet = sap.ui.getCore().byId("diaAddPicture").getContent()[0];
+                // sap.ui.core.BusyIndicator.show();
+                // oUploadSet.removeAllIncompleteItems();
+                // this.getAddPictureDialog().close();
+                // oUploadSet.removeItem(oEvent.getParameters().item);
+                // if (this.uploadedPictureCount === this.totalPictureCount) {
+                //     this.getArtisanProducts(0, sProduct.productID);
+                // }
             },
             createFileEntity: function (oItem) {
                 var sProduct = this.getView().getModel("Product").getData();
@@ -692,7 +707,9 @@ sap.ui.define([
                     productID_productID: sProduct.productID,
                     email_email: sap.ui.getCore().email,
                     mediaType: oItem.getMediaType(),
-                    fileName: oItem.getFileName()
+                    fileName: oItem.getFileName(),
+                    uploaded: false,
+                    pictureUrl: ""
                 };
 
                 var oRequestSettings = {

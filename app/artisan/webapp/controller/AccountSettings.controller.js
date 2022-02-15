@@ -60,10 +60,12 @@ sap.ui.define([
                 }), "ChangePassword");
                 this.getView().setModel(new JSONModel({ Display: false }), "ShowNewPassword");
 
-                await this.getCountries();
-                await this.getProfessions();
-                this.getPersonalInformation();
-                this.getPersonalProfession();
+                // await this.getCountries();
+                // await this.getProfessions();
+                Promise.all([this.getCountries(), this.getProfessions()]).then(function () {
+                    this.getPersonalInformation();
+                    this.getPersonalProfession();
+                }.bind(this));
             },
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");

@@ -117,7 +117,9 @@ entity ProfessionCategories {
 };
 
 entity ProductAttachments : managed, Attachment {
-    key productID : Association to ArtisanProducts;
+    key productID  : Association to ArtisanProducts;
+        uploaded   : Boolean;
+        pictureUrl : String;
 };
 
 entity Orders : managed {

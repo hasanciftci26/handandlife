@@ -20,6 +20,7 @@ sap.ui.define([
 
         return BaseController.extend("renova.hl.ui.artisan.controller.NewProduct", {
             formatter: formatter,
+            saveAttach: true,
             onInit: function () {
                 this.getView().setModel(new JSONModel({}), "NewProduct");
 
@@ -73,10 +74,13 @@ sap.ui.define([
                     return;
                 }
 
-                await this.getCategories();
-                await this.getUnits();
-                await this.getColors();
-                await this.getCurrencies();
+                // await this.getCategories();
+                // await this.getUnits();
+                // await this.getColors();
+                // await this.getCurrencies();
+
+                Promise.all([this.getCategories(), this.getUnits(), this.getColors(), this.getCurrencies()]);
+
                 this.getView().setModel(new JSONModel(this.getBodySizes()), "BodySizes");
                 this.getView().setModel(new JSONModel({ ColorText: "" }), "Color");
             },
@@ -161,7 +165,7 @@ sap.ui.define([
                         showDefaultColorButton: false,
                         showMoreColorsButton: false,
                         colors: aPaletteColors,
-                        colorSelect: this.handleColorSelect
+                        colorSelect: this.handleColorSelect.bind(this)
                     });
                 }
 
@@ -172,7 +176,7 @@ sap.ui.define([
                 var sSelectedColor = sap.ui.getCore().aColors.find((item) => {
                     return item.hexCode === vSelectedColor;
                 });
-                sap.ui.getCore().vThis.getView().getModel("Color").setProperty("/ColorText", sSelectedColor.color);
+                this.getView().getModel("Color").setProperty("/ColorText", sSelectedColor.color);
             },
             onNavToLoginPage: function () {
                 this.getRouter().navTo("Login");
@@ -427,6 +431,7 @@ sap.ui.define([
                 oEvent.getSource().setValueState();
             },
             onUploadAttachments: function () {
+                var oDataModel = this.getView().getModel();
                 this.getView().byId("usProductAttachments").getIncompleteItems().forEach((oItem) => {
                     this.createFileEntity(oItem).then((FileKeys) => {
                         this.uploadFileContent(oItem, FileKeys);
@@ -434,6 +439,15 @@ sap.ui.define([
                         console.log(err);
                     });
                 });
+                setTimeout(function () {
+                    var oBindAction = oDataModel.bindContext("/uploadImagesToRemote(...)");
+                    oBindAction.setParameter("productID", this.vProductId);
+                    oBindAction.execute().then((resolve) => {
+                        var test = "x";
+                    }).catch((reject) => {
+
+                    });
+                }.bind(this), 5000);
             },
             onFileUploadCompleted: function (oEvent) {
                 // var oUploadSet = this.getView().byId("usProductAttachments");
@@ -448,7 +462,9 @@ sap.ui.define([
                     productID_productID: this.vProductId,
                     email_email: sap.ui.getCore().email,
                     mediaType: oItem.getMediaType(),
-                    fileName: oItem.getFileName()
+                    fileName: oItem.getFileName(),
+                    uploaded: false,
+                    pictureUrl: ""
                 };
 
                 var oRequestSettings = {

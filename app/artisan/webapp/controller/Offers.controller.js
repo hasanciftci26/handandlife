@@ -39,14 +39,16 @@ sap.ui.define([
                     }
                     );
                 }
-                await this.getCategories();
-                await this.getCountries();
-                await this.getCities();
-                await this.getUnits();
-                await this.getCurrencies();
-                this.getWaitingOffers();
+                // await this.getCategories();
+                // await this.getCountries();
+                // await this.getCities();
+                // await this.getUnits();
+                // await this.getCurrencies();
+                Promise.all([this.getCategories(), this.getCountries(), this.getCities(), this.getUnits(), this.getCurrencies()]).then(() => {
+                    that.getWaitingOffers();
+                });
             },
-            onNavToAccountSettings:function(){
+            onNavToAccountSettings: function () {
                 this.getRouter().navTo("AccountSettings");
             },
             onNavToLoginPage: function () {
